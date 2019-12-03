@@ -1,8 +1,10 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using SDHK_Tool.Dynamic;
 using SDHK_Tool.Static;
+using SDHK_Tool.Extension;
 using UnityEngine;
 
 /*
@@ -16,7 +18,7 @@ using UnityEngine;
  * 
  * 动态列表，发放编号，并进行排列
  * 更具父物体高宽来计算内容盒子高宽
- * 更具自身位置来生成和删除物体
+ * 更具自身位置来移动物体并修改编号
  *
  */
 
@@ -32,10 +34,37 @@ namespace SDHK_Tool.Component
         #region 公开属性
 
         /// <summary>
-        /// 动态列表内容生成器：必须有
+        /// 预制体
         /// </summary>
-        [Tooltip("动态列表内容生成器：必须有")]
-        public SB_ScrollGroup_BoxGenerator ScrollGroup_Base;
+        [Tooltip("要生成的预制体")]
+        public GameObject Box_Pfb;
+
+        [Space()]
+        [Space()]
+
+        /// <summary>
+        /// 内容数量
+        /// </summary>
+        [Tooltip("要生成的内容数")]
+        public int BoxCount = 10;
+
+        [Space()]
+        [Space()]
+
+        /// <summary>
+        /// 列表循环
+        /// </summary>
+        [Tooltip("列表循环")]
+        public bool Loop = false;
+
+        [Space()]
+        [Space()]
+
+        /// <summary>
+        /// 动态列表内容处理器：必须有
+        /// </summary>
+        [Tooltip("动态列表内容处理器：必须有")]
+        public SB_ScrollGroup_BoxProcessor ScrollGroup_Base;
 
         [Space()]
         [Space()]
@@ -94,6 +123,19 @@ namespace SDHK_Tool.Component
         [Tooltip("脚本计算出来的格子高宽_画布坐标")]
         public Vector2 GroupBox;
 
+        /// <summary>
+        /// 对象池句柄
+        /// </summary>
+        /// <typeparam name="int">编号</typeparam>
+        /// <typeparam name="GameObject">储存物体</typeparam>
+        public Dictionary<int, GameObject> IdPool = new Dictionary<int, GameObject>();
+
+        /// <summary>
+        /// 对象池
+        /// </summary>
+        public SD_ObjectPool<GameObject> objectPool;
+
+
         #endregion
 
         #region 私有属性
@@ -104,11 +146,11 @@ namespace SDHK_Tool.Component
         private List<int> EnterIds; //添加ID集合
         private List<int> ExitIds;  //删除ID集合
 
-        private int ObjectCount;
-
         private int PointerId = 0;//指针当前指向的Id
 
         private int LatePointerId = 1;//指针上一次Id
+
+        private int Num;//数据Id
 
         private RectTransform ThisTransform; //当前物体
 
@@ -123,9 +165,11 @@ namespace SDHK_Tool.Component
 
         #endregion
 
-        private void Awake()
+        private void Start()
         {
             //===[初始化动态列表]=====
+
+            objectPool = new SD_ObjectPool<GameObject>(() => Instantiate(Box_Pfb), (Box) => Destroy(Box));
 
             ParentTransform = (RectTransform)transform.parent;//获取父物体面板
             ThisTransform = (RectTransform)transform;//获取本物体面板
@@ -138,8 +182,8 @@ namespace SDHK_Tool.Component
             ThisTransform.anchorMin = new Vector2(0, 1);//设置锚点为左上角
             ThisTransform.anchorMax = new Vector2(0, 1);
 
-            //计算
-            GroupRefresh();
+            //初始化
+            Refresh();
 
             ThisTransform.anchoredPosition3D = Vector3.zero;//动态列表面板归零（需要移动这个）
 
@@ -158,8 +202,6 @@ namespace SDHK_Tool.Component
 
             BoxSize_Half = BoxSize * 0.5f;
             GroupBox_multiple = GroupBox * Preload;
-
-            ObjectCount = (int)((GroupList.x + Preload * 2) * GroupList.y);
         }
 
         /// <summary>
@@ -168,9 +210,34 @@ namespace SDHK_Tool.Component
         [ContextMenu("列表刷新")]
         public void Refresh()
         {
-            if (ScrollGroup_Base == null) return;
-            ScrollGroup_Base.RefreshGroup();
             Exit(new List<int>(BoxsId));
+
+            objectPool.Clear_ObjectPool(); IdPool.Clear();//对象池清空
+
+            if (ScrollGroup_Base != null)//对象池委托绑定
+            {
+                objectPool.Object_New = (obj) =>
+                {
+                    obj.transform.SetParent(transform);
+                    obj.transform.localScale = Vector3.one;
+                    obj.transform.SE_LocalPosition_Z(0);
+                    ScrollGroup_Base.GroupBox_New(obj, Num);
+                    obj.transform.SetParent(this.transform);
+                };
+
+                objectPool.Object_Del = (obj) => ScrollGroup_Base.GroupBox_Del(obj, Num);
+
+                objectPool.Object_Work = (obj) =>
+                {
+                    ScrollGroup_Base.GroupBox_Work(obj, Num);//数据加载
+                };
+
+                objectPool.Object_Idle = (obj) => ScrollGroup_Base.GroupBox_Idle(obj, Num);
+
+                ScrollGroup_Base.RefreshGroup();
+            }
+
+
             GroupRefresh();
             Generate_List();
 
@@ -178,8 +245,6 @@ namespace SDHK_Tool.Component
 
         void Update()
         {
-            if (ScrollGroup_Base == null) return;
-
             if (isVertical)
             {
                 GroupPosition = ThisTransform.anchoredPosition3D.y;//获取当前物体位置
@@ -220,9 +285,16 @@ namespace SDHK_Tool.Component
         {
             for (int i = 0; i < Ids.Count; i++)
             {
-                int ObjectId = SS_Mathf.Int_Loop(Ids[i], ObjectCount); //Id换算成整数循环（对象Id）
+                if (BoxCount < 1) return; //数量不能为0
+                Num = (Loop) ? SS_Mathf.Int_Loop(Ids[i], BoxCount) : Ids[i]; //换算成整数循环
 
-                GameObject BoxObject = ScrollGroup_Base.EnterGroupBox(ObjectId, Ids[i]);//获取要显示的物体
+                if (!(Loop || SS_Mathf.If_IntervalValue(Num, 0, BoxCount - 1))) continue;//跳过这次循环
+
+                GameObject BoxObject = objectPool.Get_Object();
+                // print("工作对象池：" + objectPool.ObjectPool_Work.Count + " 闲置对象池：" + objectPool.ObjectPool_Idle.Count);
+
+
+                IdPool.Add(Ids[i], BoxObject);
 
                 if (BoxObject != null)
                 {
@@ -232,12 +304,15 @@ namespace SDHK_Tool.Component
                     BoxPosition.x = ((isVertical) ? List2D.y : List2D.x) * GroupBox.x + GroupGap.x + BoxSize_Half.x;
                     BoxPosition.y = ((isVertical) ? List2D.x : List2D.y) * -GroupBox.y - GroupGap.y - BoxSize_Half.y;
 
+
                     ((RectTransform)BoxObject.transform).sizeDelta = new Vector2(BoxSize.x, BoxSize.y);//设置内容盒子高宽
                     ((RectTransform)BoxObject.transform).anchorMin = new Vector2(0, 1);//设置锚点为中心点
                     ((RectTransform)BoxObject.transform).anchorMax = new Vector2(0, 1);
                     ((RectTransform)BoxObject.transform).anchoredPosition = BoxPosition;//位置放置
                     BoxsId.Add(Ids[i]);//Id存入列表
+
                 }
+
             }
         }
 
@@ -245,9 +320,12 @@ namespace SDHK_Tool.Component
         {
             for (int i = 0; i < Ids.Count; i++)
             {
-                int ObjectId = SS_Mathf.Int_Loop(Ids[i], ObjectCount); //换算成整数循环
-                ScrollGroup_Base.ExitGroupBox(ObjectId, Ids[i]);
+                objectPool.Set_Object(IdPool[Ids[i]]);
+                IdPool.Remove(Ids[i]);
+
                 BoxsId.Remove(Ids[i]);//Id列表删除
+                Resources.UnloadUnusedAssets();//释放无用对象
+                // System.GC.Collect();
             }
 
         }
