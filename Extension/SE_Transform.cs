@@ -215,7 +215,7 @@ namespace SDHK_Tool.Extension
         }
 
         /// <summary>
-        /// 世界坐标转局部坐标
+        /// 局部坐标转世界坐标
         /// </summary>
         /// <param name="LocalPoint">局部坐标点</param>
         /// <returns>世界坐标</returns>

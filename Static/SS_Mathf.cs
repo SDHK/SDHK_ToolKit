@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-
-
-
 /*
  * 作者：闪电Y黑客
  *
@@ -16,7 +13,6 @@ using UnityEngine;
 
 namespace SDHK_Tool.Static
 {
-
 
     /// <summary>
     /// 数学类
@@ -354,6 +350,18 @@ namespace SDHK_Tool.Static
         {
             b ^= (a ^= b);
             a ^= b;
+        }
+
+        /// <summary>
+        /// 计算多点中心
+        /// </summary>
+        /// <param name="vectors">多点位置集合</param>
+        /// <returns>中心点</returns>
+        public static Vector3 VectorsCenter(List<Vector3> vectors)
+        {
+            Vector3 Center = new Vector3();
+            vectors.ForEach((vector) => Center += vector);
+            return Center / vectors.Count;
         }
 
     }

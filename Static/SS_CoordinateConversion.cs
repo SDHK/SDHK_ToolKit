@@ -12,7 +12,7 @@ namespace SDHK_Tool.Static
 {
 
     /// <summary>
-    /// 坐标系坐标角度转换
+    /// 坐标系坐标转换
     /// </summary>
     public class SS_CoordinateConversion
     {

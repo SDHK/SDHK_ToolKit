@@ -75,7 +75,6 @@ namespace SDHK_Tool.Component
         /// <param name="eventData">触摸点</param>
         public void RemoveTouchData(PointerEventData eventData)
         {
-
             TouchIds.Remove(eventData.pointerId);
             TouchPool.Remove(eventData.pointerId);
         }

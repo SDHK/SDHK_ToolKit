@@ -5,6 +5,8 @@ using SDHK_Tool.Dynamic;
 using UnityEngine;
 using UnityEngine.Events;
 
+//遗留提醒：简易电机组未开工
+
 public class SC_Motor_Angle : MonoBehaviour
 {
 
