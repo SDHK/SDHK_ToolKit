@@ -109,7 +109,6 @@ namespace SDHK_Tool.Static
         public static void UISendEvent<T>(List<RaycastResult> UI_Objects, PointerEventData eventData, ExecuteEvents.EventFunction<T> function)
         where T : IEventSystemHandler//泛型约束
         {
-
             foreach (var UI_Object in UI_Objects)
             {
                 if (UI_Object.gameObject != null)
@@ -118,7 +117,6 @@ namespace SDHK_Tool.Static
                 }
             }
         }
-
     }
 }
 

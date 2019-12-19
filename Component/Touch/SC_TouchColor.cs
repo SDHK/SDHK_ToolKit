@@ -44,23 +44,20 @@ namespace SDHK_Tool.Component
         private RawImage rawimage;
 
         /// <summary>
-        /// 点击触摸id顺序链表[顺序列表]，通过列表id顺序去字典提取触摸
+        /// 点击触摸id顺序链表[顺序列表]
         /// </summary>
-        [Tooltip("触摸点Id顺序表")]
-        public List<int> TouchDownIds = new List<int>();
+        private List<int> TouchDownIds = new List<int>();
 
         /// <summary>
-        /// 点击触摸id顺序链表[顺序列表]，通过列表id顺序去字典提取触摸
+        /// 点击触摸id顺序链表[顺序列表]
         /// </summary>
-        [Tooltip("触摸点Id顺序表")]
-        public List<int> TouchEnterIds = new List<int>();
+        private List<int> TouchEnterIds = new List<int>();
 
         void Awake()
         {
             if (GetComponent<Image>() != null) { image = GetComponent<Image>(); TouchExit = image.color; }
 
             if (GetComponent<RawImage>() != null) { rawimage = GetComponent<RawImage>(); TouchExit = rawimage.color; }
-
         }
 
         public void OnPointerDown(PointerEventData eventData)

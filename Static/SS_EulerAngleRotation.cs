@@ -73,6 +73,17 @@ namespace SDHK_Tool.Static
             return (Quaternion.Euler(CurrentEulerAngle) * Quaternion.Euler(direction)).eulerAngles;
         }
 
+        /// <summary>
+        /// 欧拉角自轴旋转
+        /// </summary>
+        /// <param name="CurrentEulerAngle">当前物体欧拉角(transform.eulerAngles)</param>
+        /// <param name="direction">旋转轴向量及角度大小（Vector3.up）</param>
+        /// <returns>return : 自转后的欧拉角</returns>
+        public static Vector3 EulerAngles_AxisRotation1(Vector3 CurrentEulerAngle, Vector3 direction)
+        {
+            return (Quaternion.Euler(CurrentEulerAngle) * Quaternion.Euler(direction)).eulerAngles;
+        }
+
 
         /// <summary>
         /// 匀速旋转

@@ -12,6 +12,8 @@ using UnityEngine.UI;
  * 日期： 2019.7.24
  *
  * 2019.10.12 添加父物体事件渗透
+ *
+ * 2019.12.16 修复穿透抬起Bug
  * 
  * 功能：将触摸事件变的可穿透
  *
@@ -109,12 +111,12 @@ namespace SDHK_Tool.Component
 
             //触摸事件通知：按下，开始拖拽
             SS_Ray.UISendEvent(UI_List, eventData, ExecuteEvents.pointerDownHandler);
-            
+
         }
 
         public void OnPointerUp(PointerEventData eventData)//抬起事件
         {
-           
+
             if (!TouchRayDownLists.ContainsKey(eventData.pointerId)) return;
             //抬起事件
 
@@ -124,9 +126,10 @@ namespace SDHK_Tool.Component
             //点击事件
 
             List<RaycastResult> UI_List = SS_Ray.UIRayCast(canvas, eventData.position, InterceptTag, IgnoreLayer);//提取物体列表
-            if (UI_List.Count < 1) return;
-            UI_List.RemoveAt(0);//顶层为自己，剔除。
-            List<RaycastResult> Click_List = SS_GameObject.List_Intersect(TouchRayDownLists[eventData.pointerId], UI_List, (RaycastResult a, RaycastResult b) => { return object.ReferenceEquals(a.gameObject, b.gameObject);});
+
+            if (UI_List.Count > 0) UI_List.RemoveAt(0);//顶层为自己，剔除。
+
+            List<RaycastResult> Click_List = SS_GameObject.List_Intersect(TouchRayDownLists[eventData.pointerId], UI_List, (RaycastResult a, RaycastResult b) => { return object.ReferenceEquals(a.gameObject, b.gameObject); });
 
             SS_Ray.UISendEvent(Click_List, eventData, ExecuteEvents.pointerClickHandler);
 
@@ -182,6 +185,7 @@ namespace SDHK_Tool.Component
 
         public void OnDrag(PointerEventData eventData)//拖拽事件
         {
+            if (!TouchRayDragLists.ContainsKey(eventData.pointerId)) return;
             //触摸事件通知：拖拽
             SS_Ray.UISendEvent(TouchRayDownLists[eventData.pointerId], eventData, ExecuteEvents.dragHandler);
         }
@@ -204,7 +208,7 @@ namespace SDHK_Tool.Component
 
             List<RaycastResult> Enter_List = SS_GameObject.List_Except(UI_List, TouchRayEnterLists[eventData.pointerId], (RaycastResult a, RaycastResult b) => { return object.ReferenceEquals(a.gameObject, b.gameObject); });
             List<RaycastResult> Exit_List = SS_GameObject.List_Except(TouchRayEnterLists[eventData.pointerId], UI_List, (RaycastResult a, RaycastResult b) => { return object.ReferenceEquals(a.gameObject, b.gameObject); });
-           
+
             //触摸事件通知：停留
             SS_Ray.UISendEvent(Enter_List, eventData, ExecuteEvents.pointerEnterHandler);
 

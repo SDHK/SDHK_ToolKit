@@ -85,7 +85,7 @@ namespace SDHK_Tool.Component
             GetQueue = new Queue();
             LateTime = DateTime.Now;//刷新心跳时间
 
-            IPAddress ServerIp = Dns.GetHostEntry(Dns.GetHostName()).AddressList[1];
+            IPAddress ServerIp = Dns.GetHostEntry(Dns.GetHostName()).AddressList[2];
             Local_IP = ServerIp.ToString(); //获取本地IP
 
 
