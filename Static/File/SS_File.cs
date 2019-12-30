@@ -6,7 +6,7 @@ using UnityEngine;
  * 
  * 日期： 2019.6.11
  * 
- * 功能：SS_Flie的分支部分：存放文件操作需要的类型
+ * 功能：SS_File的分支部分：存放文件操作需要的类型
  */
 
 namespace SDHK_Tool.Static

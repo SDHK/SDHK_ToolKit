@@ -8,7 +8,7 @@ using UnityEngine;
  * 
  * 日期： 2019.12.3
  * 
- * 功能：SS_Flie的分支部分：对Xml文件进行操作的方法
+ * 功能：SS_File的分支部分：对Xml文件进行操作的方法
  */
 
 

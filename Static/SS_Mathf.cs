@@ -364,5 +364,31 @@ namespace SDHK_Tool.Static
             return Center / vectors.Count;
         }
 
+        /// <summary>
+        /// 贝塞尔曲线
+        /// </summary>
+        /// <param name="TimeRatio">点的位置（时间比例0~1）</param>
+        /// <param name="point">曲线拉伸坐标点</param>
+        /// <returns>点的位置</returns>
+        public static Vector3 Curve_Bezier(float TimeRatio, List<Vector3> point)
+        {
+            while (point.Count > 1)
+            {
+                List<Vector3> newp = new List<Vector3>();
+                for (int i = 0; i < point.Count - 1; i++)
+                {
+                    Debug.DrawLine(point[i], point[i + 1]);
+                    Vector3 p0p1 = (1 - TimeRatio) * point[i] + TimeRatio * point[i + 1];
+                    newp.Add(p0p1);
+                }
+                point = newp;
+            }
+            return point[0];
+        }
+
+
+        
+
+
     }
 }

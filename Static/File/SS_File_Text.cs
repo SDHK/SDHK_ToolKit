@@ -6,13 +6,13 @@ using UnityEngine;
  * 
  * 日期： 2019.12.3
  * 
- * 功能：SS_Flie的分支部分：对Text文本文件进行操作的方法
+ * 功能：SS_File的分支部分：对Text文本文件进行操作的方法
  */
 
 namespace SDHK_Tool.Static
 {
 
-    public static partial class SS_Flie
+    public static partial class SS_File
     {
         #region 字符串读取
 

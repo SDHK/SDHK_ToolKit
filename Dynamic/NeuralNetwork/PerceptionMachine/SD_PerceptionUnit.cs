@@ -11,11 +11,11 @@ using UnityEngine;
  *
  * 公式：
  *
- *  估算结果 = ( for { 临时结果 += 权重i*输入i }  + 偏置值 > 阈值 ) ？ 1:0 ;
+ *  估算结果 = ( for { 临时结果 += 权重i * 输入i }  + 偏置值 > 阈值 ) ？ 1:0 ;
  *
- *  for { 权重i = 权重i + 学习速率（ 预期结果 - 估算结果 ）* 输入i };
+ *  for { 权重i = 权重i + 学习速率 *（ 预期结果 - 估算结果 ）* 输入i };
  *
- *  偏置 = 偏置 + 学习速率（ 预期结果 - 估算结果 ）;
+ *  偏置 = 偏置 + 学习速率 *（ 预期结果 - 估算结果 ）;
  *
  */
 
@@ -40,6 +40,7 @@ namespace SDHK_Tool.Dynamic
         public float Threshold = 0.5f;//阈值
 
         private List<float> Inputs;//输入
+        
         private float Expected_Results;//预期结果
 
         private float ThresholdResults = 0;//阈值结果
@@ -113,7 +114,7 @@ namespace SDHK_Tool.Dynamic
 
             for (int i = 0; i < weight.Count; i++)
             {
-                weight[i] = weight[i] + SpeedRate * (Expected_Results - Estimate_Results) * Inputs[i];
+                weight[i] += SpeedRate * (Expected_Results - Estimate_Results) * Inputs[i];
             }
             Bias += SpeedRate * (Expected_Results - Estimate_Results);
             return this;

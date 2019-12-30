@@ -8,7 +8,7 @@ using System.Linq;
  * 
  * 日期： 2019.12.3
  * 
- * 功能：SS_Flie的分支部分：对文件路径进行处理的方法
+ * 功能：SS_File的分支部分：对文件路径进行处理的方法
  */
 
 namespace SDHK_Tool.Static
