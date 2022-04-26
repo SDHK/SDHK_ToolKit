@@ -1,0 +1,70 @@
+﻿--[[--------------------
+
+ * Author: 闪电黑客
+
+ * 日期: 2022/01/27 17:43:45
+
+ * 最后日期: 2022/01/27 17:43:51
+
+ * 最后修改: 闪电黑客
+
+ * 描述:  
+
+--]] --------------------
+
+---@class LuaWindowBuilder
+--- ------------------
+--- 窗体建造者      
+--- ------------------
+--- FocusStateEnter     
+--- FocusStateExit      
+--- FocusStateUpdate        
+--- ------------------
+--- WaitFocusStateEnter(Action EnterDone)
+--- WaitFocusStateExit(Action ExitDone)
+--- ------------------
+--- StackStateEnter     
+--- StackStateExit      
+--- StackStateUpdate        
+--- ------------------
+--- StackTopPrompt      
+--- WaitStackStateEnter(Action EnterDone)       
+--- WaitStackStateExit(Action ExitDone)     
+--- ------------------
+LuaWindowBuilder = {}
+function LuaWindowBuilder.Construct(table)
+    local window = LuaWindow()
+    window.table = table
+    window.waitFocusStateEnter = table.WaitFocusStateEnter or LuaWindowBuilder.WaitFocusStateEnter
+    window.waitFocusStateExit = table.WaitFocusStateExit or LuaWindowBuilder.waitFocusStateExit
+
+    window.focusStateEnter = table.FocusStateEnter
+    window.focusStateExit = table.FocusStateExit
+    window.focusStateUpdate = table.FocusStateUpdate
+
+    window.waitStackStateEnter = table.WaitStackStateEnter or LuaWindowBuilder.WaitStackStateEnter
+    window.waitStackStateExit = table.WaitStackStateExit or LuaWindowBuilder.WaitStackStateExit
+
+    window.stackStateEnter = table.StackStateEnter
+    window.stackStateExit = table.StackStateExit
+    window.stackStateUpdate = table.StackStateUpdate
+    window.stackTopPrompt = table.StackTopPrompt
+
+    return window
+end
+
+function LuaWindowBuilder:WaitFocusStateEnter(EnterDone)
+    EnterDone()
+end
+
+function LuaWindowBuilder:waitFocusStateExit(ExitDone)
+    ExitDone()
+end
+
+function LuaWindowBuilder:WaitStackStateEnter(EnterDone)
+    EnterDone()
+end
+
+function LuaWindowBuilder:WaitStackStateExit(ExitDone)
+    ExitDone()
+end

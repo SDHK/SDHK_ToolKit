@@ -1,0 +1,65 @@
+
+--[[--------------------
+
+ * Author: 闪电黑客
+
+ * 日期: 2021/12/19 10:06:47
+
+ * 最后日期: 2021/12/19 10:06:48
+
+ * 最后修改: 闪电黑客
+
+ * 描述:  
+
+--]] --------------------
+using "LuaObjectItem"
+
+-- 对象池
+LuaObjectPoolBuilder = {}
+
+-- 新建池
+function LuaObjectPoolBuilder.Construct(table)
+    local newPool = LuaObjectPool(table)
+    newPool.NewObject = LuaObjectPoolBuilder.ObjectNew
+    newPool.DestroyObject = LuaObjectPoolBuilder.ObjectDestroy
+    newPool.objectOnNew = LuaObjectPoolBuilder.ObjectOnNew
+    newPool.objectOnGet = LuaObjectPoolBuilder.ObjectOnGet
+    newPool.objectOnRecycle = LuaObjectPoolBuilder.ObjectOnRecycle
+    newPool.objectOnDestroy = LuaObjectPoolBuilder.ObjectOnDestroy
+    return newPool
+end
+
+
+-- 新建对象的方法
+function LuaObjectPoolBuilder.ObjectNew(pool)
+    local newTable = pool.table:New()
+    newTable.selfPool = pool
+    return newTable
+end
+
+
+function LuaObjectPoolBuilder.ObjectDestroy(obj)
+    obj = nil
+end
+
+
+function LuaObjectPoolBuilder.ObjectOnNew(obj)
+    obj:ObjectOnNew()
+end
+
+
+function LuaObjectPoolBuilder.ObjectOnGet(obj)
+    obj:ObjectOnGet()
+end
+
+
+function LuaObjectPoolBuilder.ObjectOnRecycle(obj)
+    obj:ObjectOnRecycle()
+end
+
+
+function LuaObjectPoolBuilder.ObjectOnDestroy(obj)
+    obj:ObjectOnDestroy()
+end
+
+

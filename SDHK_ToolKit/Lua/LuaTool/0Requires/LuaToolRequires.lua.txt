@@ -1,0 +1,30 @@
+﻿--[[--------------------
+
+ * Author: 闪电黑客
+
+ * 日期: 2021/12/18 23:00:10
+
+ * 最后日期: 2021/12/20 18:58:40
+
+ * 最后修改: 闪电黑客
+
+ * 描述:  由LuaManager启动，主要用于加载LuaTool的工具文件
+
+
+--]] --------------------
+
+--引入命名空间
+function using(LuaScriptPath)
+    return require("luatool/" .. LuaScriptPath..".lua")
+end
+
+function Script(LuaScriptPath)
+    return require("lua/" .. LuaScriptPath..".lua")
+end
+
+using "LuaObject"
+using "UnityEngine"
+using "SDHK_ToolKit"
+
+--加载完工具后，启动自定义文件LuaMain
+Script "LuaMain"

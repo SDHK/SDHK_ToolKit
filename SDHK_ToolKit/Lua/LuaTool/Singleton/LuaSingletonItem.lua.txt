@@ -1,0 +1,39 @@
+﻿--[[--------------------
+
+ * Author: 闪电黑客
+
+ * 日期: 2022/01/30 22:54:34
+
+ * 最后日期: 2022/01/30 22:55:22
+
+ * 最后修改: 闪电黑客
+
+ * 描述:  
+
+--]] --------------------
+using "LuaObjectItem"
+
+--- Lua对象池对象，单例基类
+LuaSingletonItem = LuaObjectItem:Extend({
+    TableName = "LuaSingletonItem",
+    instance = nil
+})
+
+function LuaSingletonItem:Instance()
+    if self.instance then
+        return self.instance
+    else
+        self.instance = self.Get()
+        return self.instance
+    end
+end
+
+
+function LuaSingletonItem:SingletonRecycle()
+    if self.instance then
+        self.instance:ObjectRecycle()
+        self.instance = nil
+    end
+end
+
+

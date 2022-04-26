@@ -1,0 +1,48 @@
+﻿--[[--------------------
+
+ * Author: 闪电黑客
+
+ * 日期: 2022/01/27 19:05:57
+
+ * 最后日期: 2022/01/27 19:06:28
+
+ * 最后修改: 闪电黑客
+
+ * 描述:  
+
+--]] --------------------
+---@class LuaStackStateBuilder
+--- ------------------
+--- 焦点状态机建造者
+--- ------------------
+--- StackStateEnter
+--- StackStateExit
+--- StackStateUpdate
+--- ------------------
+--- StackTopPrompt
+--- WaitStackStateEnter(Action EnterDone)
+--- WaitStackStateExit(Action ExitDone)
+--- ------------------
+LuaStackStateBuilder = {}
+function LuaStackStateBuilder.Construct(table)
+    local stackState = LuaStackState()
+    stackState.table = table
+
+    stackState.waitStackStateEnter = table.WaitStackStateEnter or LuaStackStateBuilder.WaitStackStateEnter
+    stackState.waitStackStateExit = table.WaitStackStateExit or LuaStackStateBuilder.WaitStackStateExit
+
+    stackState.stackStateEnter = table.StackStateEnter
+    stackState.stackStateExit = table.StackStateExit
+    stackState.stackStateUpdate = table.StackStateUpdate
+    stackState.stackTopPrompt = table.StackTopPrompt
+
+    return stackState
+end
+
+function LuaStackStateBuilder:WaitStackStateEnter(EnterDone)
+    EnterDone()
+end
+
+function LuaStackStateBuilder:WaitStackStateExit(ExitDone)
+    ExitDone()
+end

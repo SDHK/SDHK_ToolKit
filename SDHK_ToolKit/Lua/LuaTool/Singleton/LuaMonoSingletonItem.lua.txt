@@ -1,0 +1,37 @@
+﻿--[[--------------------
+
+ * Author: 闪电黑客
+
+ * 日期: 2022/03/08 06:58:03
+
+ * 最后日期: 2022/03/08 06:58:17
+
+ * 最后修改: 闪电黑客
+
+ * 描述:  
+
+--]] --------------------
+using "LuaMonoObjectItem"
+
+LuaMonoSingletonItem = LuaMonoObjectItem:Extend({
+    TableName = "LuaMonoSingletonItem",
+    instance = nil
+})
+
+function LuaMonoSingletonItem:Instance()
+    if self.instance then
+        return self.instance
+    else
+        self.instance = self.Get()
+        return self.instance
+    end
+end
+
+
+function LuaMonoSingletonItem:SingletonRecycle()
+    if self.instance then
+        self.instance:ObjectRecycle()
+        self.instance = nil
+    end
+end
+

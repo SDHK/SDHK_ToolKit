@@ -1,0 +1,140 @@
+﻿--[[--------------------
+
+ * Author: 闪电黑客
+
+ * 日期: 2021/12/18 17:53:44
+
+ * 最后日期: 2021/12/18 17:57:03
+
+ * 最后修改: 闪电黑客
+
+ * 描述:  
+
+    Lua 面向对象的 Object 基类
+
+--]] --------------------
+
+
+---@class LuaObject Lua对象基类
+---@field TableName string 对象名称
+---@field Extend function Extend() 扩展继承
+---@field Is function Is(BaseTable) 判断对象
+LuaObject = {
+    TableName = "LuaObject"
+}
+
+---新建对象
+function LuaObject:New()
+    return New(self)
+end
+
+---获取继承的子类
+function LuaObject:Extend()
+    return Extend(self)
+end
+
+---获取继承的子类
+function LuaObject:Extend(SubObject)
+    SubObject = SubObject or {}
+    setmetatable(SubObject, self)
+    self.__index = self
+    SubObject.Base = self
+    return SubObject
+end
+
+---判断对象
+function LuaObject:Is(BaseTable)
+    return Is(self, BaseTable)
+end
+
+---判断对象是否为父类
+---@param selfTable LuaObject 对象
+---@param BaseTable LuaObject 父类
+---@return boolean
+function Is(selfTable, BaseTable)
+    if selfTable == nil or BaseTable == nil then
+        return false
+    else
+        if selfTable.TableName == BaseTable.TableName then
+            return true
+        else
+            local selfTableMetatable = getmetatable(selfTable)
+            return Is(selfTableMetatable, BaseTable)
+        end
+    end
+end
+
+---新建对象
+---@param BaseTable LuaObject 继承父类
+---@return table
+function New(BaseTable)
+    local SubObject = {}
+    setmetatable(SubObject, BaseTable)
+    BaseTable.__index = BaseTable
+    return SubObject
+end
+
+---新建对象
+---@param BaseTable LuaObject 继承父类
+---@return table
+function Extend(BaseTable)
+    local SubObject = {}
+    setmetatable(SubObject, BaseTable)
+    BaseTable.__index = BaseTable
+    SubObject.Base = BaseTable
+    return SubObject
+end
+
+---判断是否为空
+function IsNull(unityObject)
+    if unityObject == nil then return true end
+    if type(unityObject) == 'userdata' and unityObject.IsNull ~= nil then
+        return unityObject:IsNull()
+    end
+    return false
+end
+
+
+--!考虑copy
+-- for k, v in pairs(MouseCursor) do
+--     -- if k ~= "__firstcreate" and k ~= "__unittype" then
+--     --     instance[k] = v
+--     -- end
+--     print(k ..":".. type(v))
+-- end
+--!考虑copy
+
+-- return Object
+
+-- -- !测试：尝试用table继承C#的类
+-- -- 获取扩展的C#实例的表
+-- function NewCS1(BaseClass)
+--     local SubObject = {}
+--     SubObject.CSBase = BaseClass
+
+--     setmetatable(SubObject, SubObject)
+
+--     -- SubObject.Bfunc = function(tab, ...) -- !成功关键
+--     --     tab.CSBase["pr1"](tab.CSBase, ...)
+--     -- end
+
+--     SubObject.__index = function(tab, key)
+--         local keyFuncTable = {}
+--         keyFuncTable.key = key
+--         keyFuncTable.base = tab.CSBase
+
+--         setmetatable(
+--             keyFuncTable,
+--             {
+--                 __call = function(funcTable, tab, ...)
+--                     return funcTable.base[funcTable.key](funcTable.base, ...)
+--                 end
+--             }
+--         )
+
+--         rawset(tab, key, keyFuncTable)
+--         return tab[key]
+--     end
+
+--     return SubObject
+-- end

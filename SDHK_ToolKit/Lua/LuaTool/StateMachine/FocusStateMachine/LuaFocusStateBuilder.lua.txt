@@ -1,0 +1,47 @@
+﻿--[[--------------------
+
+ * Author: 闪电黑客
+
+ * 日期: 2022/01/27 18:58:14
+
+ * 最后日期: 2022/01/27 18:58:26
+
+ * 最后修改: 闪电黑客
+
+ * 描述:  
+
+--]] --------------------
+
+---@class LuaFocusStateBuilder
+--- ------------------
+--- 焦点状态机建造者    
+--- ------------------
+--- FocusStateEnter 
+--- FocusStateExit  
+--- FocusStateUpdate    
+--- ------------------
+--- WaitFocusStateEnter(Action EnterDone)   
+--- WaitFocusStateExit(Action ExitDone) 
+--- ------------------
+LuaFocusStateBuilder = {}
+function LuaFocusStateBuilder.Construct(table)
+    local focusState = LuaFocusState()
+
+    focusState.table = table
+    focusState.waitFocusStateEnter = table.WaitFocusStateEnter or LuaFocusStateBuilder.WaitFocusStateEnter
+    focusState.waitFocusStateExit = table.WaitFocusStateExit or LuaFocusStateBuilder.waitFocusStateExit
+
+    focusState.focusStateEnter = table.FocusStateEnter
+    focusState.focusStateExit = table.FocusStateExit
+    focusState.focusStateUpdate = table.FocusStateUpdate
+
+    return focusState
+end
+
+function LuaFocusStateBuilder:WaitFocusStateEnter(EnterDone)
+    EnterDone()
+end
+
+function LuaFocusStateBuilder:waitFocusStateExit(ExitDone)
+    ExitDone()
+end

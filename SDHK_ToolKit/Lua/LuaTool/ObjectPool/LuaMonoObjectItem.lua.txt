@@ -1,0 +1,42 @@
+--[[--------------------
+
+ * Author: 闪电黑客
+
+ * 日期: 2021/12/19 10:41:47
+
+ * 最后日期: 2021/12/19 10:41:49
+
+ * 最后修改: 闪电黑客
+
+ * 描述:  
+
+--]] --------------------
+-- Mono对象池对象接口
+
+using "LuaObjectItem"
+
+---@class LuaMonoObjectItem LuaMono对象池对象基类，继承LuaObjectItem
+---@field mono MonoBehaviour
+---@field gameObject GameObject
+---@field transform Transform
+---@field selfPool LuaMonoObjectPool 生成自己的对象池，用于回收自己
+---
+---@field ObjectRecycle function ObjectRecycle() 回收自己
+---@field ObjectOnNew function ObjectOnNew() 新建后
+---@field ObjectOnDestroy function ObjectOnDestroy() 回收销毁后
+---@field ObjectOnGet function ObjectOnGet() 获取后
+---@field ObjectOnRecycle function ObjectOnRecycle() 回收后
+LuaMonoObjectItem =
+    LuaObjectItem:Extend(
+    {
+        TableName = "LuaMonoObjectItem",
+        -- 绑定的mono组件
+        mono = nil,
+        gameObject = nil,
+        transform = nil
+    }
+)
+
+function LuaMonoObjectItem:ObjectRecycle()
+    self.selfPool:Recycle(self.mono)
+end
