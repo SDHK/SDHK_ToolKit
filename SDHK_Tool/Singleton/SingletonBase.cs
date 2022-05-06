@@ -1,10 +1,11 @@
 /****************************************
 
 * 创 建 者：  闪电黑客
-* 创建时间：  2022/4/18 14:52
+* 创建时间：  2022/5/6 21:27
 * 描    述:
 
 ****************************************/
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,17 +15,31 @@ namespace Singleton
     public class SingletonBase<T>
     where T : SingletonBase<T>, new()
     {
-        // Start is called before the first frame update
-        void Start()
-        {
 
+        protected static T instance;//实例
+        private static readonly object _lock = new object();//对象锁
+
+        /// <summary>
+        /// 单例实例化
+        /// </summary>
+        public static T Instance()
+        {
+            if (instance == null)
+            {
+                lock (_lock)
+                {
+                    if (instance == null)
+                    {
+                        instance = new T();
+                        Debug.Log("[单例启动] : " + typeof(T).Name);
+                        instance.OnInstance();
+                    }
+                }
+            }
+            return instance;
         }
 
-        // Update is called once per frame
-        void Update()
-        {
+        public virtual void OnInstance() { }
 
-
-        }
     }
 }
