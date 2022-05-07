@@ -18,26 +18,44 @@ using UnityEngine;
 namespace SDHK_Tool.ECS
 {
 
-    public partial interface ISystem
+    public abstract partial  class SystemBase
     {
-        void Call(Entity entity);
+        public virtual void Call(Entity entity)=> Debug.Log("跳过 Entity");
     }
 
-    public partial class AddSystem : ISystem
+
+    public partial class AddSystem : SystemBase
     {
-        public void Call(Entity entity)
+        public override void Call(Entity entity)
         {
             Debug.Log("Add Entity");
         }
     }
 
-    public partial class UpdateSystem : ISystem
+    public partial class UpdateSystem : SystemBase
     {
-        public void Call(Entity e)
+        public override void Call(Entity e)
         {
             Debug.Log("Update Entity");
 
         }
+    }
+
+
+
+    public abstract partial class SystemBase
+    {
+        public virtual void Call(Entity2 entity) => Debug.Log("跳过 Entity2");
+    }
+
+    public partial class AddSystem : SystemBase
+    {
+        public override void Call(Entity2 entity) => Debug.Log("Add Entity2");
+    }
+
+    public partial class UpdateSystem : SystemBase
+    {
+        public override void Call(Entity2 e) => Debug.Log("Update Entity2");
     }
 
 }

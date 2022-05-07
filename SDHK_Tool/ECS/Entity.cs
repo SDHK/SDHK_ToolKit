@@ -18,19 +18,20 @@ namespace SDHK_Tool.ECS
     public abstract class Entity 
     {
         public int ID { get; set; }
+        public int Layer = 0;
         public List<Entity> children = new List<Entity>();
 
-        public abstract void Run(ISystem s);
+        public abstract void Run(SystemBase s);
     }
 
 
     public class Entity2 : Entity
     {
-        public override void Run(ISystem s) => s.Call(this);
+        public override void Run(SystemBase s) => s.Call(this);
     }
 
     public class Entity3 : Entity
     {
-        public override void Run(ISystem s) => s.Call(this);
+        public override void Run(SystemBase s) => s.Call(this);
     }
 }

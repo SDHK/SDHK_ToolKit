@@ -1,10 +1,11 @@
-/****************************************
+ï»¿/****************************************
 
-* ´´ ½¨ Õß£º  ÉÁµçºÚ¿Í
-* ´´½¨Ê±¼ä£º  2022/5/6 21:27
-* Ãè    Êö:
+* åˆ› å»º è€…ï¼š  é—ªç”µé»‘å®¢
+* åˆ›å»ºæ—¶é—´ï¼š  2022/5/7 9:23
+* æ    è¿°:
 
 ****************************************/
+
 
 using System.Collections;
 using System.Collections.Generic;
@@ -16,11 +17,11 @@ namespace Singleton
     where T : SingletonBase<T>, new()
     {
 
-        protected static T instance;//ÊµÀı
-        private static readonly object _lock = new object();//¶ÔÏóËø
+        protected static T instance;//å®ä¾‹
+        private static readonly object _lock = new object();//å¯¹è±¡é”
 
         /// <summary>
-        /// µ¥ÀıÊµÀı»¯
+        /// å•ä¾‹å®ä¾‹åŒ–
         /// </summary>
         public static T Instance()
         {
@@ -31,7 +32,7 @@ namespace Singleton
                     if (instance == null)
                     {
                         instance = new T();
-                        Debug.Log("[µ¥ÀıÆô¶¯] : " + typeof(T).Name);
+                        Debug.Log("[å•ä¾‹å¯åŠ¨] : " + typeof(T).Name);
                         instance.OnInstance();
                     }
                 }

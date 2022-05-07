@@ -2,9 +2,13 @@ using Singleton;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class EcsManager : SingletonMonoEagerBase<EcsManager>
+namespace SDHK_Tool.ECS
 {
-    
-    
+    public class EcsManager : SingletonMonoEagerBase<EcsManager>
+    {
+        public List<Entity> entities = new List<Entity>();
+        
+
+
+    }
 }
