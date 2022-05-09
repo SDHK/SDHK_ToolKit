@@ -18,9 +18,9 @@ using UnityEngine;
 namespace SDHK_Tool.ECS
 {
 
-    public abstract partial  class SystemBase
+    public abstract partial class SystemBase
     {
-        public virtual void Call(Entity entity)=> Debug.Log("跳过 Entity");
+        public virtual void Call(Entity entity) => Debug.Log("跳过 Entity");
     }
 
 
@@ -50,12 +50,19 @@ namespace SDHK_Tool.ECS
 
     public partial class AddSystem : SystemBase
     {
-        public override void Call(Entity2 entity) => Debug.Log("Add Entity2");
+
+        public override void Call(Entity2 entity)
+        {
+            Debug.Log("Add Entity2");
+        }
     }
 
     public partial class UpdateSystem : SystemBase
     {
-        public override void Call(Entity2 e) => Debug.Log("Update Entity2");
+        public override void Call(Entity2 e)
+        {
+            Debug.Log("Update Entity2");
+        }
     }
 
 }

@@ -19,11 +19,22 @@ namespace SDHK_Tool.ECS
     {
         public int ID { get; set; }
         public int Layer = 0;
-        public List<Entity> children = new List<Entity>();
+        public Dictionary<long, Entity> entities = new Dictionary<long, Entity>();  //实体
+        public Dictionary<Type, Entity> components = new Dictionary<Type, Entity>(); //组件
 
         public abstract void Run(SystemBase s);
+
+       
     }
 
+
+
+
+
+
+
+
+    
 
     public class Entity2 : Entity
     {
