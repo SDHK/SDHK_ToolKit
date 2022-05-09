@@ -20,23 +20,25 @@ namespace SDHK_Tool.ECS
 
     public abstract partial class SystemBase
     {
-        public virtual void Call(Entity entity) => Debug.Log("跳过 Entity");
+        public virtual bool Call(Entity entity) =>false;
     }
 
 
     public partial class AddSystem : SystemBase
     {
-        public override void Call(Entity entity)
+        public override bool Call(Entity entity)
         {
             Debug.Log("Add Entity");
+            return true;
         }
     }
 
     public partial class UpdateSystem : SystemBase
     {
-        public override void Call(Entity e)
+        public override bool Call(Entity e)
         {
             Debug.Log("Update Entity");
+            return true;
 
         }
     }
@@ -45,23 +47,25 @@ namespace SDHK_Tool.ECS
 
     public abstract partial class SystemBase
     {
-        public virtual void Call(Entity2 entity) => Debug.Log("跳过 Entity2");
+        public virtual bool Call(Entity2 entity) => false;
     }
 
     public partial class AddSystem : SystemBase
     {
-
-        public override void Call(Entity2 entity)
+       
+        public override bool Call(Entity2 entity)
         {
             Debug.Log("Add Entity2");
+            return true;
         }
     }
 
     public partial class UpdateSystem : SystemBase
     {
-        public override void Call(Entity2 e)
+        public override bool Call(Entity2 e)
         {
             Debug.Log("Update Entity2");
+            return true;
         }
     }
 

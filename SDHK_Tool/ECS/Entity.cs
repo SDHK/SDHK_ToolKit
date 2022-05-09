@@ -15,34 +15,38 @@ using System.Threading.Tasks;
 namespace SDHK_Tool.ECS
 {
 
-    public abstract class Entity 
+    public abstract class Entity
     {
         public int ID { get; set; }
-        public int Layer = 0;
         public Dictionary<long, Entity> entities = new Dictionary<long, Entity>();  //实体
         public Dictionary<Type, Entity> components = new Dictionary<Type, Entity>(); //组件
 
-        public abstract void Run(SystemBase s);
+        public abstract bool Run(SystemBase s);
+        public virtual int Order => 0;
 
-       
+
     }
 
 
 
 
+    public class Entity1 : Entity
+    {
+        public override bool Run(SystemBase s) => s.Call(this);
+        public override int Order => 1;
 
+    }
 
-
-
-    
 
     public class Entity2 : Entity
     {
-        public override void Run(SystemBase s) => s.Call(this);
+        public override bool Run(SystemBase s) => s.Call(this);
     }
 
     public class Entity3 : Entity
     {
-        public override void Run(SystemBase s) => s.Call(this);
+        public override bool Run(SystemBase s) => s.Call(this);
+        public override int Order => 3;
+        
     }
 }
