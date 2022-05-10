@@ -50,9 +50,8 @@ namespace SDHK_Tool.ECS
         public virtual bool Call(Entity2 entity) => false;
     }
 
-    public partial class AddSystem : SystemBase
+    public partial class AddSystem 
     {
-       
         public override bool Call(Entity2 entity)
         {
             Debug.Log("Add Entity2");
@@ -60,7 +59,7 @@ namespace SDHK_Tool.ECS
         }
     }
 
-    public partial class UpdateSystem : SystemBase
+    public partial class UpdateSystem 
     {
         public override bool Call(Entity2 e)
         {

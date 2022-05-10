@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace SDHK_Tool.ECS
 {
+    //Entity需要回收标记
 
     public abstract class Entity
     {
