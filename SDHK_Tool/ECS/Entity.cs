@@ -23,7 +23,6 @@ namespace SDHK_Tool.ECS
         public Dictionary<Type, Entity> components = new Dictionary<Type, Entity>(); //组件
 
         public abstract bool Run(SystemBase s);
-        public virtual int Order => 0;
 
 
     }
@@ -34,7 +33,6 @@ namespace SDHK_Tool.ECS
     public class Entity1 : Entity
     {
         public override bool Run(SystemBase s) => s.Call(this);
-        public override int Order => 1;
 
     }
 
@@ -47,7 +45,6 @@ namespace SDHK_Tool.ECS
     public class Entity3 : Entity
     {
         public override bool Run(SystemBase s) => s.Call(this);
-        public override int Order => 3;
         
     }
 }

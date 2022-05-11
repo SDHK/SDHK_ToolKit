@@ -17,12 +17,10 @@ using UnityEngine;
 
 namespace SDHK_Tool.ECS
 {
-
     public abstract partial class SystemBase
     {
         public virtual bool Call(Entity entity) =>false;
     }
-
 
     public partial class AddSystem : SystemBase
     {
@@ -44,14 +42,15 @@ namespace SDHK_Tool.ECS
     }
 
 
-
+    //执行顺序
     public abstract partial class SystemBase
     {
         public virtual bool Call(Entity2 entity) => false;
     }
-
+    
     public partial class AddSystem 
     {
+
         public override bool Call(Entity2 entity)
         {
             Debug.Log("Add Entity2");
