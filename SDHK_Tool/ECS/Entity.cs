@@ -22,29 +22,20 @@ namespace SDHK_Tool.ECS
         public Dictionary<long, Entity> entities = new Dictionary<long, Entity>();  //实体
         public Dictionary<Type, Entity> components = new Dictionary<Type, Entity>(); //组件
 
-        public abstract bool Run(SystemBase s);
 
 
     }
 
 
 
-
-    public class Entity1 : Entity
-    {
-        public override bool Run(SystemBase s) => s.Call(this);
-
-    }
 
 
     public class Entity2 : Entity
     {
-        public override bool Run(SystemBase s) => s.Call(this);
     }
 
     public class Entity3 : Entity
     {
-        public override bool Run(SystemBase s) => s.Call(this);
         
     }
 }

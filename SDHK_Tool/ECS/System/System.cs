@@ -13,57 +13,38 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-
+//数据监听器
 
 namespace SDHK_Tool.ECS
 {
-    public abstract partial class SystemBase
+    public interface ISystem
     {
-        public virtual bool Call(Entity entity) =>false;
+        Type SystemType { get; }
+        Type EntityType { get; }
+        void Execute(Entity entity);
     }
 
-    public partial class AddSystem : SystemBase
+    //用于标记
+    public interface IUpdateSystem : ISystem
     {
-        public override bool Call(Entity entity)
+    }
+
+
+    public abstract class UpdateSystem<T> : IUpdateSystem
+    where T : Entity
+    {
+        public  Type SystemType => typeof(IUpdateSystem);
+        public  Type EntityType => typeof(T);
+        public  void Execute(Entity entity)=> Update(entity as T);
+        public abstract void Update(T entity);
+    }
+
+    [EcsSystem(1)]
+    public class System1 : UpdateSystem<Entity2>
+    {
+        public override void Update(Entity2 entity)
         {
-            Debug.Log("Add Entity");
-            return true;
-        }
-    }
 
-    public partial class UpdateSystem : SystemBase
-    {
-        public override bool Call(Entity e)
-        {
-            Debug.Log("Update Entity");
-            return true;
-
-        }
-    }
-
-
-    //执行顺序
-    public abstract partial class SystemBase
-    {
-        public virtual bool Call(Entity2 entity) => false;
-    }
-    
-    public partial class AddSystem 
-    {
-
-        public override bool Call(Entity2 entity)
-        {
-            Debug.Log("Add Entity2");
-            return true;
-        }
-    }
-
-    public partial class UpdateSystem 
-    {
-        public override bool Call(Entity2 e)
-        {
-            Debug.Log("Update Entity2");
-            return true;
         }
     }
 
