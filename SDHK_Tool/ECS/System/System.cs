@@ -21,12 +21,12 @@ namespace SDHK_Tool.ECS
     {
         Type SystemType { get; }
         Type EntityType { get; }
-        void Execute(Entity entity);
     }
 
     //用于标记
     public interface IUpdateSystem : ISystem
     {
+        void Execute(Entity entity);
     }
 
 

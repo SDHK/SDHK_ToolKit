@@ -6,12 +6,12 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace SDHK_Tool.ECS
 {
-    public class EcsManager : SingletonMonoEagerBase<EcsManager>
+    public partial class EcsManager : SingletonMonoEagerBase<EcsManager>
     {
         public SortedList<int, List<ISystem>> systems = new SortedList<int, List<ISystem>>();//SystemBase.getType()
         public Dictionary<long, Entity> allEntities = new Dictionary<long, Entity>();
 
-        public Dictionary<Type, List<long>> entitieList = new Dictionary<Type, List<long>>();//需要用释放标签
+        public Dictionary<Type, List<long>> entitieList = new Dictionary<Type, List<long>>();//
         public Dictionary<Type, List<long>> entitieAddList = new Dictionary<Type, List<long>>();
 
 
