@@ -13,7 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SDHK_Tool.ECS
+namespace SDHK
 {
     public class Component
     {

@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SDHK_Tool.ECS
+namespace SDHK
 {
     //Entity需要回收标记
 

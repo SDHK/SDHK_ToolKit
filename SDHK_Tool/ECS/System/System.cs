@@ -15,7 +15,7 @@ using UnityEngine;
 
 //数据监听器
 
-namespace SDHK_Tool.ECS
+namespace SDHK
 {
     public interface ISystem
     {
