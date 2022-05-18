@@ -27,16 +27,18 @@ using UnityEngine;
 
 namespace SDHK
 {
+
+
     /// <summary>
     /// 泛型对象池
     /// </summary>
-    public class ClassObjectPool<T> : GenericPool<T>
-    where T : class, IObjectPoolItem
+    public class ClassPool<T> : GenericPool<T>
+    where T : class, IPoolUnit
     {
         /// <summary>
         /// 对象池构造
         /// </summary>
-        public ClassObjectPool()
+        public ClassPool()
         {
             ObjectType = typeof(T);
 
@@ -53,7 +55,7 @@ namespace SDHK
             return "[ClassObjectPool<" + ObjectType.Name + ">] ";
         }
 
-        private  T ObjectNew(PoolBase pool)
+        private T ObjectNew(PoolBase pool)
         {
             T obj = Activator.CreateInstance(ObjectType, true) as T;
             obj.thisPool = pool;
@@ -62,19 +64,19 @@ namespace SDHK
 
         private static void ObjectOnNew(T obj)
         {
-            obj.ObjectOnNew();
+            obj.OnNew();
         }
         private static void ObjectOnGet(T obj)
         {
-            obj.ObjectOnGet();
+            obj.OnGet();
         }
         private static void ObjectOnRecycle(T obj)
         {
-            obj.ObjectOnRecycle();
+            obj.OnRecycle();
         }
         private static void ObjectOnDestroy(T obj)
         {
-            obj.ObjectOnDestroy();
+            obj.Dispose();
         }
 
     }

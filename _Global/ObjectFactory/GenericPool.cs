@@ -11,7 +11,7 @@
 
  * 描述:  
  
-    泛型对象池 ,继承 ObjectPoolBase
+    泛型通用对象池 ,继承 PoolBase
 
     1.预加载数：objectPreload = 0 ，在 池新建时 和 Get时 , 将池内对象数量保持到设定数值。
     
@@ -267,7 +267,7 @@ namespace SDHK
             }
         }
 
-        protected override void OnDispose()
+        public override void OnDispose()
         {
             Clear();
             NewObject = null;

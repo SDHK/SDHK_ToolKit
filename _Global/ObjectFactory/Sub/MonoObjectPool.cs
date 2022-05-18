@@ -3,34 +3,37 @@
 
  * Author: 闪电黑客
 
- * 日期: 2021/12/14 03:43:06
+ * 日期: 2021/12/13 13:38:13
 
- * 最后日期: 2021/12/15 17:23:26
+ * 最后日期: 2021/12/15 17:49:41
 
  * 最后修改: 闪电黑客
 
  * 描述:  
 
-    泛型绑定对象池: 继承 ObjectPool<T>
+    泛型Mono对象池: 继承 ObjectPool<T>
 
-    作用于继承了 IBindObjectPoolItem 的类型
+    作用于继承了 MonoBehaviour、IObjectPoolItem 的类型
 
 ******************************/
+
 
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace SDHK
 {
 
     /// <summary>
-    /// 泛型绑定对象池
+    /// 泛型Mono对象池
     /// </summary>
-    public class BindObjectPool<T> : GenericPool<T>
-    where T : class, IBindObjectPoolItem
+    public class MonoObjectPool<T> : GenericPool<T>
+    where T : MonoBehaviour, IPoolUnit
     {
         /// <summary>
         /// 池对象（不销毁）：用于储存回收的游戏对象
@@ -41,14 +44,12 @@ namespace SDHK
         /// 预制体
         /// </summary>
         public GameObject prefab { get; private set; }
-
-        //游戏对象名称
         private string objName;
 
         /// <summary>
         /// 对象池构造 (预制体)
         /// </summary>
-        public BindObjectPool(GameObject prefabObj = null)
+        public MonoObjectPool(GameObject prefabObj = null)
         {
             ObjectType = typeof(T);
             if (prefabObj != null)
@@ -58,7 +59,7 @@ namespace SDHK
             }
             else
             {
-                objName = ObjectType.Name + ".BindObject";
+                objName = ObjectType.Name + ".MonoObject";
             }
             poolTransform = new GameObject(ToString()).transform;
             GameObject.DontDestroyOnLoad(poolTransform);
@@ -70,13 +71,15 @@ namespace SDHK
             objectOnDestroy += ObjectOnDestroy;
             objectOnGet += ObjectOnGet;
             objectOnRecycle += ObjectOnRecycle;
+
+
         }
 
         public override string ToString()
         {
-            return "[BindObjectPool<" + ObjectType.Name + ">] : " + objName;
+            return "[MonoObjectPool<" + ObjectType.Name + ">] : " + objName;
         }
-        
+
         /// <summary>
         /// 获取对象（设置父节点）
         /// </summary>
@@ -85,7 +88,7 @@ namespace SDHK
             destoryCountDown = objectDestoryClock;
 
             T obj = DequeueOrNewObject();
-            obj.bindGameObject.transform.parent = parent;
+            obj.transform.parent = parent;
             objectOnGet?.Invoke(obj);
             Preload();
 
@@ -103,35 +106,42 @@ namespace SDHK
         {
             GameObject gameObj = (prefab == null) ? new GameObject(objName) : GameObject.Instantiate(prefab);
             gameObj.name = objName;
-            T obj = Activator.CreateInstance(typeof(T), true) as T;
-            obj.bindGameObject = gameObj;
+            T obj = gameObj.GetComponent<T>();
+            if (obj == null)
+            {
+                obj = gameObj.AddComponent<T>();
+            }
             obj.thisPool = pool;
             return obj;
         }
 
         private void ObjectDestroy(T obj)
         {
-            GameObject.Destroy(obj.bindGameObject);
+            GameObject.Destroy(obj.gameObject);
         }
         private void ObjectOnNew(T obj)
         {
-            obj.bindGameObject.SetActive(poolTransform);
-            obj.ObjectOnNew();
+            obj.transform.SetParent(poolTransform);
+            obj.OnNew();
         }
         private void ObjectOnGet(T obj)
         {
-            obj.bindGameObject.SetActive(true);
-            obj.ObjectOnGet();
+            obj.gameObject.SetActive(true);
+            obj.OnGet();
         }
         private void ObjectOnRecycle(T obj)
         {
-            obj.bindGameObject.SetActive(false);
-            obj.bindGameObject.transform.SetParent(poolTransform);
-            obj.ObjectOnRecycle();
+            obj.gameObject.SetActive(false);
+            obj.transform.SetParent(poolTransform);
+            obj.OnRecycle();
         }
+
         private void ObjectOnDestroy(T obj)
         {
-            obj.ObjectOnDestroy();
+            obj.Dispose();
         }
+
     }
+
+
 }

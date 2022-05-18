@@ -17,6 +17,7 @@
 
 
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -27,9 +28,9 @@ namespace SDHK
 {
 
     /// <summary>
-    /// 对象池对象接口
+    /// 池单位对象接口
     /// </summary>
-    public interface IObjectPoolItem
+    public interface IPoolUnit: IUnit
     {
         /// <summary>
         /// 产生此类的对象池
@@ -37,31 +38,30 @@ namespace SDHK
         PoolBase thisPool { get; set; }
 
         /// <summary>
+        /// 回收标记
+        /// </summary>
+        bool IsRecycle { get; set; }
+
+
+        /// <summary>
         /// 对象回收
         /// </summary>
-        void ObjectRecycle();
+        void Recycle();
 
         /// <summary>
         /// 对象新建时
         /// </summary>
-        void ObjectOnNew();
+        void OnNew();
 
         /// <summary>
         /// 对象获取时
         /// </summary>
-        void ObjectOnGet();
+        void OnGet();
 
         /// <summary>
         /// 对象回收时
         /// </summary>
-        void ObjectOnRecycle();
+        void OnRecycle();
 
-        /// <summary>
-        /// 对象删除时
-        /// </summary>
-        void ObjectOnDestroy();
     }
-   
-
-
 }

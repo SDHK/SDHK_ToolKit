@@ -21,26 +21,19 @@ namespace SDHK
     /// </summary>
     public abstract class Unit : IUnit
     {
-        private bool isDisposed = false;
-        /// <summary>
-        /// 是否已经释放
-        /// </summary>
-        public bool IsDisposed => isDisposed;
+        public bool IsDisposed { get; set; }
 
         /// <summary>
-        /// 释放时
-        /// </summary>
-        protected abstract void OnDispose();
-
-        /// <summary>
-        /// 释放
+        /// 直接释放
         /// </summary>
         public void Dispose()
         {
-            if (isDisposed) return;
+            if (IsDisposed) return;
             OnDispose();
-            isDisposed = true;
+            IsDisposed = true;
         }
+        public virtual void OnDispose() { }
+        
     }
 
 }
