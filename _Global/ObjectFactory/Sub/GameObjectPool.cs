@@ -81,8 +81,6 @@ namespace SDHK
         /// </summary>
         public GameObject Get(Transform parent)
         {
-            destoryCountDown = objectDestoryClock;
-
             GameObject gameObject = DequeueOrNewObject();
             gameObject.transform.parent = parent;
             objectOnGet?.Invoke(gameObject);
@@ -90,13 +88,6 @@ namespace SDHK
 
             return gameObject;
         }
-
-        //public override void Destroy()
-        //{
-        //    base.Destroy();
-        //    GameObject.Destroy(poolTransform.gameObject);
-        //}
-
 
         private GameObject ObjectNew(PoolBase pool)
         {

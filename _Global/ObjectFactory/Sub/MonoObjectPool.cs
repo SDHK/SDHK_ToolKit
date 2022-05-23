@@ -85,7 +85,6 @@ namespace SDHK
         /// </summary>
         public T Get(Transform parent)
         {
-            destoryCountDown = objectDestoryClock;
 
             T obj = DequeueOrNewObject();
             obj.transform.parent = parent;

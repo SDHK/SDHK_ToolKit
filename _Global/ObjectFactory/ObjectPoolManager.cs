@@ -56,13 +56,7 @@ namespace SDHK
             pools.Remove(objectPool);
         }
 
-        void FixedUpdate()
-        {
-            foreach (var pool in pools)
-            {
-                pool.Update(Time.fixedDeltaTime);
-            }
-        }
+      
     }
     
     public static class ObjectPoolExtension

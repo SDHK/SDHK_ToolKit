@@ -159,8 +159,6 @@ namespace SDHK
         /// </summary>
         public T Get()
         {
-            destoryCountDown = objectDestoryClock;
-
             T obj = DequeueOrNewObject();
             objectOnGet?.Invoke(obj);
             Preload();
@@ -178,7 +176,7 @@ namespace SDHK
                 if (obj != null)
                 {
 
-                    if (objectLimit == -1 || objetPool.Count < objectLimit)
+                    if (maxLimit == -1 || objetPool.Count < maxLimit)
                     {
                         if (!objetPool.Contains(obj))
                         {
@@ -197,25 +195,35 @@ namespace SDHK
         }
         public override object GetObject()
         {
-            return (object)Get();
+            return Get();
         }
 
         public override void Recycle(object obj)
         {
             Recycle((T)obj);
         }
-
-        public override void Clear()
+        public override void DisposeOne()
         {
             lock (objetPool)
             {
-                for (int i = objetPool.Count - 1; i >= 0; i--)
+                if (objetPool.Count>0)
                 {
                     var obj = objetPool.Dequeue();
                     objectOnDestroy?.Invoke(obj);
                     DestroyObject?.Invoke(obj);
                 }
-                objetPool.Clear();
+            }
+        }
+        public override void DisposeAll()
+        {
+            lock (objetPool)
+            {
+                while (objetPool.Count > 0)
+                {
+                    var obj = objetPool.Dequeue();
+                    objectOnDestroy?.Invoke(obj);
+                    DestroyObject?.Invoke(obj);
+                }
             }
         }
 
@@ -223,7 +231,7 @@ namespace SDHK
         {
             lock (objetPool)
             {
-                while (objetPool.Count < objectPreload)
+                while (objetPool.Count < minLimit)
                 {
                     T obj = NewObject(this);
                     objectOnNew?.Invoke(obj);
@@ -232,44 +240,11 @@ namespace SDHK
             }
         }
 
-        public override void Update(float deltaTime)
-        {
-            if (objectDestoryClock != -1)
-            {
-                if (objetPool.Count > 0)
-                {
-                    if (destoryCountDown == -1)
-                    {
-                        if (destoryIntervalCountDown > 0)//回收间隔倒计时计时
-                        {
-                            destoryIntervalCountDown -= deltaTime;
-                        }
-                        else
-                        {
-                            var obj = objetPool.Dequeue();//清除回调
-                            objectOnDestroy?.Invoke(obj);
-                            DestroyObject?.Invoke(obj);
-                            destoryIntervalCountDown = objectDestoryIntervalClock;
-                        }
-                    }
-                    else
-                    {
-                        if (destoryCountDown > 0)//回收倒计时
-                        {
-                            destoryCountDown -= deltaTime;
-                        }
-                        else
-                        {
-                            destoryCountDown = -1;
-                        }
-                    }
-                }
-            }
-        }
+     
 
         public override void OnDispose()
         {
-            Clear();
+            DisposeAll();
             NewObject = null;
             DestroyObject = null;
             objectOnNew = null;
@@ -277,5 +252,7 @@ namespace SDHK
             objectOnRecycle = null;
             objectOnDestroy = null;
         }
+
+       
     }
 }

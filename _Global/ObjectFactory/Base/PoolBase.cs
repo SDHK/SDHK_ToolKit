@@ -16,6 +16,7 @@
  * 描述:  
  * 改为继承Unit统一了销毁功能
  * 重命名类由 ObjectPoolBase 改为 PoolBase
+ * 分离计时功能
 
 */
 
@@ -44,32 +45,12 @@ namespace SDHK
         /// <summary>
         /// 预加载数量
         /// </summary>
-        public int objectPreload = 0;
+        public int minLimit = 0;
 
         /// <summary>
         /// 对象回收数量限制
         /// </summary>
-        public int objectLimit = -1;
-
-        /// <summary>
-        /// 对象自动销毁计时设定
-        /// </summary>
-        public float objectDestoryClock = -1;
-
-        /// <summary>
-        /// 对象销毁的计时间隔
-        /// </summary>
-        public float objectDestoryIntervalClock = 0;
-
-
-        /// <summary>
-        /// 销毁倒计时
-        /// </summary>
-        protected float destoryCountDown = -1;
-        /// <summary>
-        /// 销毁间隔倒计时
-        /// </summary>
-        protected float destoryIntervalCountDown = -1;
+        public int maxLimit = -1;
 
         /// <summary>
         /// 获取对象
@@ -80,21 +61,23 @@ namespace SDHK
         /// 回收对象
         /// </summary>
         public abstract void Recycle(object obj);
+        
         /// <summary>
-        /// 清空对象池
+        /// 释放全部对象
         /// </summary>
-        public abstract void Clear();
+        public abstract void DisposeAll();
+
+        /// <summary>
+        /// 释放一个对象
+        /// </summary>
+        public abstract void DisposeOne();
 
         /// <summary>
         /// 预加载
         /// </summary>
         public abstract void Preload();
 
-        /// <summary>
-        /// 刷新
-        /// </summary>
-        /// <param name="deltaTime">刷新时间差</param>
-        public abstract void Update(float deltaTime);
+
 
     }
 

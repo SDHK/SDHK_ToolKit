@@ -17,6 +17,18 @@ using System.Threading.Tasks;
 
 namespace SDHK
 {
+
+    public abstract class PoolUnit<T> : PoolUnit
+        where T : PoolUnit<T>
+    {
+        public static T Get()//需要通过管理器获取
+        {
+            
+            return null;
+        }
+
+    }
+
     /// <summary>
     /// 池单位抽象基类
     /// </summary>
@@ -25,6 +37,7 @@ namespace SDHK
         public PoolBase thisPool { get; set; }
 
         public bool IsRecycle { get; set; }
+
 
         public void Recycle()
         {
@@ -41,8 +54,8 @@ namespace SDHK
 
         public virtual void OnRecycle()
         {
-            
+
         }
-      
+
     }
 }

@@ -48,7 +48,6 @@ namespace SDHK
 
         private static void ObjectOnNew(T obj)
         {
-            obj.IsRecycle = false;
             obj.OnNew();
         }
         private static void ObjectOnGet(T obj)
@@ -63,7 +62,6 @@ namespace SDHK
         }
         private static void ObjectOnDestroy(T obj)
         {
-            obj.IsRecycle = true;
             obj.Dispose();
         }
 
