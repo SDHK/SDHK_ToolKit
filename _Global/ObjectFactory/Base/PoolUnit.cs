@@ -21,10 +21,10 @@ namespace SDHK
     public abstract class PoolUnit<T> : PoolUnit
         where T : PoolUnit<T>
     {
+        public static UnitPool<T> unitPool = new UnitPool<T>();
         public static T Get()//需要通过管理器获取
         {
-            
-            return null;
+            return unitPool.Get();
         }
 
     }

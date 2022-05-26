@@ -14,57 +14,7 @@ namespace SDHK
      
      */
 
-    public class EntityGroup
-    {
-        public bool isRun = true;
-        public SortedList<int, List<ISystem>> systems = new SortedList<int, List<ISystem>>();//SystemBase.getType()
-        public Dictionary<Type, List<Entity>> entities = new Dictionary<Type, List<Entity>>();
-        public Dictionary<Type, List<Entity>> entitieExecutes = new Dictionary<Type, List<Entity>>();
 
-        public void AddSystem()
-        {
-
-        }
-        public void Add(Entity entity)
-        {
-            Type type = entity.GetType();
-            if (!entities.ContainsKey(type))
-            {
-                entities.Add(type, new List<Entity>());
-                entitieExecutes.Add(type, new List<Entity>());
-            }
-            if (!entities[type].Contains(entity))
-            {
-                entities[type].Add(entity);
-            }
-        }
-
-        public void remove(Entity entity)
-        {
-            Type type = entity.GetType();
-            if (entities.ContainsKey(type))
-            {
-                entities[type].Remove(entity);
-                entitieExecutes[type].Remove(entity);
-            }
-        }
-
-        public void Swap(Type type)
-        {
-            List<Entity> swap;
-            swap = entities[type];
-            entities[type] = entitieExecutes[type];
-            entitieExecutes[type] = swap;
-        }
-
-        public void Update(Type type)
-        {
-            if (isRun)
-            {
-
-            }
-        }
-    }
 
     public partial class EcsManager//单独执行层
     {
