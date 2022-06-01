@@ -30,7 +30,7 @@ namespace SDHK
     /// <summary>
     /// 池单位对象接口
     /// </summary>
-    public interface IPoolUnit: IUnit
+    public interface IUnitPoolItem: IUnit
     {
         /// <summary>
         /// 产生此类的对象池

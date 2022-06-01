@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace SDHK
 {
+
+
+
     public class EntityMonoGroup
     {
         public bool isRun = true;
@@ -39,7 +42,7 @@ namespace SDHK
             }
         }
 
-        public void remove(Entity entity)
+        public void Remove(Entity entity)
         {
             Type type = entity.GetType();
             if (entities.ContainsKey(type))
@@ -62,29 +65,45 @@ namespace SDHK
 
 
 
-    public class UnitPoolManager
+    public class UnitPoolManager:Unit
     {
         Dictionary<Type, PoolBase> pools = new Dictionary<Type, PoolBase>();
 
-        public void Get<T>()
-            where T : class, IPoolUnit
+        public PoolBase Get<T>()
+        where T : class, IUnitPoolItem
         {
-
-
-        }
-        public void Set<T>(UnitPool<T> pool)
-        where T : class, IPoolUnit
-        {
+            Type type = typeof(T);
+            if (!pools.ContainsKey(type))
+            {
+                UnitPool<T> pool = new UnitPool<T>();
+                pools.Add(type, pool);
+                return pool;
+            }
+            else
+            {
+                return pools[type];
+            }
 
         }
 
         public void Add<T>(UnitPool<T> pool)
-        where T : class, IPoolUnit
+        where T : class, IUnitPoolItem
         {
-
+            Type type = typeof(T);
+            if (!pools.ContainsKey(type))
+            {
+                pools.Add(type, pool);
+            }
         }
 
-
-
+        public override void OnDispose()
+        {
+            foreach (var pool in pools)
+            {
+                pool.Value.Dispose();
+            }
+        }
     }
 }
+
+

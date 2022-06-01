@@ -18,8 +18,8 @@ using System.Threading.Tasks;
 namespace SDHK
 {
 
-    public abstract class PoolUnit<T> : PoolUnit
-        where T : PoolUnit<T>
+    public abstract class UnitPoolItem<T> : UnitPoolItem
+        where T : UnitPoolItem<T>
     {
         public static UnitPool<T> unitPool = new UnitPool<T>();
         public static T Get()//需要通过管理器获取
@@ -32,7 +32,7 @@ namespace SDHK
     /// <summary>
     /// 池单位抽象基类
     /// </summary>
-    public abstract class PoolUnit : Unit, IPoolUnit
+    public abstract class UnitPoolItem : Unit, IUnitPoolItem
     {
         public PoolBase thisPool { get; set; }
 

@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 namespace SDHK
 {
     public class UnitPool<T> : GenericPool<T>
-      where T : class, IPoolUnit
+      where T : class, IUnitPoolItem
     {
         /// <summary>
         /// 对象池构造

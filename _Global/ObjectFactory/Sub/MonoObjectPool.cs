@@ -33,7 +33,7 @@ namespace SDHK
     /// 泛型Mono对象池
     /// </summary>
     public class MonoObjectPool<T> : GenericPool<T>
-    where T : MonoBehaviour, IPoolUnit
+    where T : MonoBehaviour, IUnitPoolItem
     {
         /// <summary>
         /// 池对象（不销毁）：用于储存回收的游戏对象

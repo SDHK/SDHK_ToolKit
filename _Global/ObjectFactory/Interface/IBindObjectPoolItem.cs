@@ -27,7 +27,7 @@ namespace SDHK
     /// <summary>
     /// 泛型绑定对象接口
     /// </summary>
-    public interface IBindObjectPoolItem : IPoolUnit
+    public interface IBindObjectPoolItem : IUnitPoolItem
     {
         /// <summary>
         /// 绑定的GameObject
