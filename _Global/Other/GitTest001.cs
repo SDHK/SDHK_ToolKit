@@ -11,6 +11,5 @@ namespace Assets.SDHK_Tool._Global.Other.Git
     public class GitTest01
     {
         public string text1 = "Hello World01";
-
     }
 }
