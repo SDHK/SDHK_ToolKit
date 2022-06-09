@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Assets.SDHK_Tool._Global.Other.Git
 {
-    public class GitTest001
+    public class GitTest
     {
-        public string text1 = "Hello World";
+        public string text = "Hello World";
 
     }
 }
