@@ -1,4 +1,4 @@
-using Singleton;
+﻿using Singleton;
 using System;
 using System.Linq;
 using System.Collections;
