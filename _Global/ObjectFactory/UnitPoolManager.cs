@@ -23,7 +23,6 @@ namespace SDHK
 
     public class EntityGroup
     {
-        public SortedList<int, List<ISystem>> systems = new SortedList<int, List<ISystem>>();//SystemBase.getType()//System不能在组里
 
         public Dictionary<Type, List<Entity>> entities = new Dictionary<Type, List<Entity>>();
         public Dictionary<Type, List<Entity>> entitieExecutes = new Dictionary<Type, List<Entity>>();

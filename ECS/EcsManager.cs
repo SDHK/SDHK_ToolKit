@@ -16,6 +16,7 @@ namespace SDHK
 
 
 
+    //以事件驱动函数执行
     public partial class EcsManager//单独执行层
     {
         public Dictionary<long, Entity> allEntities = new Dictionary<long, Entity>();
@@ -23,6 +24,8 @@ namespace SDHK
         public SortedList<int, EntityGroup> entityGroupUpdate = new SortedList<int, EntityGroup>();
         public SortedList<int, EntityGroup> entityGroupLateUpdate = new SortedList<int, EntityGroup>();
         public SortedList<int, EntityGroup> entityGroupFixedUpdate = new SortedList<int, EntityGroup>();
+
+        public List<ISystem> systems = new List<ISystem>();//SystemBase.getType()//System不能在组里
 
 
 

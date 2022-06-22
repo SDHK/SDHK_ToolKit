@@ -16,11 +16,12 @@ namespace SDHK
 {
     //Entity需要回收标记
 
-    public abstract class Entity
+    public abstract class Entity:Unit
     {
         public int ID { get; set; }
         public Dictionary<long, Entity> entities = new Dictionary<long, Entity>();  //实体
         public Dictionary<Type, Entity> components = new Dictionary<Type, Entity>(); //组件
+
 
 
 
