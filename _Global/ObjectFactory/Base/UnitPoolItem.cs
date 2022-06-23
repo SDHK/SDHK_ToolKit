@@ -4,7 +4,7 @@
 * 作者： 闪电黑客
 * 日期： 2022/5/18 15:07
 
-* 描述： 
+* 描述： 池单位对象抽象基类
 
 */
 
@@ -17,7 +17,10 @@ using System.Threading.Tasks;
 
 namespace SDHK
 {
-
+    /// <summary>
+    /// 池单位抽象泛型基类
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public abstract class UnitPoolItem<T> : UnitPoolItem
         where T : UnitPoolItem<T>
     {
@@ -41,7 +44,13 @@ namespace SDHK
 
         public void Recycle()
         {
-            thisPool.Recycle(this);
+            if (thisPool!=null)
+            {
+                if (!thisPool.IsDisposed)
+                {
+                    thisPool.Recycle(this);
+                }
+            }
         }
 
         public virtual void OnGet()

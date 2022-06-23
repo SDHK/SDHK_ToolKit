@@ -16,6 +16,9 @@ using System.Threading.Tasks;
 
 namespace SDHK
 {
+    /// <summary>
+    /// 单位对象池
+    /// </summary>
     public class UnitPool<T> : GenericPool<T>
       where T : class, IUnitPoolItem
     {

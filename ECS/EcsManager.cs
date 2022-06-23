@@ -8,22 +8,17 @@ using UnityEngine;
 namespace SDHK
 {
     /*
-     * 文件夹式分组：需要PathData结构
-     * 全局/敌人/武器/子弹
-     * 
+     * 以事件驱动函数执行
      
      */
 
 
 
-    //以事件驱动函数执行
     public partial class EcsManager//单独执行层
     {
         public Dictionary<long, Entity> allEntities = new Dictionary<long, Entity>();
 
-        public SortedList<int, EntityGroup> entityGroupUpdate = new SortedList<int, EntityGroup>();
-        public SortedList<int, EntityGroup> entityGroupLateUpdate = new SortedList<int, EntityGroup>();
-        public SortedList<int, EntityGroup> entityGroupFixedUpdate = new SortedList<int, EntityGroup>();
+
 
         public List<ISystem> systems = new List<ISystem>();//SystemBase.getType()//System不能在组里
 

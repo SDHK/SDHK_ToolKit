@@ -11,7 +11,7 @@
 
  * 描述:  
 
-    游戏物体对象池: 继承 ObjectPool<T>
+    游戏物体对象池: 继承 GenericPool<T>
 
     作用于 GameObject 类型
 
@@ -27,11 +27,13 @@ using UnityEngine;
 
 namespace SDHK
 {
-
+    /// <summary>
+    /// GameObject对象池
+    /// </summary>
     public class GameObjectPool : GenericPool<GameObject>
     {
         /// <summary>
-        /// 池对象（不销毁）：用于储存回收的游戏对象
+        /// 池对象节点（不销毁）：用于储存回收的游戏对象
         /// </summary>
         public Transform poolTransform { get; private set; }
 
@@ -60,6 +62,7 @@ namespace SDHK
             {
                 objName = "GameObject";
             }
+
             poolTransform = new GameObject(ToString()).transform;
             GameObject.DontDestroyOnLoad(poolTransform);
 
@@ -74,6 +77,15 @@ namespace SDHK
         public override string ToString()
         {
             return "[GameObjectPool] : " + objName;
+        }
+
+        public override void OnDispose()
+        {
+            base.OnDispose();
+            if (poolTransform != null)
+            {
+                GameObject.Destroy(poolTransform.gameObject);
+            }
         }
 
         /// <summary>
@@ -100,7 +112,14 @@ namespace SDHK
 
         private void ObjectOnNew(GameObject gameObject)
         {
-            gameObject.SetActive(poolTransform);
+            if (poolTransform == null)
+            {
+                GameObject.DontDestroyOnLoad(gameObject);
+            }
+            else
+            {
+                gameObject.transform.SetParent(poolTransform);
+            }
         }
         private void ObjectOnGet(GameObject gameObject)
         {
@@ -109,7 +128,14 @@ namespace SDHK
         private void ObjectOnRecycle(GameObject gameObject)
         {
             gameObject.SetActive(false);
-            gameObject.transform.SetParent(poolTransform);
+            if (poolTransform == null)
+            {
+                GameObject.DontDestroyOnLoad(gameObject);
+            }
+            else
+            {
+                gameObject.transform.SetParent(poolTransform);
+            }
 
         }
 

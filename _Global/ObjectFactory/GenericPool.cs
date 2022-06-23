@@ -1,13 +1,8 @@
 ﻿
 /******************************
 
- * Author: 闪电黑客
-
+ * 作者： 闪电黑客
  * 日期: 2021/12/13 13:37:00
-
- * 最后日期: 2021/12/15 17:23:49
-
- * 最后修改: 闪电黑客
 
  * 描述:  
  
@@ -17,31 +12,17 @@
     
     2.限制数：objectLimit = -1 ，为-1时则不限制对象数量。
         数量超过限制时，对象将不再被回收保留，而是被回收后立即销毁。
-    
-    3.自动销毁倒计时时间（秒）：objectDestoryClock = -1，为-1时不起效，
-        设定倒计时，内部计时结束后自动销毁池内对象，Get 和 Recycle 操作会重置倒计时。
-    
-    4.销毁间隔时间（秒）：objectDestoryIntervalClock = 0 ，为0时间隔为1帧。
-        开始自动销毁时，每间隔一段时间销毁一个对象。
-    
 
-    其中 计时功能 需要 update 刷新调用才会起效。
+*/
+/****************************************
 
+* 作者： 闪电黑客
+* 日期： 2022/6/23 10:30
 
+* 描述： 名称改为通用对象池，
+* 去除了倒计时功能。
 
-    生命周期大致为：
-    
-    Get     NewObject
-            objectOnNew
-            objectOnGet
-    
-    Recycle objectOnRecycle
-            objectOnDestroy
-            DestroyObject
-
-
-
-******************************/
+*/
 
 
 
@@ -57,7 +38,8 @@ namespace SDHK
     /// <summary>
     /// object对象池
     /// </summary>
-    public class ObjectPool : GenericPool<object> {
+    public class ObjectPool : GenericPool<object>
+    {
         public ObjectPool() : base() { }
         public ObjectPool(Type type) { ObjectType = type; }
     }
@@ -66,6 +48,7 @@ namespace SDHK
     /// 泛型通用对象池
     /// </summary>
     public class GenericPool<T> : PoolBase
+        where T : class
     {
         /// <summary>
         /// 对象池
@@ -133,14 +116,14 @@ namespace SDHK
         {
             lock (objetPool)
             {
-                T obj = default(T);
+                T obj = null;
 
-                while (objetPool.Count > 0 && obj.Equals(default(T)))
+                while (objetPool.Count > 0 && obj== null)
                 {
                     obj = objetPool.Dequeue();
                 }
 
-                if (obj.Equals(default(T)))
+                if (obj == null)
                 {
                     if (NewObject != null)
                     {
@@ -206,7 +189,7 @@ namespace SDHK
         {
             lock (objetPool)
             {
-                if (objetPool.Count>0)
+                if (objetPool.Count > 0)
                 {
                     var obj = objetPool.Dequeue();
                     objectOnDestroy?.Invoke(obj);
@@ -240,7 +223,7 @@ namespace SDHK
             }
         }
 
-     
+
 
         public override void OnDispose()
         {
@@ -253,6 +236,6 @@ namespace SDHK
             objectOnDestroy = null;
         }
 
-       
+
     }
 }

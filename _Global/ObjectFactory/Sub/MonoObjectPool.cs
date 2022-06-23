@@ -11,9 +11,9 @@
 
  * 描述:  
 
-    泛型Mono对象池: 继承 ObjectPool<T>
+    泛型Mono对象池: 继承 GenericPool<T>
 
-    作用于继承了 MonoBehaviour、IObjectPoolItem 的类型
+    作用于继承了 MonoBehaviour、IUnitPoolItem 的类型
 
 ******************************/
 
@@ -36,7 +36,7 @@ namespace SDHK
     where T : MonoBehaviour, IUnitPoolItem
     {
         /// <summary>
-        /// 池对象（不销毁）：用于储存回收的游戏对象
+        /// 池对象节点（不销毁）：用于储存回收的游戏对象
         /// </summary>
         public Transform poolTransform { get; private set; }
 
@@ -44,6 +44,8 @@ namespace SDHK
         /// 预制体
         /// </summary>
         public GameObject prefab { get; private set; }
+       
+        //游戏对象名称
         private string objName;
 
         /// <summary>
@@ -80,6 +82,15 @@ namespace SDHK
             return "[MonoObjectPool<" + ObjectType.Name + ">] : " + objName;
         }
 
+        public override void OnDispose()
+        {
+            base.OnDispose();
+            if (poolTransform != null)
+            {
+                GameObject.Destroy(poolTransform.gameObject);
+            }
+        }
+
         /// <summary>
         /// 获取对象（设置父节点）
         /// </summary>
@@ -93,12 +104,8 @@ namespace SDHK
 
             return obj;
         }
-        //public override void Destroy()
-        //{
-        //    base.Destroy();
-        //    GameObject.Destroy(poolTransform.gameObject);
-        //}
 
+    
 
 
         private T ObjectNew(PoolBase pool)
@@ -120,7 +127,15 @@ namespace SDHK
         }
         private void ObjectOnNew(T obj)
         {
-            obj.transform.SetParent(poolTransform);
+            if (poolTransform == null)
+            {
+                GameObject.DontDestroyOnLoad(obj.gameObject);
+            }
+            else
+            {
+                obj.transform.SetParent(poolTransform);
+            }
+
             obj.OnNew();
         }
         private void ObjectOnGet(T obj)
@@ -131,7 +146,14 @@ namespace SDHK
         private void ObjectOnRecycle(T obj)
         {
             obj.gameObject.SetActive(false);
-            obj.transform.SetParent(poolTransform);
+            if (poolTransform == null)
+            {
+                GameObject.DontDestroyOnLoad(obj.gameObject);
+            }
+            else
+            {
+                obj.transform.SetParent(poolTransform);
+            }
             obj.OnRecycle();
         }
 

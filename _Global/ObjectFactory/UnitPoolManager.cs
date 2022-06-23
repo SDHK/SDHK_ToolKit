@@ -1,4 +1,14 @@
-﻿using System;
+﻿
+/****************************************
+
+* 作者： 闪电黑客
+* 日期： 2022/5/24 18:52
+
+* 描述： 单位对象池管理器
+
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,92 +16,74 @@ using System.Threading.Tasks;
 
 namespace SDHK
 {
-
-
-
-    public class EntityMonoGroup
+    /// <summary>
+    /// 单位对象池管理器
+    /// </summary>
+    public class UnitPoolManager : Unit
     {
-        public bool isRun = true;
+        private Dictionary<Type, PoolBase> pools = new Dictionary<Type, PoolBase>();
 
-        public EntityGroup Update = new EntityGroup();
-        public EntityGroup LateUpdate = new EntityGroup();
-        public EntityGroup FixedUpdate = new EntityGroup();
-
-        public UnitPoolManager unitPools;
-        //计时器
-    }
-
-    public class EntityGroup
-    {
-
-        public Dictionary<Type, List<Entity>> entities = new Dictionary<Type, List<Entity>>();
-        public Dictionary<Type, List<Entity>> entitieExecutes = new Dictionary<Type, List<Entity>>();
-
-        public void Add(Entity entity)
-        {
-            Type type = entity.GetType();
-            if (!entities.ContainsKey(type))
-            {
-                entities.Add(type, new List<Entity>());
-                entitieExecutes.Add(type, new List<Entity>());
-            }
-            if (!entities[type].Contains(entity))
-            {
-                entities[type].Add(entity);
-            }
-        }
-
-        public void Remove(Entity entity)
-        {
-            Type type = entity.GetType();
-            if (entities.ContainsKey(type))
-            {
-                entities[type].Remove(entity);
-                entitieExecutes[type].Remove(entity);
-            }
-        }
-
-        public void Swap(Type type)
-        {
-            List<Entity> swap;
-            swap = entities[type];
-            entities[type] = entitieExecutes[type];
-            entitieExecutes[type] = swap;
-        }
-
-    }
-
-
-
-
-    public class UnitPoolManager:Unit
-    {
-        Dictionary<Type, PoolBase> pools = new Dictionary<Type, PoolBase>();
-
-        public PoolBase Get<T>()
+        /// <summary>
+        /// 获取单位
+        /// </summary>
+        public T Get<T>()
         where T : class, IUnitPoolItem
         {
             Type type = typeof(T);
-            if (!pools.ContainsKey(type))
+            if (pools.TryGetValue(type, out PoolBase pool))
             {
-                UnitPool<T> pool = new UnitPool<T>();
-                pools.Add(type, pool);
-                return pool;
+                return pool.GetObject() as T;
+            }
+            else//不存在则新建
+            {
+                UnitPool<T> newPool = new UnitPool<T>();
+                pools.Add(type, newPool);
+                return newPool.Get();
+            }
+        }
+
+        /// <summary>
+        /// 添加单位池：假如池已存在，则替换并释放掉原来的。
+        /// </summary>
+        public void AddPool<T>(UnitPool<T> pool)
+        where T : class, IUnitPoolItem
+        {
+            Type type = typeof(T);
+            if (pools.TryAdd(type, pool))
+            {
+                pools[type]?.Dispose();
+                pools[type] = pool;
+            }
+        }
+
+        /// <summary>
+        /// 获取池
+        /// </summary>
+        public UnitPool<T> GetPool<T>()
+        where T : class, IUnitPoolItem
+        {
+            Type type = typeof(T);
+            if (pools.TryGetValue(type, out PoolBase pool))
+            {
+                return pool as UnitPool<T>;
             }
             else
             {
-                return pools[type];
+                return null;
             }
 
         }
 
-        public void Add<T>(UnitPool<T> pool)
-        where T : class, IUnitPoolItem
+        /// <summary>
+        /// 释放池
+        /// </summary>
+        public void DisposePool<T>()
         {
             Type type = typeof(T);
-            if (!pools.ContainsKey(type))
+            if (pools.TryGetValue(type, out PoolBase pool))
             {
-                pools.Add(type, pool);
+                 pool.Dispose();
+                pools.Remove(type);
             }
         }
 
@@ -101,6 +93,7 @@ namespace SDHK
             {
                 pool.Value.Dispose();
             }
+            pools.Clear();
         }
     }
 }
