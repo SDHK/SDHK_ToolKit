@@ -5,6 +5,8 @@
 * 日期： 2022/5/18 15:06
 
 * 描述： 单位对象池
+* 用于对继承了 IUnitPoolItem 接口的类进行回收
+* 自己定义的类都继承 IUnitPoolItem ，方便统一管理
 
 */
 
@@ -30,9 +32,10 @@ namespace SDHK
             ObjectType = typeof(T);
 
             NewObject = ObjectNew;
+            DestroyObject = ObjectDestroy;
 
             objectOnNew += ObjectOnNew;
-            objectOnDestroy += ObjectOnDestroy;
+
             objectOnGet += ObjectOnGet;
             objectOnRecycle += ObjectOnRecycle;
         }
@@ -42,11 +45,15 @@ namespace SDHK
             return "[UnitPool<" + ObjectType.Name + ">] ";
         }
 
-        private T ObjectNew(PoolBase pool)
+        private  T ObjectNew(PoolBase pool)
         {
             T obj = Activator.CreateInstance(ObjectType, true) as T;
             obj.thisPool = pool;
             return obj;
+        }
+        private static void ObjectDestroy(T obj)
+        {
+            obj.Dispose();
         }
 
         private static void ObjectOnNew(T obj)
@@ -63,10 +70,7 @@ namespace SDHK
             obj.IsRecycle = true;
             obj.OnRecycle();
         }
-        private static void ObjectOnDestroy(T obj)
-        {
-            obj.Dispose();
-        }
+      
 
     }
 }

@@ -7,11 +7,16 @@
  * 描述:  
  
     泛型通用对象池 ,继承 PoolBase
+    
+    需要手动注册New和Destroy的方法
 
     1.预加载数：objectPreload = 0 ，在 池新建时 和 Get时 , 将池内对象数量保持到设定数值。
     
     2.限制数：objectLimit = -1 ，为-1时则不限制对象数量。
         数量超过限制时，对象将不再被回收保留，而是被回收后立即销毁。
+
+    设计思路是可以用于任意类型的对象管理，
+    也可以被继承定义为指定对象管理的对象池。
 
 */
 /****************************************
@@ -35,14 +40,6 @@ using UnityEngine.Profiling;
 
 namespace SDHK
 {
-    /// <summary>
-    /// object对象池
-    /// </summary>
-    public class ObjectPool : GenericPool<object>
-    {
-        public ObjectPool() : base() { }
-        public ObjectPool(Type type) { ObjectType = type; }
-    }
 
     /// <summary>
     /// 泛型通用对象池
@@ -106,7 +103,7 @@ namespace SDHK
 
         public override string ToString()
         {
-            return "[ObjectPool<" + ObjectType.Name + ">]";
+            return "[GenericPool<" + ObjectType.Name + ">]";
         }
 
         /// <summary>

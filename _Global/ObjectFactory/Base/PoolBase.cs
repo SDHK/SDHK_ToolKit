@@ -6,6 +6,7 @@
  * 描述:  
  * 对原先对象池工具的重写，
  * 增加计时销毁设定，并抽象大部分方法
+ * 所有对象池的最基类
 
 */
 /****************************************
@@ -28,7 +29,7 @@ using UnityEngine;
 namespace SDHK
 {
     /// <summary>
-    /// 计时对象池抽象基类
+    /// 对象池抽象基类
     /// </summary>
     public abstract class PoolBase:Unit
     {

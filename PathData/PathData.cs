@@ -29,7 +29,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
-using Singleton;
+using SDHK;
 
 public class DataBox<T>
 {

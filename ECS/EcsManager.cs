@@ -1,4 +1,4 @@
-﻿using Singleton;
+﻿using SDHK;
 using System;
 using System.Linq;
 using System.Collections;
@@ -7,18 +7,26 @@ using UnityEngine;
 
 namespace SDHK
 {
-    /*
-     * 以事件驱动函数执行
-     
-     */
-
-
-
-    public partial class EcsManager//单独执行层
+    public class EntitieManager : SingletonBase<EcsManager>
     {
         public Dictionary<long, Entity> allEntities = new Dictionary<long, Entity>();
 
+        public void AddChild(Entity entity)
+        {
 
+        }
+        public void RemoveChild(Entity entity)
+        {
+
+        }
+    }
+
+    public partial class EcsManager : SingletonBase<EcsManager>
+    {
+        public Dictionary<long, Entity> allEntities = new Dictionary<long, Entity>();
+
+        public Queue<long> update1 = new Queue<long>();
+        public Queue<long> update2 = new Queue<long>();
 
         public List<ISystem> systems = new List<ISystem>();//SystemBase.getType()//System不能在组里
 

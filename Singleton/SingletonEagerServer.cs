@@ -21,10 +21,10 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using Singleton.SingletonAttribute;
+using SDHK.SingletonAttribute;
 using UnityEngine;
 
-namespace Singleton
+namespace SDHK
 {
     namespace SingletonAttribute
     {

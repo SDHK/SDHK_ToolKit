@@ -2,29 +2,30 @@
 
 /******************************
 
- * Author: 闪电黑客
-
+ * 作者: 闪电黑客
  * 日期: 2021/12/14 05:23:50
-
- * 最后日期: 2021/12/15 17:53:47
-
- * 最后修改: 闪电黑客
 
  * 描述:  
     
     泛型对象池管理器
-    
-    给对象池提供 update 刷新
 
-******************************/
+*/
+/****************************************
 
+* 作者： 闪电黑客
+* 日期： 2022/6/21 20:55
+
+* 描述： 对象池结构大改。
+
+*/
 
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Singleton;
+using SDHK;
 using System.Runtime.InteropServices;
 using UnityEngine.Profiling;
+using System;
 
 namespace SDHK
 {
@@ -32,52 +33,99 @@ namespace SDHK
     /// <summary>
     /// 泛型对象池管理器
     /// </summary>
-    public class ObjectPoolManager : SingletonMonoBase<ObjectPoolManager>
+    public class ObjectPoolManager : SingletonBase<ObjectPoolManager>
     {
-        public List<PoolBase> pools = new List<PoolBase>();
+        private Dictionary<Type, PoolBase> pools = new Dictionary<Type, PoolBase>();
 
         /// <summary>
-        /// 注册对象池
+        /// 获取对象
         /// </summary>
-        public PoolBase Register(PoolBase objectPool)
+        public T Get<T>()
+        where T : class
         {
-            if (!pools.Contains(objectPool))
+            Type type = typeof(T);
+            if (pools.TryGetValue(type, out PoolBase pool))
             {
-                pools.Add(objectPool);
+                return pool.GetObject() as T;
             }
-            return objectPool;
+            else//不存在则新建
+            {
+                ObjectPool<T> newPool = new ObjectPool<T>();
+                pools.Add(type, newPool);
+                return newPool.Get();
+            }
         }
 
         /// <summary>
-        /// 移除对象池
+        /// 回收对象
         /// </summary>
-        public void Remove(PoolBase objectPool)
+        public void Recycle<T>(T obj)
+        where T : class
         {
-            pools.Remove(objectPool);
+            Type type = typeof(T);
+            if (pools.TryGetValue(type, out PoolBase pool))
+            {
+                pool.Recycle(obj);
+            }
+            else//不存在则新建
+            {
+                ObjectPool<T> newPool = new ObjectPool<T>();
+                pools.Add(type, newPool);
+                newPool.Recycle(obj);
+            }
         }
 
-      
+        /// <summary>
+        /// 添加泛型对象池：假如池已存在，则替换并释放掉原来的。
+        /// </summary>
+        public void AddPool<T>(ObjectPool<T> pool)
+        where T : class
+        {
+            if (pools.TryAdd(pool.ObjectType, pool))
+            {
+                pools[pool.ObjectType]?.Dispose();
+                pools[pool.ObjectType] = pool;
+            }
+        }
+
+        /// <summary>
+        /// 获取池
+        /// </summary>
+        public ObjectPool<T> GetPool<T>()
+        where T : class
+        {
+            Type type = typeof(T);
+            if (pools.TryGetValue(type, out PoolBase pool))
+            {
+                return pool as ObjectPool<T>;
+            }
+            else
+            {
+                ObjectPool<T> unitPool = new ObjectPool<T>();
+                pools.Add(type, unitPool);
+                return unitPool;
+            }
+        }
+
+        /// <summary>
+        /// 释放池
+        /// </summary>
+        public void DisposePool<T>()
+        {
+            Type type = typeof(T);
+            if (pools.TryGetValue(type, out PoolBase pool))
+            {
+                pool.Dispose();
+                pools.Remove(type);
+            }
+        }
+        public override void OnDispose()
+        {
+            foreach (var pool in pools)
+            {
+                pool.Value.Dispose();
+            }
+            pools.Clear();
+        }
     }
-    
-    public static class ObjectPoolExtension
-    {
-        /// <summary>
-        /// 注册对象池到管理器
-        /// </summary>
-        public static T RegisterManager<T>(this T objectPool)
-        where T : PoolBase
-        {
-            return ObjectPoolManager.Instance().Register(objectPool) as T;
-        }
-
-        /// <summary>
-        /// 从管理器移除对象池 
-        /// </summary>
-        public static void RemoveManager(this PoolBase objectPool)
-        {
-            ObjectPoolManager.Instance().Remove(objectPool);
-        }
-    }
-
-
 }

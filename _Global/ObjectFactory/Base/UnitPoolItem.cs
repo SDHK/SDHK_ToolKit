@@ -4,7 +4,17 @@
 * 作者： 闪电黑客
 * 日期： 2022/5/18 15:07
 
-* 描述： 池单位对象抽象基类
+* 描述： 池单位对象，抽象基类
+* 
+* 抽象基类将提供一个回收实例的方法，
+* 并对其是否可以回收进行判断，
+* 省去用对象池管理器回收的麻烦。
+* 
+* 
+* 抽象泛型基类将提供一个静态获取实例的方法，
+* 省去用对象池管理器获取的麻烦。
+* 
+* 
 
 */
 
@@ -18,22 +28,24 @@ using System.Threading.Tasks;
 namespace SDHK
 {
     /// <summary>
-    /// 池单位抽象泛型基类
+    /// 池单位抽象泛型基类：获取和回收对象的方法
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public abstract class UnitPoolItem<T> : UnitPoolItem
         where T : UnitPoolItem<T>
     {
-        public static UnitPool<T> unitPool = new UnitPool<T>();
-        public static T Get()//需要通过管理器获取
+        /// <summary>
+        /// 单位对象池：获取对象
+        /// </summary>
+        public static T GetObject()
         {
-            return unitPool.Get();
+            return UnitPoolManager.Instance.Get<T>();
         }
 
     }
 
     /// <summary>
-    /// 池单位抽象基类
+    /// 池单位抽象基类：提供回收方法
     /// </summary>
     public abstract class UnitPoolItem : Unit, IUnitPoolItem
     {
@@ -48,7 +60,10 @@ namespace SDHK
             {
                 if (!thisPool.IsDisposed)
                 {
-                    thisPool.Recycle(this);
+                    if (!IsRecycle)
+                    {
+                        thisPool.Recycle(this);
+                    }
                 }
             }
         }
@@ -63,7 +78,6 @@ namespace SDHK
 
         public virtual void OnRecycle()
         {
-
         }
 
     }

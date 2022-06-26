@@ -21,6 +21,7 @@ namespace SDHK
     {
         Type SystemType { get; }
         Type EntityType { get; }
+
     }
 
     //用于标记
@@ -39,7 +40,6 @@ namespace SDHK
         public abstract void Update(T entity);
     }
 
-    [EcsSystem(1)]
     public class System1 : UpdateSystem<Entity2>
     {
         public override void Update(Entity2 entity)

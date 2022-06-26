@@ -16,15 +16,50 @@ namespace SDHK
 {
     //Entity需要回收标记
 
-    public abstract class Entity:Unit
+    public abstract class Entity : UnitPoolItem
     {
-        public int ID { get; set; }
-        public Dictionary<long, Entity> entities = new Dictionary<long, Entity>();  //实体
+        public long ID { get; set; }
+
+        public Entity parent;
+
+        public Dictionary<long, Entity> children = new Dictionary<long, Entity>();  //实体
         public Dictionary<Type, Entity> components = new Dictionary<Type, Entity>(); //组件
 
+        public Dictionary<long, Entity> Children
+        {
+            get
+            {
+                if (children == null)
+                {
+                    children = ObjectPoolManager.Instance.Get<Dictionary<long, Entity>>();
+                }
+
+                return children;
+            }
+        }
 
 
+        public void AddChildren(Entity entity)
+        {
+            if (entity != null)
+            {
+                entity.parent = this;
+                Children.TryAdd(entity.ID, entity);
+            }
+        }
+        public void RemoveChildren(Entity entity)
+        {
 
+            if (entity != null)
+            {
+                Children.Remove(entity.ID);
+                if (children.Count == 0)
+                {
+                    ObjectPoolManager.Instance.Recycle(children);
+                    children = null;
+                }
+            }
+        }
     }
 
 
@@ -37,6 +72,6 @@ namespace SDHK
 
     public class Entity3 : Entity
     {
-        
+
     }
 }

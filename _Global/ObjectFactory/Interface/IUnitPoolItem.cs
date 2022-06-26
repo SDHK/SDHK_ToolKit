@@ -12,6 +12,7 @@
  * 描述:  
   
     泛型对象接口
+    让IUnit类获得对象池管理的生命周期
 
 ******************************/
 
@@ -33,7 +34,7 @@ namespace SDHK
     public interface IUnitPoolItem: IUnit
     {
         /// <summary>
-        /// 产生此类的对象池
+        /// 产生此类的对象池：由对象池自动赋值，用于实例的自我回收
         /// </summary>
         PoolBase thisPool { get; set; }
 

@@ -11,33 +11,46 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Singleton
+namespace SDHK
 {
-    public class SingletonBase<T>
+    /// <summary>
+    /// 泛型单例基类：懒汉式
+    /// </summary>
+    public class SingletonBase<T>: Unit
     where T : SingletonBase<T>, new()
     {
-
         protected static T instance;//实例
         private static readonly object _lock = new object();//对象锁
 
         /// <summary>
         /// 单例实例化
         /// </summary>
-        public static T Instance()
+        public static T Instance
         {
-            if (instance == null)
+            get
             {
-                lock (_lock)
+                if (instance == null)
                 {
-                    if (instance == null)
+                    lock (_lock)
                     {
-                        instance = new T();
-                        Debug.Log("[单例启动] : " + typeof(T).Name);
-                        instance.OnInstance();
+                        if (instance == null)
+                        {
+                            instance = new T();
+                            Debug.Log("[单例启动] : " + typeof(T).Name);
+                            instance.OnInstance();
+                        }
                     }
                 }
+                return instance;
             }
-            return instance;
+        }
+
+        /// <summary>
+        /// 单例实例化
+        /// </summary>
+        public static T GetInstance()
+        {
+            return Instance;
         }
 
         public virtual void OnInstance() { }

@@ -1,18 +1,16 @@
-﻿using Singleton.SingletonAttribute;
+﻿using SDHK.SingletonAttribute;
 using UnityEngine;
 
-namespace Singleton
+namespace SDHK
 {
     /// <summary>
-    /// Mono泛型单例抽象基类：饿汉式
+    /// Mono泛型单例抽象基类：饿汉式(禁止手动挂载)
     /// </summary>
     [SingletonMonoEagerBaseAttribute]
     public abstract class SingletonMonoEagerBase<T> : MonoBehaviour, ISingletonEager
         where T : SingletonMonoEagerBase<T>
     {
         protected static T instance;//实例
-
-        public static bool isInstance => instance != null;
 
         public void InitializeOnLoadMethod()
         {

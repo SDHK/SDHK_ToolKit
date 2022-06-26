@@ -1,13 +1,11 @@
-﻿
-/****************************************
+﻿/****************************************
 
 * 作者： 闪电黑客
-* 日期： 2022/5/24 18:52
+* 日期： 2022/6/25 15:07
 
-* 描述： 单位对象池管理器
+* 描述： 通用对象池管理器，需要自行添加对象池
 
 */
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,14 +15,14 @@ using System.Threading.Tasks;
 namespace SDHK
 {
     /// <summary>
-    /// 单位对象池管理器
+    /// 通用对象池管理器
     /// </summary>
-    public class UnitPoolManager : SingletonBase<UnitPoolManager>
+    public class GenericPoolManager : SingletonBase<GenericPoolManager>
     {
         private Dictionary<Type, PoolBase> pools = new Dictionary<Type, PoolBase>();
 
         /// <summary>
-        /// 获取单位
+        /// 获取对象：通用对象池需要手动添加进来
         /// </summary>
         public T Get<T>()
         where T : class, IUnitPoolItem
@@ -34,37 +32,30 @@ namespace SDHK
             {
                 return pool.GetObject() as T;
             }
-            else//不存在则新建
+            else
             {
-                UnitPool<T> newPool = new UnitPool<T>();
-                pools.Add(type, newPool);
-                return newPool.Get();
+                return null;
             }
         }
+
         /// <summary>
         /// 回收对象
         /// </summary>
         public void Recycle<T>(T obj)
-        where T : class, IUnitPoolItem
+        where T : class
         {
             Type type = typeof(T);
             if (pools.TryGetValue(type, out PoolBase pool))
             {
                 pool.Recycle(obj);
             }
-            else//不存在则新建
-            {
-                UnitPool<T> newPool = new UnitPool<T>();
-                pools.Add(type, newPool);
-                newPool.Recycle(obj);
-            }
         }
 
         /// <summary>
-        /// 添加单位池：假如池已存在，则替换并释放掉原来的。
+        /// 添加通用对象池：假如池已存在，则替换并释放掉原来的。
         /// </summary>
-        public void AddPool<T>(UnitPool<T> pool)
-        where T : class, IUnitPoolItem
+        public void AddPool<T>(GenericPool<T> pool)
+        where T : class
         {
             if (pools.TryAdd(pool.ObjectType, pool))
             {
@@ -74,9 +65,9 @@ namespace SDHK
         }
 
         /// <summary>
-        /// 获取池
+        /// 获取通用对象池：不存在返回null
         /// </summary>
-        public UnitPool<T> GetPool<T>()
+        public GenericPool<T> GetPool<T>()
         where T : class, IUnitPoolItem
         {
             Type type = typeof(T);
@@ -85,13 +76,10 @@ namespace SDHK
                 return pool as UnitPool<T>;
             }
             else
-            { 
-                UnitPool<T> unitPool = new UnitPool<T>();
-                pools.Add(type, unitPool); 
-                return unitPool;
+            {
+                return null;
             }
         }
-
         /// <summary>
         /// 释放池
         /// </summary>
@@ -100,11 +88,10 @@ namespace SDHK
             Type type = typeof(T);
             if (pools.TryGetValue(type, out PoolBase pool))
             {
-                 pool.Dispose();
+                pool.Dispose();
                 pools.Remove(type);
             }
         }
-
         public override void OnDispose()
         {
             foreach (var pool in pools)
@@ -115,5 +102,3 @@ namespace SDHK
         }
     }
 }
-
-
