@@ -7,15 +7,23 @@ using UnityEngine;
 
 namespace SDHK
 {
+    //调用SystemManager然后注册自己的添加实体的监听方法
+    public class UpdateSystem : ISystem
+    {
+        public Type SystemType => throw new NotImplementedException();
+
+        public Type EntityType => throw new NotImplementedException();
+    }
+
     public class EntitieManager : SingletonBase<EcsManager>
     {
         public Dictionary<long, Entity> allEntities = new Dictionary<long, Entity>();
 
-        public void AddChild(Entity entity)
+        public void Add(Entity entity)
         {
-
+            //allEntities
         }
-        public void RemoveChild(Entity entity)
+        public void Remove(Entity entity)
         {
 
         }
@@ -38,6 +46,7 @@ namespace SDHK
         }
         private void LateUpdate()
         {
+
         }
 
         public void FixedUpdate()
