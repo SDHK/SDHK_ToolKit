@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 
 namespace SDHK
 {
+
     /// <summary>
     /// 系统集合组
     /// </summary>
@@ -40,13 +41,14 @@ namespace SDHK
 
         public void RegisterSystems(Type Interface)
         {
-            var types = FindTypesIsInterface(Interface);
+            var types = FindTypesIsInterface(Interface);//查找继承了接口的类
             if (!typeSystems.ContainsKey(Interface))
             {
-                foreach (var itemType in types)
+                foreach (var itemType in types)//遍历实现接口的类
                 {
-                    if (typeSystems[Interface].systems.ContainsKey(itemType))
+                    if (typeSystems[Interface].systems.ContainsKey(itemType))//有问题
                     {
+                        //接口，接收类的类型（壳），泛型参数类型（欠缺）
                         typeSystems[Interface].systems[itemType].Add(Activator.CreateInstance(itemType, true) as ISystem);
                     }
                 }

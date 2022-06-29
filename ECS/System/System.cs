@@ -24,21 +24,9 @@ namespace SDHK
 
     }
 
-    //用于标记
-    public interface IUpdateSystem : ISystem
-    {
-        void Execute(Entity entity);
-    }
 
 
-    public abstract class UpdateSystem<T> : IUpdateSystem
-    where T : Entity
-    {
-        public  Type SystemType => typeof(IUpdateSystem);
-        public  Type EntityType => typeof(T);
-        public  void Execute(Entity entity)=> Update(entity as T);
-        public abstract void Update(T entity);
-    }
+
 
     public class System1 : UpdateSystem<Entity2>
     {
