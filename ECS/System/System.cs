@@ -19,11 +19,16 @@ namespace SDHK
 {
     public interface ISystem
     {
-        Type SystemType { get; }
+        //Type SystemType { get; }
         Type EntityType { get; }
 
     }
 
+    public abstract class SystemBase<T> : ISystem
+    {
+        public Type EntityType => typeof(T);
+        //public abstract Type SystemType { get; }
+    }
 
 
 

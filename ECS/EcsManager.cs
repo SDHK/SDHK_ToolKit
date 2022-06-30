@@ -13,22 +13,20 @@ namespace SDHK
     {
         void Execute(Entity entity);
     }
-    public abstract class UpdateSystem<T> : IUpdateSystem
+    public abstract class UpdateSystem<T> : SystemBase<T>, IUpdateSystem
         where T : Entity
     {
-        public Type SystemType => throw new NotImplementedException();
-
-        public Type EntityType => throw new NotImplementedException();
-
         public void Execute(Entity entity) => Update(entity as T);
         public abstract void Update(T entity);
     }
 
     //调用SystemManager然后注册自己的添加实体的监听方法
-    public class UpdateSystem : SingletonEagerBase<UpdateSystem>//!!
+    public class UpdateSystemManager : SingletonEagerBase<UpdateSystemManager>,IEntitieSystem//!!
     {
         public Queue<long> update1 = new Queue<long>();
         public Queue<long> update2 = new Queue<long>();
+
+        public Type EntityType =>typeof(Entity);
 
         public override void OnInstance()
         {

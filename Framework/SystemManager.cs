@@ -21,9 +21,17 @@ namespace SDHK
     /// <summary>
     /// 系统集合组
     /// </summary>
-    public class SystemGroup
+    public class SystemGroup : UnitPoolItem<SystemGroup>
     {
         public Dictionary<Type, List<ISystem>> systems = new Dictionary<Type, List<ISystem>>();
+        public List<ISystem> GetSystems(Type type)
+        {
+            if (!systems.TryGetValue(type, out List<ISystem> Isystems))
+            {
+                systems.Add(type, new List<ISystem>());
+            }
+            return systems[type];
+        }
     }
 
     /// <summary>
@@ -31,8 +39,13 @@ namespace SDHK
     /// </summary>
     public class SystemManager : SingletonBase<SystemManager>
     {
-        private Dictionary<Type, SystemGroup> typeSystems = new Dictionary<Type, SystemGroup>();
+        private Dictionary<Type, SystemGroup> typeSystems;
 
+
+        public override void OnInstance()
+        {
+            typeSystems = ObjectPoolManager.Instance.Get<Dictionary<Type, SystemGroup>>();
+        }
 
         /// <summary>
         /// 注册系统
@@ -42,21 +55,31 @@ namespace SDHK
         public void RegisterSystems(Type Interface)
         {
             var types = FindTypesIsInterface(Interface);//查找继承了接口的类
+
             if (!typeSystems.ContainsKey(Interface))
             {
-                foreach (var itemType in types)//遍历实现接口的类
-                {
-                    if (typeSystems[Interface].systems.ContainsKey(itemType))//有问题
-                    {
-                        //接口，接收类的类型（壳），泛型参数类型（欠缺）
-                        typeSystems[Interface].systems[itemType].Add(Activator.CreateInstance(itemType, true) as ISystem);
-                    }
-                }
+                typeSystems.Add(Interface, SystemGroup.GetObject());
+            }
+
+            foreach (var itemType in types)//遍历实现接口的类
+            {
+                ISystem system = Activator.CreateInstance(itemType, true) as ISystem;
+                typeSystems[Interface].GetSystems(system.EntityType).Add(system);
             }
         }
 
         /// <summary>
-        /// 获取系统列表
+        /// 获取系统组
+        /// </summary>
+        public SystemGroup GetSystemGroup<T>()
+        {
+            typeSystems.TryGetValue(typeof(T), out SystemGroup systemGroup);
+            return systemGroup;
+        }
+
+
+        /// <summary>
+        /// 获取单类型系统列表
         /// </summary>
         public List<T> GetSystems<T>(Type type)
              where T : ISystem
@@ -69,6 +92,11 @@ namespace SDHK
                 }
             }
             return null;
+        }
+
+        public override void OnDispose()
+        {
+
         }
 
         /// <summary>
