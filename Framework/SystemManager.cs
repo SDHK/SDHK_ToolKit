@@ -11,6 +11,7 @@
 */
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -39,8 +40,10 @@ namespace SDHK
     /// </summary>
     public class SystemManager : SingletonBase<SystemManager>
     {
+        //接口类型，（实例类型，实例方法）
         private Dictionary<Type, SystemGroup> typeSystems;
-
+        private Dictionary<Type, SystemGroup> ISystems;
+       
 
         public override void OnInstance()
         {
