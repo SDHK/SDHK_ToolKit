@@ -15,12 +15,19 @@ using System.Threading.Tasks;
 namespace SDHK
 {
     //Entity需要回收标记
-
     public abstract class Entity : UnitPoolItem
     {
         public long ID { get; set; }
 
-        public Entity parent;
+        /// <summary>
+        /// 根节点
+        /// </summary>
+        public static Entity root;
+
+        /// <summary>
+        /// 父节点
+        /// </summary>
+        public Entity parent { get; private set; }
 
         public Dictionary<long, Entity> children = new Dictionary<long, Entity>();  //实体
         public Dictionary<Type, Entity> components = new Dictionary<Type, Entity>(); //组件
@@ -33,11 +40,20 @@ namespace SDHK
                 {
                     children = ObjectPoolManager.Instance.Get<Dictionary<long, Entity>>();
                 }
-
                 return children;
             }
         }
-
+        public Dictionary<Type, Entity> Components
+        {
+            get
+            {
+                if (components == null)
+                {
+                    components = ObjectPoolManager.Instance.Get<Dictionary<Type, Entity>>();
+                }
+                return components;
+            }
+        }
 
         public void AddChildren(Entity entity)
         {
@@ -45,13 +61,16 @@ namespace SDHK
             {
                 entity.parent = this;
                 Children.TryAdd(entity.ID, entity);
+                EntitieManager.Instance.Add(entity);
             }
         }
         public void RemoveChildren(Entity entity)
         {
-
             if (entity != null)
             {
+                entity.parent = null;
+                EntitieManager.Instance.Remove(entity);
+                entity.Recycle();
                 Children.Remove(entity.ID);
                 if (children.Count == 0)
                 {
@@ -60,6 +79,34 @@ namespace SDHK
                 }
             }
         }
+
+        public void AddComponent<T>()
+            where T : Entity
+        {
+            Type type = typeof(T);
+            if (!Components.ContainsKey(type))
+            {
+                T t = UnitPoolManager.Instance.Get<T>();
+                Components.Add(type, t);
+            }
+        }
+
+        public void RemoveComponent<T>()
+            where T : Entity
+        {
+            Type type = typeof(T);
+            if (Components.ContainsKey(type))
+            {
+                components[type].Recycle();
+                components.Remove(type);
+                if (components.Count == 0)
+                {
+                    ObjectPoolManager.Instance.Recycle(components);
+                    components = null;
+                }
+            }
+        }
+
     }
 
 

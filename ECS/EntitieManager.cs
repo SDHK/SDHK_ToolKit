@@ -9,30 +9,43 @@ namespace SDHK
     //划分事件
     public interface IEntitieSystem : ISystem
     {
-        public void OnAddEntitie(Entity entity);
-        public void OnRemoveEntitie(Entity entity);
+        public void AddEntitie(Entity entity, Entity arg);
+        public void RemoveEntitie(Entity entity, Entity arg);
     }
+
+
+    public abstract class EntitieSystem<T> : Entity, IEntitieSystem
+        where T : Entity
+    {
+        public Type EntityType => typeof(T);
+
+        public void AddEntitie(Entity self, Entity entity) => OnAddEntitie(self as T, entity);
+        public void RemoveEntitie(Entity self, Entity entity) => OnRemoveEntitie(self as T, entity);
+
+        public abstract void OnAddEntitie(T self, Entity entity);
+        public abstract void OnRemoveEntitie(T self, Entity entity);
+    }
+
     //单例本质应该是实体
     public class EntitieManager : SingletonEagerBase<EntitieManager>
     {
         public Dictionary<long, Entity> allEntities = new Dictionary<long, Entity>();
 
-        private List<IEntitieSystem> entitieSystems;
-
-
-        public Queue<long> update1 = new Queue<long>();
-
-
+        //类型，系统方法集合
+        private Dictionary<Type, List<IEntitieSystem>> entitieSystems;
+        //类型，实例
+        private Dictionary<Type,List<Entity>> entities;//遍历实例执行方法
         public override void OnInstance()
         {
             SystemManager.Instance.RegisterSystems<IEntitieSystem>();
 
             //!拿到的是系统方法，并不是实体
-            entitieSystems = SystemManager.Instance.GetSystems<IEntitieSystem>(typeof(Entity));
+            //entitieSystems = SystemManager.Instance.GetSystemGroup<IEntitieSystem>(typeof(Entity));
         }
 
         public void Add(Entity entity)
         {
+            entity.GetType();
             //allEntities.Add(entity.ID, entity);
             //foreach (var item in entitieSystems)
             //{

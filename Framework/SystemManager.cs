@@ -34,6 +34,9 @@ namespace SDHK
             return systems[type];
         }
     }
+    //可能需要两种反射通知事件，
+    //一种是扩展方法式
+    //另一种是委托调用？？？假如只反射一次只可能是静态方法
 
     /// <summary>
     /// 系统管理器
@@ -41,13 +44,13 @@ namespace SDHK
     public class SystemManager : SingletonBase<SystemManager>
     {
         //接口类型，（实例类型，实例方法）
+        private Dictionary<Type, SystemGroup> InterfaceSystems;
         private Dictionary<Type, SystemGroup> typeSystems;
-        private Dictionary<Type, SystemGroup> ISystems;
        
 
         public override void OnInstance()
         {
-            typeSystems = ObjectPoolManager.Instance.Get<Dictionary<Type, SystemGroup>>();
+            InterfaceSystems = ObjectPoolManager.Instance.Get<Dictionary<Type, SystemGroup>>();
         }
 
         /// <summary>
@@ -57,17 +60,24 @@ namespace SDHK
 
         public void RegisterSystems(Type Interface)
         {
-            var types = FindTypesIsInterface(Interface);//查找继承了接口的类
-
-            if (!typeSystems.ContainsKey(Interface))
-            {
-                typeSystems.Add(Interface, SystemGroup.GetObject());
-            }
+            //查找继承了接口的类
+            var types = FindTypesIsInterface(Interface);
 
             foreach (var itemType in types)//遍历实现接口的类
             {
                 ISystem system = Activator.CreateInstance(itemType, true) as ISystem;
-                typeSystems[Interface].GetSystems(system.EntityType).Add(system);
+
+                if (!InterfaceSystems.ContainsKey(Interface))
+                {
+                    InterfaceSystems.Add(Interface, SystemGroup.GetObject());
+                }
+                InterfaceSystems[Interface].GetSystems(system.EntityType).Add(system);
+
+                if (!typeSystems.ContainsKey(system.EntityType))
+                {
+                    typeSystems.Add(system.EntityType, SystemGroup.GetObject());
+                }
+                typeSystems[system.EntityType].GetSystems(Interface).Add(system);
             }
         }
 
@@ -76,7 +86,7 @@ namespace SDHK
         /// </summary>
         public SystemGroup GetSystemGroup<T>()
         {
-            typeSystems.TryGetValue(typeof(T), out SystemGroup systemGroup);
+            InterfaceSystems.TryGetValue(typeof(T), out SystemGroup systemGroup);
             return systemGroup;
         }
 
@@ -87,7 +97,7 @@ namespace SDHK
         public List<T> GetSystems<T>(Type type)
              where T : ISystem
         {
-            if (typeSystems.TryGetValue(typeof(T), out SystemGroup systemGroup))
+            if (InterfaceSystems.TryGetValue(typeof(T), out SystemGroup systemGroup))
             {
                 if (systemGroup.systems.ContainsKey(type))
                 {

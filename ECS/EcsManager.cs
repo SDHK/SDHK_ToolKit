@@ -21,30 +21,32 @@ namespace SDHK
     }
 
     //调用SystemManager然后注册自己的添加实体的监听方法
-    public class UpdateSystemManager : SingletonEagerBase<UpdateSystemManager>,IEntitieSystem//!!
+    public class UpdateSystemManager 
     {
         public Queue<long> update1 = new Queue<long>();
         public Queue<long> update2 = new Queue<long>();
 
         public Type EntityType =>typeof(Entity);
 
-        public override void OnInstance()
+        public  void OnInstance()
         {
             SystemManager.Instance.RegisterSystems<IUpdateSystem>();
         }
 
-        public void OnAddEntitie(Entity entity)
-        {
-        }
-
-        public void OnRemoveEntitie(Entity entity)
-        {
-        }
-
-
         public void Update()
         {
 
+        }
+    }
+
+    public class UpdateSystemManagerEntitieSystem : EntitieSystem<UpdateSystemManagerEntitieSystem>
+    {
+        public override void OnAddEntitie(UpdateSystemManagerEntitieSystem self, Entity entity)
+        {
+        }
+
+        public override void OnRemoveEntitie(UpdateSystemManagerEntitieSystem self, Entity entity)
+        {
         }
     }
 
