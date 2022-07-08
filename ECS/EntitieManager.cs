@@ -32,12 +32,12 @@ namespace SDHK
         public Dictionary<long, Entity> allEntities = new Dictionary<long, Entity>();
 
         //类型，系统方法集合
-        private Dictionary<Type, List<IEntitieSystem>> entitieSystems;
+        private SystemGroup entitieSystems;
         //类型，实例
-        private Dictionary<Type,List<Entity>> entities;//遍历实例执行方法
+        private Dictionary<Type, List<Entity>> entities;//遍历实例执行方法
         public override void OnInstance()
         {
-            SystemManager.Instance.RegisterSystems<IEntitieSystem>();
+            entitieSystems = SystemManager.Instance.RegisterSystems<IEntitieSystem>();
 
             //!拿到的是系统方法，并不是实体
             //entitieSystems = SystemManager.Instance.GetSystemGroup<IEntitieSystem>(typeof(Entity));
@@ -46,6 +46,7 @@ namespace SDHK
         public void Add(Entity entity)
         {
             entity.GetType();
+            
             //allEntities.Add(entity.ID, entity);
             //foreach (var item in entitieSystems)
             //{

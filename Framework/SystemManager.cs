@@ -22,21 +22,75 @@ namespace SDHK
     /// <summary>
     /// 系统集合组
     /// </summary>
-    public class SystemGroup : UnitPoolItem<SystemGroup>
+    public class SystemGroup : Dictionary<Type, List<ISystem>>, IUnitPoolItem
     {
-        public Dictionary<Type, List<ISystem>> systems = new Dictionary<Type, List<ISystem>>();
-        public List<ISystem> GetSystems(Type type)
+        public PoolBase thisPool { get; set; }
+        public bool IsRecycle { get; set; }
+        public bool IsDisposed { get; set; }
+
+        /// <summary>
+        /// 单位对象池：获取对象
+        /// </summary>
+        public static SystemGroup GetObject()
         {
-            if (!systems.TryGetValue(type, out List<ISystem> Isystems))
+            return UnitPoolManager.Instance.Get<SystemGroup>();
+        }
+        /// <summary>
+        /// 获取系统类列表
+        /// </summary>
+        public List<T> GetSystems<T>(Type type)
+            where T : ISystem
+        {
+            if (TryGetValue(type, out List<ISystem> Isystems))
             {
-                systems.Add(type, new List<ISystem>());
+                Add(type, new List<ISystem>());
             }
-            return systems[type];
+            return this[type] as List<T>;
+        }
+
+        public void Dispose()
+        {
+            if (IsDisposed) return;
+            OnDispose();
+            IsDisposed = true;
+        }
+
+        public void OnDispose()
+        {
+        }
+
+        public void OnGet()
+        {
+        }
+
+        public void OnNew()
+        {
+        }
+
+        public void OnRecycle()
+        {
+            foreach (var systemList in this)
+            {
+                systemList.Value.Clear();
+                ObjectPoolManager.Instance.Recycle(systemList.Value);
+            }
+            Clear();
+        }
+
+        public void Recycle()
+        {
+            if (thisPool != null)
+            {
+                if (!thisPool.IsDisposed)
+                {
+                    if (!IsRecycle)
+                    {
+                        thisPool.Recycle(this);
+                    }
+                }
+            }
         }
     }
-    //可能需要两种反射通知事件，
-    //一种是扩展方法式
-    //另一种是委托调用？？？假如只反射一次只可能是静态方法
 
     /// <summary>
     /// 系统管理器
@@ -46,7 +100,6 @@ namespace SDHK
         //接口类型，（实例类型，实例方法）
         private Dictionary<Type, SystemGroup> InterfaceSystems;
         private Dictionary<Type, SystemGroup> typeSystems;
-       
 
         public override void OnInstance()
         {
@@ -56,9 +109,9 @@ namespace SDHK
         /// <summary>
         /// 注册系统
         /// </summary>
-        public void RegisterSystems<T>() where T : ISystem => RegisterSystems(typeof(T));
+        public SystemGroup RegisterSystems<T>() where T : ISystem => RegisterSystems(typeof(T));
 
-        public void RegisterSystems(Type Interface)
+        public SystemGroup RegisterSystems(Type Interface)
         {
             //查找继承了接口的类
             var types = FindTypesIsInterface(Interface);
@@ -71,13 +124,21 @@ namespace SDHK
                 {
                     InterfaceSystems.Add(Interface, SystemGroup.GetObject());
                 }
-                InterfaceSystems[Interface].GetSystems(system.EntityType).Add(system);
+                InterfaceSystems[Interface].GetSystems<ISystem>(system.EntityType).Add(system);
 
                 if (!typeSystems.ContainsKey(system.EntityType))
                 {
                     typeSystems.Add(system.EntityType, SystemGroup.GetObject());
                 }
-                typeSystems[system.EntityType].GetSystems(Interface).Add(system);
+                typeSystems[system.EntityType].GetSystems<ISystem>(Interface).Add(system);
+            }
+            if (InterfaceSystems.ContainsKey(Interface))
+            {
+                return InterfaceSystems[Interface];
+            }
+            else
+            {
+                return null;
             }
         }
 
@@ -99,9 +160,9 @@ namespace SDHK
         {
             if (InterfaceSystems.TryGetValue(typeof(T), out SystemGroup systemGroup))
             {
-                if (systemGroup.systems.ContainsKey(type))
+                if (systemGroup.ContainsKey(type))
                 {
-                    return systemGroup.systems[type] as List<T>;
+                    return systemGroup[type] as List<T>;
                 }
             }
             return null;
