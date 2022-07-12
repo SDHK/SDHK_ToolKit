@@ -39,7 +39,7 @@ namespace SDHK
         }
     }
 
-    public class UpdateSystemManagerEntitieSystem : EntitieSystem<UpdateSystemManagerEntitieSystem>
+    public class UpdateSystemManagerEntitieSystem : EntitySystem<UpdateSystemManagerEntitieSystem>
     {
         public override void OnAddEntitie(UpdateSystemManagerEntitieSystem self, Entity entity)
         {

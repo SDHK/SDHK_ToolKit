@@ -61,7 +61,7 @@ namespace SDHK
             {
                 entity.parent = this;
                 Children.TryAdd(entity.ID, entity);
-                EntitieManager.Instance.Add(entity);
+                EntityManager.Instance.Add(entity);
             }
         }
         public void RemoveChildren(Entity entity)
@@ -69,7 +69,7 @@ namespace SDHK
             if (entity != null)
             {
                 entity.parent = null;
-                EntitieManager.Instance.Remove(entity);
+                EntityManager.Instance.Remove(entity);
                 entity.Recycle();
                 Children.Remove(entity.ID);
                 if (children.Count == 0)

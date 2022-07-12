@@ -41,11 +41,13 @@ namespace SDHK
         public List<T> GetSystems<T>(Type type)
             where T : ISystem
         {
-            if (TryGetValue(type, out List<ISystem> Isystems))
+            List<ISystem> Isystems;
+            if (!TryGetValue(type, out Isystems))
             {
-                Add(type, new List<ISystem>());
+                Isystems = new List<ISystem>();
+                Add(type, Isystems);
             }
-            return this[type] as List<T>;
+            return Isystems as List<T>;
         }
 
         public void Dispose()
@@ -77,7 +79,7 @@ namespace SDHK
             Clear();
         }
 
-        public void Recycle()
+        public  void Recycle()
         {
             if (thisPool != null)
             {
@@ -113,6 +115,7 @@ namespace SDHK
 
         public SystemGroup RegisterSystems(Type Interface)
         {
+           
             //查找继承了接口的类
             var types = FindTypesIsInterface(Interface);
 
@@ -138,6 +141,7 @@ namespace SDHK
             }
             else
             {
+               
                 return null;
             }
         }

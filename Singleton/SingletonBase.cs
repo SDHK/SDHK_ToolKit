@@ -53,6 +53,9 @@ namespace SDHK
             return Instance;
         }
 
+        /// <summary>
+        /// 单例实例时
+        /// </summary>
         public virtual void OnInstance() { }
 
     }
