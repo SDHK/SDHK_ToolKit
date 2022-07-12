@@ -29,7 +29,7 @@ namespace SDHK
 {
 
     /// <summary>
-    /// 池单位对象接口
+    /// 单位池对象接口
     /// </summary>
     public interface IUnitPoolItem: IUnit
     {

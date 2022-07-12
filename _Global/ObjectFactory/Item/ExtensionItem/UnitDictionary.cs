@@ -2,24 +2,27 @@
 /****************************************
 
 * 作者： 闪电黑客
-* 日期： 2022/7/12 16:23
+* 日期： 2022/7/12 16:45
 
-* 描述： 单位列表，这个列表可由对象池管理生成和回收
+* 描述： 单位字典，这个字典可由对象池管理生成和回收
 * 
-* 其余和普通的List一样使用
+* 其余和普通的字典一样使用
 
 */
 
-using System.Collections;
+using System;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SDHK
 {
+
     /// <summary>
-    /// 单位列表：可由对象池管理回收
+    /// 单位字典：可由对象池管理回收
     /// </summary>
-    public class UnitList<T> : List<T>, IUnitPoolItem
+    public class UnitDictionary<TKey,TValue>:Dictionary<TKey, TValue>,IUnitPoolItem
     {
         public PoolBase thisPool { get; set; }
         public bool IsRecycle { get; set; }
@@ -28,9 +31,9 @@ namespace SDHK
         /// <summary>
         /// 单位对象池：获取对象
         /// </summary>
-        public static UnitList<T> GetObject()
+        public static  UnitDictionary<TKey, TValue> GetObject()
         {
-            return UnitPoolManager.Instance.Get<UnitList<T>>();
+            return UnitPoolManager.Instance.Get<UnitDictionary<TKey, TValue>>();
         }
 
         /// <summary>
@@ -74,7 +77,5 @@ namespace SDHK
                 }
             }
         }
-
-
     }
 }

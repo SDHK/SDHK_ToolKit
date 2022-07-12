@@ -22,75 +22,41 @@ namespace SDHK
     /// <summary>
     /// 系统集合组
     /// </summary>
-    public class SystemGroup : Dictionary<Type, List<ISystem>>, IUnitPoolItem
+    public class SystemGroup : UnitDictionary<Type, UnitList<ISystem>>, IUnitPoolItem
     {
-        public PoolBase thisPool { get; set; }
-        public bool IsRecycle { get; set; }
-        public bool IsDisposed { get; set; }
-
         /// <summary>
         /// 单位对象池：获取对象
         /// </summary>
-        public static SystemGroup GetObject()
+        public new static SystemGroup GetObject()
         {
             return UnitPoolManager.Instance.Get<SystemGroup>();
         }
+
         /// <summary>
         /// 获取系统类列表
         /// </summary>
-        public List<T> GetSystems<T>(Type type)
+        public UnitList<T> GetSystems<T>(Type type)
             where T : ISystem
         {
-            List<ISystem> Isystems;
+            UnitList<ISystem> Isystems;
             if (!TryGetValue(type, out Isystems))
             {
-                Isystems = new List<ISystem>();
+                Isystems =  UnitList<ISystem>.GetObject();
                 Add(type, Isystems);
             }
-            return Isystems as List<T>;
+            
+            return Isystems as UnitList<T>;
         }
 
-        public void Dispose()
-        {
-            if (IsDisposed) return;
-            OnDispose();
-            IsDisposed = true;
-        }
 
-        public void OnDispose()
-        {
-        }
-
-        public void OnGet()
-        {
-        }
-
-        public void OnNew()
-        {
-        }
-
-        public void OnRecycle()
+        public override void OnRecycle()
         {
             foreach (var systemList in this)
             {
                 systemList.Value.Clear();
-                ObjectPoolManager.Instance.Recycle(systemList.Value);
+                systemList.Value.Recycle();
             }
             Clear();
-        }
-
-        public  void Recycle()
-        {
-            if (thisPool != null)
-            {
-                if (!thisPool.IsDisposed)
-                {
-                    if (!IsRecycle)
-                    {
-                        thisPool.Recycle(this);
-                    }
-                }
-            }
         }
     }
 
@@ -100,12 +66,13 @@ namespace SDHK
     public class SystemManager : SingletonBase<SystemManager>
     {
         //接口类型，（实例类型，实例方法）
-        private Dictionary<Type, SystemGroup> InterfaceSystems;
-        private Dictionary<Type, SystemGroup> typeSystems;
+        private UnitDictionary<Type, SystemGroup> InterfaceSystems;
+        private UnitDictionary<Type, SystemGroup> typeSystems;
 
         public override void OnInstance()
         {
-            InterfaceSystems = ObjectPoolManager.Instance.Get<Dictionary<Type, SystemGroup>>();
+            InterfaceSystems = UnitDictionary<Type, SystemGroup>.GetObject();
+            typeSystems = UnitDictionary<Type, SystemGroup>.GetObject();
         }
 
         /// <summary>
@@ -159,14 +126,14 @@ namespace SDHK
         /// <summary>
         /// 获取单类型系统列表
         /// </summary>
-        public List<T> GetSystems<T>(Type type)
+        public UnitList<T> GetSystems<T>(Type type)
              where T : ISystem
         {
             if (InterfaceSystems.TryGetValue(typeof(T), out SystemGroup systemGroup))
             {
                 if (systemGroup.ContainsKey(type))
                 {
-                    return systemGroup[type] as List<T>;
+                    return systemGroup[type] as UnitList<T>;
                 }
             }
             return null;
