@@ -39,21 +39,11 @@ namespace SDHK
         }
     }
 
-    public class UpdateSystemManagerEntitieSystem : EntitySystem<UpdateSystemManagerEntitieSystem>
-    {
-        public override void OnAddEntitie(UpdateSystemManagerEntitieSystem self, Entity entity)
-        {
-        }
-
-        public override void OnRemoveEntitie(UpdateSystemManagerEntitieSystem self, Entity entity)
-        {
-        }
-    }
 
 
 
 
-    public partial class EcsManager : SingletonEagerBase<EcsManager>
+    public partial class EcsManager : SingletonBase<EcsManager>
     {
         public Dictionary<long, Entity> allEntities = new Dictionary<long, Entity>();
 

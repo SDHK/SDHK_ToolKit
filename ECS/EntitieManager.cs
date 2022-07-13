@@ -14,7 +14,7 @@ namespace SDHK
     }
 
 
-    public abstract class EntitySystem<T> : Entity, IEntitieSystem
+    public abstract class EntitySystem<T> : IEntitieSystem
         where T : Entity
     {
         public Type EntityType => typeof(T);
@@ -30,7 +30,7 @@ namespace SDHK
     //单例本质应该是实体
     public class EntityManager : SingletonBase<EntityManager>
     {
-        public Dictionary<long, Entity> allEntities = new Dictionary<long, Entity>();
+        public Dictionary<ulong, Entity> allEntities = new Dictionary<ulong, Entity>();
 
         //管理器实例
         private UnitDictionary<Type, Entity> managers;//遍历实例执行方法

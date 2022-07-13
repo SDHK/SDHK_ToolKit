@@ -14,10 +14,12 @@ using System.Threading.Tasks;
 
 namespace SDHK
 {
-    //Entity需要回收标记
+    /// <summary>
+    /// 实体
+    /// </summary>
     public abstract class Entity : UnitPoolItem
     {
-        public long ID { get; set; }
+        public ulong ID { get; set; }
 
         /// <summary>
         /// 根节点
@@ -29,16 +31,16 @@ namespace SDHK
         /// </summary>
         public Entity parent { get; private set; }
 
-        public Dictionary<long, Entity> children = new Dictionary<long, Entity>();  //实体
-        public Dictionary<Type, Entity> components = new Dictionary<Type, Entity>(); //组件
+        public UnitDictionary<ulong, Entity> children = new UnitDictionary<ulong, Entity>(); //实体
+        public UnitDictionary<Type, Entity> components = new UnitDictionary<Type, Entity>(); //组件
 
-        public Dictionary<long, Entity> Children
+        public Dictionary<ulong, Entity> Children
         {
             get
             {
                 if (children == null)
                 {
-                    children = ObjectPoolManager.Instance.Get<Dictionary<long, Entity>>();
+                    children = UnitDictionary<ulong, Entity>.GetObject();
                 }
                 return children;
             }
@@ -49,10 +51,15 @@ namespace SDHK
             {
                 if (components == null)
                 {
-                    components = ObjectPoolManager.Instance.Get<Dictionary<Type, Entity>>();
+                    components = UnitDictionary<Type, Entity>.GetObject();
                 }
                 return components;
             }
+        }
+
+        public override void OnNew()
+        {
+            ID = IdManager.GetID;
         }
 
         public void AddChildren(Entity entity)
@@ -74,22 +81,42 @@ namespace SDHK
                 Children.Remove(entity.ID);
                 if (children.Count == 0)
                 {
-                    ObjectPoolManager.Instance.Recycle(children);
+                    children.Recycle();
                     children = null;
                 }
             }
         }
 
-        public void AddComponent<T>()
+        public T AddComponent<T>()
             where T : Entity
         {
             Type type = typeof(T);
+            T t;
+            if (!Components.TryGetValue(type, out Entity entity))
+            {
+                t = UnitPoolManager.Instance.Get<T>();
+                Components.Add(type, t);
+                EntityManager.Instance.Add(t);
+            }
+            else
+            {
+                t = entity as T;
+            }
+
+            return t;
+        }
+
+
+        public void AddComponent(Entity entity)
+        {
+            Type type = entity.GetType();
             if (!Components.ContainsKey(type))
             {
-                T t = UnitPoolManager.Instance.Get<T>();
-                Components.Add(type, t);
+                Components.Add(type, entity);
+                EntityManager.Instance.Add(entity);
             }
         }
+
 
         public void RemoveComponent<T>()
             where T : Entity
@@ -97,11 +124,12 @@ namespace SDHK
             Type type = typeof(T);
             if (Components.ContainsKey(type))
             {
+                EntityManager.Instance.Remove(components[type]);
                 components[type].Recycle();
                 components.Remove(type);
                 if (components.Count == 0)
                 {
-                    ObjectPoolManager.Instance.Recycle(components);
+                    components.Recycle();
                     components = null;
                 }
             }

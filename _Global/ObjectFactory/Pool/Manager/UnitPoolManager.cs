@@ -41,6 +41,7 @@ namespace SDHK
                 return newPool.Get();
             }
         }
+
         /// <summary>
         /// 回收对象
         /// </summary>
