@@ -26,6 +26,7 @@ namespace SDHK
         public abstract void OnRemoveEntitie(T self, Entity entity);
     }
 
+    //root.GetComponent<UpdateManager>().Update(),组件或单例
 
     //单例本质应该是实体
     public class EntityManager : SingletonBase<EntityManager>
