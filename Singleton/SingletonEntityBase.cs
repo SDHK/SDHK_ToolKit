@@ -12,7 +12,7 @@ namespace SDHK
         /// <summary>
         /// 实例组件
         /// </summary>
-        public static T Instance => root?.AddComponent<T>();
+        public static T Instance => root.AddComponent<T>();
 
         /// <summary>
         /// 单例实例化

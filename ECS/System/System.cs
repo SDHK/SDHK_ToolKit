@@ -30,15 +30,4 @@ namespace SDHK
         //public abstract Type SystemType { get; }
     }
 
-
-
-
-    public class System1 : UpdateSystem<Entity2>
-    {
-        public override void Update(Entity2 entity)
-        {
-
-        }
-    }
-
 }

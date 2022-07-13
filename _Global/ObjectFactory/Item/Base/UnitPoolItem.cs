@@ -28,7 +28,7 @@ using System.Threading.Tasks;
 namespace SDHK
 {
     /// <summary>
-    /// 池单位抽象泛型基类：获取和回收对象的方法
+    /// 池单位抽象泛型基类：提供获取和回收对象的方法
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public abstract class UnitPoolItem<T> : UnitPoolItem

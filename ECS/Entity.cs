@@ -15,7 +15,23 @@ using System.Threading.Tasks;
 namespace SDHK
 {
     /// <summary>
-    /// 实体
+    /// 泛型实体基类：提供获取和回收对象的方法
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public abstract class Entity<T> : Entity
+        where T : Entity<T>
+    {
+        /// <summary>
+        /// 单位对象池：获取对象
+        /// </summary>
+        public static T GetObject()
+        {
+            return UnitPoolManager.Instance.Get<T>();
+        }
+    }
+
+    /// <summary>
+    /// 实体基类
     /// </summary>
     public abstract class Entity : UnitPoolItem
     {
@@ -137,16 +153,4 @@ namespace SDHK
 
     }
 
-
-
-
-
-    public class Entity2 : Entity
-    {
-    }
-
-    public class Entity3 : Entity
-    {
-
-    }
 }
