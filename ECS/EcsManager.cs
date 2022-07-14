@@ -33,8 +33,6 @@ namespace SDHK
 
             while (update1.Count != 0)
             {
-                Debug.Log("Update执行");
-
                 ulong firstKey = update1.Keys.First();
                 Entity entity = update1[firstKey];
                 Type type = entity.type;
@@ -68,9 +66,7 @@ namespace SDHK
             Type typeKey = entity.GetType();
             if (self.systems.ContainsKey(typeKey))
             {
-                Debug.Log("添加"+ typeKey);
                 self.update1.Add(entity.ID, entity);
-                Debug.Log(self.update1.Count);
             }
         }
 
@@ -79,8 +75,6 @@ namespace SDHK
             Type typeKey = entity.GetType();
             if (self.systems.ContainsKey(typeKey))
             {
-                Debug.Log("Remove" + typeKey);
-
                 self.update1.Remove(entity.ID);
             }
         }

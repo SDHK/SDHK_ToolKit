@@ -85,10 +85,8 @@ namespace SDHK
             //entity的Awake，或许直接写在entity里
             if (awakeSystems.TryGetValue(typeKey, out UnitList<ISystem> awakes))
             {
-                Debug.Log("awakes!!!" + awakes.Count);
                 foreach (IAwakeSystem system in awakes)
                 {
-                    Debug.Log("唤醒" + typeKey);
                     system.Execute(entity);
                 }
             }

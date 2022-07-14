@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace SDHK
 {
@@ -123,6 +124,7 @@ namespace SDHK
             where T : Entity
         {
             Type type = typeof(T);
+
             T t;
             if (!Components.TryGetValue(type, out Entity entity))
             {

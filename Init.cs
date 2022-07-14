@@ -8,10 +8,6 @@ namespace SDHK
 {
     public class Init:SingletonMonoEagerBase<Init>
     {
-        public override void OnInstance()
-        {
-            SoloistFramework.Instance.OnInstance();
-        }
 
         private void Start()
         {
