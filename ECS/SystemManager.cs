@@ -15,6 +15,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace SDHK
 {
@@ -89,18 +90,19 @@ namespace SDHK
             foreach (var itemType in types)//遍历实现接口的类
             {
                 ISystem system = Activator.CreateInstance(itemType, true) as ISystem;
-
+                Debug.Log(Interface+" : "+itemType);
                 if (!InterfaceSystems.ContainsKey(Interface))
                 {
                     InterfaceSystems.Add(Interface, SystemGroup.GetObject());
                 }
                 InterfaceSystems[Interface].GetSystems<ISystem>(system.EntityType).Add(system);
 
-                if (!typeSystems.ContainsKey(system.EntityType))
-                {
-                    typeSystems.Add(system.EntityType, SystemGroup.GetObject());
-                }
-                typeSystems[system.EntityType].GetSystems<ISystem>(Interface).Add(system);
+                Debug.Log(InterfaceSystems[Interface].GetSystems<ISystem>(system.EntityType).Count);
+                //if (!typeSystems.ContainsKey(system.EntityType))
+                //{
+                //    typeSystems.Add(system.EntityType, SystemGroup.GetObject());
+                //}
+                //typeSystems[system.EntityType].GetSystems<ISystem>(Interface).Add(system);
             }
             if (InterfaceSystems.ContainsKey(Interface))
             {

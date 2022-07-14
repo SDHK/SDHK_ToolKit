@@ -14,6 +14,9 @@ using System.Threading.Tasks;
 
 namespace SDHK
 {
+
+   
+
     /// <summary>
     /// 泛型实体基类：提供获取和回收对象的方法
     /// </summary>

@@ -3,9 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace SDHK
 {
+    public class Root : Entity
+    {
+        public Root() { root = this; }
+    }
+
     //划分事件
     public interface IEntityListenerSystem : ISystem
     {
@@ -23,6 +29,19 @@ namespace SDHK
         public abstract void OnRemoveEntitie(T self, Entity entity);
     }
 
+    public interface IAwakeSystem : ISystem
+    {
+        void Execute(Entity entity);
+    }
+
+    public abstract class AwakeSystem<T> : SystemBase<T>, IAwakeSystem
+        where T : Entity
+    {
+        public void Execute(Entity entity) => Awake(entity as T);
+        public abstract void Awake(T entity);
+
+    }
+
     //root.GetComponent<UpdateManager>().Update(),组件或单例
 
     /// <summary>
@@ -36,10 +55,14 @@ namespace SDHK
         private UnitDictionary<Type, Entity> listeners;//遍历实例执行方法
         //监听类系统方法集合
         private SystemGroup listenersSystems;
+        private SystemGroup awakeSystems;
 
         public override void OnInstance()
         {
             listenersSystems = SystemManager.Instance.RegisterSystems<IEntityListenerSystem>();
+            awakeSystems = SystemManager.Instance.RegisterSystems<IAwakeSystem>();
+
+
             listeners = UnitDictionary<Type, Entity>.GetObject();
 
         }
@@ -59,11 +82,23 @@ namespace SDHK
                 }
             }
 
+            //entity的Awake，或许直接写在entity里
+            if (awakeSystems.TryGetValue(typeKey, out UnitList<ISystem> awakes))
+            {
+                Debug.Log("awakes!!!" + awakes.Count);
+                foreach (IAwakeSystem system in awakes)
+                {
+                    Debug.Log("唤醒" + typeKey);
+                    system.Execute(entity);
+                }
+            }
+
             if (listenersSystems.ContainsKey(typeKey))//检测到系统存在，则说明这是个管理器
             {
                 listeners.TryAdd(typeKey, entity);
             }
-            //entity的Awake，或许直接写在entity里
+
+            
         }
 
         public void Remove(Entity entity)
