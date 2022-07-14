@@ -73,7 +73,7 @@ namespace SDHK
         public override void OnInstance()
         {
             InterfaceSystems = UnitDictionary<Type, SystemGroup>.GetObject();
-            typeSystems = UnitDictionary<Type, SystemGroup>.GetObject();
+            //typeSystems = UnitDictionary<Type, SystemGroup>.GetObject();
         }
 
         /// <summary>

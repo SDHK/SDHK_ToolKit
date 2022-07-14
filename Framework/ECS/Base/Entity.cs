@@ -144,7 +144,6 @@ namespace SDHK
         /// <summary>
         /// 添加组件
         /// </summary>
-        /// <param name="entity"></param>
         public void AddComponent(Entity entity)
         {
             Type type = entity.GetType();

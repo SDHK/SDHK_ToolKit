@@ -16,11 +16,18 @@ using UnityEngine;
 
 namespace SDHK
 {
+
+    /// <summary>
+    /// 系统接口
+    /// </summary>
     public interface ISystem
     {
         Type EntityType { get; }
     }
 
+    /// <summary>
+    /// 系统基类
+    /// </summary>
     public abstract class SystemBase<T> : ISystem
     {
         public Type EntityType => typeof(T);

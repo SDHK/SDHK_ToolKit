@@ -12,20 +12,31 @@ namespace SDHK
         public Root() { root = this; }
     }
 
-    //划分事件
+    /// <summary>
+    /// 实体监听系统接口
+    /// </summary>
     public interface IEntityListenerSystem : ISystem
     {
         public void AddEntity(Entity entity, Entity arg);
         public void RemoveEntity(Entity entity, Entity arg);
     }
-
+    /// <summary>
+    /// 实体监听系统基类
+    /// </summary>
     public abstract class EntityListenerSystem<T> : SystemBase<T>, IEntityListenerSystem
         where T : Entity
     {
         public void AddEntity(Entity self, Entity entity) => OnAddEntitie(self as T, entity);
         public void RemoveEntity(Entity self, Entity entity) => OnRemoveEntitie(self as T, entity);
 
+        /// <summary>
+        /// 实体添加时
+        /// </summary>
         public abstract void OnAddEntitie(T self, Entity entity);
+        
+        /// <summary>
+        /// 实体移除时
+        /// </summary>
         public abstract void OnRemoveEntitie(T self, Entity entity);
     }
 
@@ -41,8 +52,6 @@ namespace SDHK
         public abstract void Awake(T entity);
 
     }
-
-    //root.GetComponent<UpdateManager>().Update(),组件或单例
 
     /// <summary>
     /// 实体管理器
@@ -69,7 +78,7 @@ namespace SDHK
 
         public void Add(Entity entity)
         {
-            Type typeKey = entity.GetType();
+            Type typeKey = entity.type;
 
             foreach (var manager in listeners)//广播给全部管理器
             {
@@ -96,12 +105,12 @@ namespace SDHK
                 listeners.TryAdd(typeKey, entity);
             }
 
-            
+
         }
 
         public void Remove(Entity entity)
         {
-            Type typeKey = entity.GetType();
+            Type typeKey = entity.type;
             if (listenersSystems.ContainsKey(typeKey))//检测到系统存在，则说明这是个管理器
             {
                 listeners.Remove(typeKey);

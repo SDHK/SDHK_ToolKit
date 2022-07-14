@@ -6,40 +6,42 @@ using System.Threading.Tasks;
 
 namespace SDHK
 {
-    public class Init:SingletonMonoEagerBase<Init>
+    public class Init : SingletonMonoEagerBase<Init>
     {
 
+        SoloistFramework soloist;
         private void Start()
         {
-            SoloistFramework.Instance.Start();
+            soloist = SoloistFramework.Instance;
 
+            soloist.Start();
         }
 
         private void Update()
         {
-            SoloistFramework.Instance.Update();
+            soloist.Update();
 
         }
 
         private void LateUpdate()
         {
-            SoloistFramework.Instance.LateUpdate();
+            soloist.LateUpdate();
 
         }
         private void FixedUpdate()
         {
-            SoloistFramework.Instance.FixedUpdate();
+            soloist.FixedUpdate();
 
         }
 
         private void OnDestroy()
         {
-            SoloistFramework.Instance.OnInstance();
+            soloist.OnInstance();
 
         }
         private void OnApplicationQuit()
         {
-            
+
         }
     }
 }

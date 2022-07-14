@@ -7,12 +7,16 @@ using UnityEngine;
 
 namespace SDHK
 {
-
-    //用于标记
+    /// <summary>
+    /// Update系统接口
+    /// </summary>
     public interface IUpdateSystem : ISystem
     {
         void Execute(Entity entity);
     }
+    /// <summary>
+    /// Update系统基类
+    /// </summary>
     public abstract class UpdateSystem<T> : SystemBase<T>, IUpdateSystem
         where T : Entity
     {
@@ -20,8 +24,10 @@ namespace SDHK
         public abstract void Update(T entity);
     }
 
-    //调用SystemManager然后注册自己的添加实体的监听方法
-    public class UpdateSystemManager : SingletonEntityBase<UpdateSystemManager>
+    /// <summary>
+    /// Update生命周期管理器
+    /// </summary>
+    public class UpdateManager : SingletonEntityBase<UpdateManager>
     {
         public UnitDictionary<ulong, Entity> update1 = new UnitDictionary<ulong, Entity>();
         public UnitDictionary<ulong, Entity> update2 = new UnitDictionary<ulong, Entity>();
@@ -51,28 +57,28 @@ namespace SDHK
         }
     }
 
-    public class UpdateSystemAwakeSystem : AwakeSystem<UpdateSystemManager>
+    public class UpdateSystemAwakeSystem : AwakeSystem<UpdateManager>
     {
-        public override void Awake(UpdateSystemManager entity)
+        public override void Awake(UpdateManager entity)
         {
             entity.systems = SystemManager.Instance.RegisterSystems<IUpdateSystem>();
         }
     }
 
-    public class UpdateSystemManagerSystem : EntityListenerSystem<UpdateSystemManager>
+    public class UpdateManagerSystem : EntityListenerSystem<UpdateManager>
     {
-        public override void OnAddEntitie(UpdateSystemManager self, Entity entity)
+        public override void OnAddEntitie(UpdateManager self, Entity entity)
         {
-            Type typeKey = entity.GetType();
+            Type typeKey = entity.type;
             if (self.systems.ContainsKey(typeKey))
             {
                 self.update1.Add(entity.ID, entity);
             }
         }
 
-        public override void OnRemoveEntitie(UpdateSystemManager self, Entity entity)
+        public override void OnRemoveEntitie(UpdateManager self, Entity entity)
         {
-            Type typeKey = entity.GetType();
+            Type typeKey = entity.type;
             if (self.systems.ContainsKey(typeKey))
             {
                 self.update1.Remove(entity.ID);
