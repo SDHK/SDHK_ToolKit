@@ -12,7 +12,7 @@ namespace SDHK
         public override void OnInstance()
         {
             EntityManager.GetInstance();//实体管理器单例,或许应该把根节点写在管理器里
-            root = new Root();
+            //root = new Root();
         }
 
         public void Start()

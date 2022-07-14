@@ -37,6 +37,8 @@ namespace SDHK
     {
         public ulong ID { get; set; }
 
+        public Type type = null;
+
         /// <summary>
         /// 根节点
         /// </summary>
@@ -76,8 +78,12 @@ namespace SDHK
         public override void OnNew()
         {
             ID = IdManager.GetID;
+            type = GetType();
         }
 
+        /// <summary>
+        /// 添加子实体
+        /// </summary>
         public void AddChildren(Entity entity)
         {
             if (entity != null)
@@ -87,6 +93,10 @@ namespace SDHK
                 EntityManager.Instance.Add(entity);
             }
         }
+
+        /// <summary>
+        /// 移除子实体
+        /// </summary>
         public void RemoveChildren(Entity entity)
         {
             if (entity != null)
@@ -103,6 +113,9 @@ namespace SDHK
             }
         }
 
+        /// <summary>
+        /// 添加组件
+        /// </summary>
         public T AddComponent<T>()
             where T : Entity
         {
@@ -123,6 +136,10 @@ namespace SDHK
         }
 
 
+        /// <summary>
+        /// 添加组件
+        /// </summary>
+        /// <param name="entity"></param>
         public void AddComponent(Entity entity)
         {
             Type type = entity.GetType();
@@ -133,7 +150,9 @@ namespace SDHK
             }
         }
 
-
+        /// <summary>
+        /// 移除组件
+        /// </summary>
         public void RemoveComponent<T>()
             where T : Entity
         {

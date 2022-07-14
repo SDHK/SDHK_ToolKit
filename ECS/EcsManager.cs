@@ -21,62 +21,38 @@ namespace SDHK
     }
 
     //调用SystemManager然后注册自己的添加实体的监听方法
-    public class UpdateSystemManager 
+    public class UpdateSystemManager : Entity
     {
-        public Queue<long> update1 = new Queue<long>();
-        public Queue<long> update2 = new Queue<long>();
+        public UnitDictionary<ulong, Entity> update1 = new UnitDictionary<ulong, Entity>();
+        public UnitDictionary<ulong, Entity> update2 = new UnitDictionary<ulong, Entity>();
 
-        public Type EntityType =>typeof(Entity);
+        public SystemGroup systems;
 
-        public  void OnInstance()
+        public void OnInstance()
         {
-            SystemManager.Instance.RegisterSystems<IUpdateSystem>();
+            systems = SystemManager.Instance.RegisterSystems<IUpdateSystem>();
         }
 
         public void Update()
         {
+            while (update1.Count > 0)
+            {
+                ulong firstKey = update1.Keys.First();
+                Entity entity = update1[firstKey];
+                Type type = entity.type;
+                
+                if (systems.TryGetValue(type,out UnitList<ISystem> systemList))
+                {
+                    foreach (IUpdateSystem system in systemList)
+                    {
+                        system.Execute(entity);
+                    }
+                }
 
-        }
-    }
-
-
-
-
-
-    public partial class EcsManager : SingletonBase<EcsManager>
-    {
-        public Dictionary<long, Entity> allEntities = new Dictionary<long, Entity>();
-
-        public Queue<long> update1 = new Queue<long>();
-        public Queue<long> update2 = new Queue<long>();
-
-        public List<ISystem> systems = new List<ISystem>();//SystemBase.getType()//System不能在组里
-
-
-
-        private void Update()
-        {
-            //Guid.NewGuid();
-        }
-        private void LateUpdate()
-        {
-
-        }
-
-        public void FixedUpdate()
-        {
-
-        }
-
-        private void Foreach(ISystem ecsSystem)
-        {
-            //for (int i = 0; i < order.Count; i++)
-            //{
-            //    for (int j = 0; j < entities[order[i]].Count; j++)
-            //    {
-            //        if (entities[order[i]][j].Run(ecsSystem)) break;
-            //    }
-            //}
+                update1.Remove(firstKey);
+                update2.Add(firstKey, entity);
+            }
+            (update1, update2) = (update2, update1);
         }
 
         public static void Swap<T>(ref T t1, ref T t2)
@@ -84,4 +60,28 @@ namespace SDHK
             (t1, t2) = (t2, t1);
         }
     }
+
+    public class UpdateSystemManagerSystem : EntityListenerSystem<UpdateSystemManager>
+    {
+        public override void OnAddEntitie(UpdateSystemManager self, Entity entity)
+        {
+            Type typeKey = entity.GetType();
+            if (self.systems.ContainsKey(typeKey))
+            {
+                self.update1.Add(entity.ID, entity);
+            }
+        }
+
+        public override void OnRemoveEntitie(UpdateSystemManager self, Entity entity)
+        {
+            Type typeKey = entity.GetType();
+            if (self.systems.ContainsKey(typeKey))
+            {
+                self.update1.Remove(entity.ID);
+            }
+        }
+    }
+
+
+
 }
