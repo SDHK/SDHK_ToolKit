@@ -24,19 +24,19 @@ namespace SDHK
         public abstract void Update(T entity);
     }
 
+
+
+
     /// <summary>
-    /// Update生命周期管理器
+    /// Update生命周期管理器实体
     /// </summary>
     public class UpdateManager : SingletonEntityBase<UpdateManager>
     {
         public UnitDictionary<ulong, Entity> update1 = new UnitDictionary<ulong, Entity>();
         public UnitDictionary<ulong, Entity> update2 = new UnitDictionary<ulong, Entity>();
-
         public SystemGroup systems;
-
         public void Update()
         {
-
             while (update1.Count != 0)
             {
                 ulong firstKey = update1.Keys.First();
@@ -57,15 +57,27 @@ namespace SDHK
         }
     }
 
-    public class UpdateSystemAwakeSystem : AwakeSystem<UpdateManager>
+    /// <summary>
+    /// 饿汉单例事件系统
+    /// </summary>
+    public class UpdateManagerSingletonEagerSystem : SingletonEagerSystem<UpdateManager> { }
+
+
+    /// <summary>
+    /// 组件添加事件系统
+    /// </summary>
+    public class UpdateManagerStartSystem : StartSystem<UpdateManager>
     {
-        public override void Awake(UpdateManager entity)
+        public override void Start(UpdateManager entity)
         {
             entity.systems = SystemManager.Instance.RegisterSystems<IUpdateSystem>();
         }
     }
 
-    public class UpdateManagerSystem : EntityListenerSystem<UpdateManager>
+    /// <summary>
+    /// 实体监听事件系统
+    /// </summary>
+    public class UpdateManagerEntityListenerSystem : EntityListenerSystem<UpdateManager>
     {
         public override void OnAddEntitie(UpdateManager self, Entity entity)
         {
@@ -85,6 +97,7 @@ namespace SDHK
             }
         }
     }
+
 
 
 

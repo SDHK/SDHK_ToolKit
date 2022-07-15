@@ -12,7 +12,13 @@ namespace SDHK
     {
 
     }
-
+    public class NodeStartSystem : StartSystem<Node>
+    {
+        public override void Start(Node entity)
+        {
+            Debug.Log("Start!!!");
+        }
+    }
     public class NodeUpdateSystem : UpdateSystem<Node>
     {
         public override void Update(Node entity)
@@ -24,16 +30,16 @@ namespace SDHK
 
     public class SoloistFramework : SingletonBase<SoloistFramework>
     {
-        Root root;
+        
         UpdateManager update;
 
         public void Start()
         {
-            root = new Root();//实例化根节点
+          
             EntityManager.GetInstance();//实体管理器单例,或许应该把根节点写在管理器里
+            Root.root.AddComponent<Node>();//添加空节点测试
             update = UpdateManager.GetInstance();//Update管理器
-
-            root.AddComponent<Node>();//添加空节点测试
+            
         }
 
         public void Update()

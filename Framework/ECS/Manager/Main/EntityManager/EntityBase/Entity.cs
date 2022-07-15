@@ -79,10 +79,21 @@ namespace SDHK
             }
         }
 
-        public override void OnNew()
+        public override void OnNew()//懒汉注册OnNew管理器,或许需要一个ECS模式的对象池
         {
             ID = IdManager.GetID;
             type = GetType();
+        }
+        public override void OnGet()
+        {
+        }
+
+        public override void OnRecycle()
+        {
+        }
+
+        public override void OnDispose()
+        {
         }
 
         /// <summary>
