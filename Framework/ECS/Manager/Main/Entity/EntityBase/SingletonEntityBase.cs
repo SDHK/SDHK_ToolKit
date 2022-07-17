@@ -10,7 +10,7 @@ namespace SDHK
     /// 实体单例化
     /// </summary>
     public class SingletonEntityBase<T> : Entity
-        where T :class,IEntity
+        where T : class, IEntity
     {
         protected static T instance;//实例
 

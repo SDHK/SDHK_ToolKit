@@ -7,25 +7,6 @@ using UnityEngine;
 
 namespace SDHK
 {
-    /// <summary>
-    /// Update系统接口
-    /// </summary>
-    public interface IUpdateSystem : ISystem
-    {
-        void Execute(IEntity entity);
-    }
-    /// <summary>
-    /// Update系统基类
-    /// </summary>
-    public abstract class UpdateSystem<T> : SystemBase<T>, IUpdateSystem
-        where T :class,IEntity
-    {
-        public void Execute(IEntity entity) => Update(entity as T);
-        public abstract void Update(T entity);
-    }
-
-
-
 
     /// <summary>
     /// Update生命周期管理器实体
@@ -41,9 +22,8 @@ namespace SDHK
             {
                 ulong firstKey = update1.Keys.First();
                 IEntity entity = update1[firstKey];
-                Type type = entity.Type;
 
-                if (systems.TryGetValue(type, out UnitList<ISystem> systemList))
+                if (systems.TryGetValue(entity.Type, out UnitList<ISystem> systemList))
                 {
                     foreach (IUpdateSystem system in systemList)
                     {
@@ -70,21 +50,18 @@ namespace SDHK
     {
         public override void OnNew(UpdateManager entity)
         {
-
             entity.systems = SystemManager.Instance.RegisterSystems<IUpdateSystem>();
         }
     }
 
-    /// <summary>
-    /// 实体监听事件系统
-    /// </summary>
+
     public class UpdateManagerEntityListenerSystem : EntitySystem<UpdateManager>
     {
         public override void OnAddEntity(UpdateManager self, IEntity entity)
         {
             if (self.systems.ContainsKey(entity.Type))
             {
-                self.update1.Add(entity.Id, entity);
+                self.update2.Add(entity.Id, entity);
             }
         }
 

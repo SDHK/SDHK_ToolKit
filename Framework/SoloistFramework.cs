@@ -12,26 +12,52 @@ namespace SDHK
     {
 
     }
-    public class NodeStartSystem : NewSystem<Node>
+
+    public class Node2 : Entity<Node2>
     {
-        public override void OnNew(Node entity)
+
+    }
+    public class Node3 : Entity<Node3>
+    {
+
+    }
+
+    class NodeStartSystem : NewSystem<Node>
+    {
+        public override void OnNew(Node self)
         {
             Debug.Log("OnNew!!!");
         }
     }
-    public class NodeUpdateSystem : UpdateSystem<Node>
+    class NodeUpdateSystem : UpdateSystem<Node>
     {
-        public override void Update(Node entity)
+        public override void Update(Node self)
         {
             Debug.Log("Update!!!");
         }
     }
 
+    class Node2LateUpdateSystem : LateUpdateSystem<Node2>
+    {
+        public override void LateUpdate(Node2 self)
+        {
+            Debug.Log("LateUpdate!!!");
+        }
+    }
+    class Node3LateUpdateSystem : FixedUpdateSystem<Node3>
+    {
+        public override void FixedUpdate(Node3 self)
+        {
+            Debug.Log("FixedUpdate!!!");
+        }
+    }
 
     public class SoloistFramework : SingletonBase<SoloistFramework>
     {
 
         UpdateManager update;
+        LateUpdateManager lateUpdate;
+        FixedUpdateManager fixedUpdate;
 
         public void Start()
         {
@@ -46,12 +72,16 @@ namespace SDHK
 
 
             update = UpdateManager.GetInstance();//Update管理器
-
+            lateUpdate = LateUpdateManager.GetInstance();
+            fixedUpdate = FixedUpdateManager.GetInstance();
 
             EntityRoot.Root
                 .GetComponent<Node>()
                 .GetComponent<Node>()
                 .GetComponent<Node>()
+                .GetComponent<Node2>()
+                .GetComponent<Node2>()
+                .GetComponent<Node3>()
 
 
                 ;//添加空节点测试
@@ -97,7 +127,7 @@ namespace SDHK
                 EntityRoot.Root.RemoveAllComponent();
 
                 EntityManager.Instance.Dispose();
-                update= null;
+                update = null;
 
                 Debug.Log("回收全部！！！");
                 Debug.Log(Print1(EntityRoot.Root, "\t"));
@@ -111,12 +141,12 @@ namespace SDHK
         }
         public void LateUpdate()
         {
-
-
+            lateUpdate?.Update();
         }
+
         public void FixedUpdate()
         {
-
+            fixedUpdate?.Update();
         }
 
         public void OnDestroy()
