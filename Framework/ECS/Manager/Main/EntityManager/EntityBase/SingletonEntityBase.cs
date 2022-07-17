@@ -10,9 +10,9 @@ namespace SDHK
     /// 实体单例化
     /// </summary>
     public class SingletonEntityBase<T> : Entity
-        where T : Entity
+        where T :class,IEntity
     {
-        public static T instance;//实例
+        protected static T instance;//实例
 
         /// <summary>
         /// 实例组件
@@ -23,7 +23,7 @@ namespace SDHK
             {
                 if (instance is null)
                 {
-                    instance= root.AddComponent<T>();
+                    instance= Root.GetComponent<T>();
                 }
                 return instance;
             }

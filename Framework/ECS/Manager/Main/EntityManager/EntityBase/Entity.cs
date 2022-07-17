@@ -16,8 +16,6 @@ using UnityEngine;
 namespace SDHK
 {
 
-   
-
     /// <summary>
     /// 泛型实体基类：提供获取和回收对象的方法
     /// </summary>
@@ -30,96 +28,100 @@ namespace SDHK
         /// </summary>
         public static T GetObject()
         {
-            return UnitPoolManager.Instance.Get<T>();
+            return EntityPoolManager.Instance.Get<T>();
         }
     }
+
 
     /// <summary>
     /// 实体基类
     /// </summary>
-    public abstract class Entity : UnitPoolItem
+    public abstract class Entity : IEntity
     {
-        public ulong ID { get; set; }
+        public bool IsDisposed { get; set; }
+        public bool IsRecycle { get; set; }
 
-        public Type type = null;
+        public ulong Id { get; set; }
+
+        public Type Type { get; set; }
 
         /// <summary>
         /// 根节点
         /// </summary>
-        public static Entity root;
+        public static IEntity Root;
 
         /// <summary>
         /// 父节点
         /// </summary>
-        public Entity parent { get; private set; }
+        public IEntity Parent { get; set; }
 
-        public UnitDictionary<ulong, Entity> children = new UnitDictionary<ulong, Entity>(); //实体
-        public UnitDictionary<Type, Entity> components = new UnitDictionary<Type, Entity>(); //组件
 
-        public Dictionary<ulong, Entity> Children
+        private UnitDictionary<ulong, IEntity> children;
+        private UnitDictionary<Type, IEntity> components;
+
+
+        public UnitDictionary<ulong, IEntity> Children
         {
             get
             {
                 if (children == null)
                 {
-                    children = UnitDictionary<ulong, Entity>.GetObject();
+                    children = UnitDictionary<ulong, IEntity>.GetObject();
                 }
                 return children;
             }
         }
-        public Dictionary<Type, Entity> Components
+        public UnitDictionary<Type, IEntity> Components
         {
             get
             {
                 if (components == null)
                 {
-                    components = UnitDictionary<Type, Entity>.GetObject();
+                    components = UnitDictionary<Type, IEntity>.GetObject();
                 }
                 return components;
             }
         }
 
-        public override void OnNew()//懒汉注册OnNew管理器,或许需要一个ECS模式的对象池
-        {
-            ID = IdManager.GetID;
-            type = GetType();
-        }
-        public override void OnGet()
-        {
-        }
 
-        public override void OnRecycle()
-        {
-        }
-
-        public override void OnDispose()
-        {
-        }
-
-        /// <summary>
-        /// 添加子实体
-        /// </summary>
-        public void AddChildren(Entity entity)
+        public void AddChildren(IEntity entity)
         {
             if (entity != null)
             {
-                entity.parent = this;
-                Children.TryAdd(entity.ID, entity);
-                EntityManager.Instance.Add(entity);
+                if (Children.TryAdd(entity.Id, entity))
+                {
+                    entity.Parent = this;
+                    EntityManager.Instance.Add(entity);
+                }
             }
         }
 
-        /// <summary>
-        /// 移除子实体
-        /// </summary>
-        public void RemoveChildren(Entity entity)
+        public T GetChildren<T>()
+            where T : class, IEntity
+        {
+            T entity = EntityPoolManager.Instance.Get<T>();
+            if (Children.TryAdd(entity.Id, entity))
+            {
+                entity.Parent = this;
+                EntityManager.Instance.Add(entity);
+            }
+
+            return entity;
+        }
+
+
+
+        public void RemoveChildren(IEntity entity)
         {
             if (entity != null)
             {
-                entity.parent = null;
+                entity.Parent = null;
                 EntityManager.Instance.Remove(entity);
-                entity.Recycle();
-                Children.Remove(entity.ID);
+                EntityPoolManager.Instance.Recycle(entity);
+
+                Children.Remove(entity.Id);
+                entity.RemoveAllChildren();
+                entity.RemoveAllComponent();
                 if (children.Count == 0)
                 {
                     children.Recycle();
@@ -128,60 +130,97 @@ namespace SDHK
             }
         }
 
-        /// <summary>
-        /// 添加组件
-        /// </summary>
-        public T AddComponent<T>()
-            where T : Entity
+
+     
+
+
+
+        public T GetComponent<T>()
+            where T : class, IEntity
         {
             Type type = typeof(T);
 
-            T t;
-            if (!Components.TryGetValue(type, out Entity entity))
+            T component = null;
+            if (!Components.TryGetValue(type, out IEntity entity))
             {
-                t = UnitPoolManager.Instance.Get<T>();
-                Components.Add(type, t);
-                EntityManager.Instance.Add(t);
+                component = EntityPoolManager.Instance.Get<T>();
+                component.Parent = this;
+
+                components.Add(type, component);
+                EntityManager.Instance.Add(component);
             }
             else
             {
-                t = entity as T;
+                component = entity as T;
             }
 
-            return t;
+            return component;
         }
 
-
-        /// <summary>
-        /// 添加组件
-        /// </summary>
-        public void AddComponent(Entity entity)
+        public void AddComponent(IEntity component)
         {
-            Type type = entity.GetType();
+            Type type = component.Type;
             if (!Components.ContainsKey(type))
             {
-                Components.Add(type, entity);
-                EntityManager.Instance.Add(entity);
+                component.Parent = this;
+                components.Add(type, component);
+                EntityManager.Instance.Add(component);
             }
         }
-
-        /// <summary>
-        /// 移除组件
-        /// </summary>
         public void RemoveComponent<T>()
-            where T : Entity
+            where T : class, IEntity
         {
             Type type = typeof(T);
             if (Components.ContainsKey(type))
             {
-                EntityManager.Instance.Remove(components[type]);
-                components[type].Recycle();
+                IEntity component = components[type];
+                component.Parent = null;
+
+                EntityManager.Instance.Remove(component);
                 components.Remove(type);
+                component.RemoveAllChildren();
+                component.RemoveAllComponent();
+                EntityPoolManager.Instance.Recycle(component);
+
                 if (components.Count == 0)
                 {
                     components.Recycle();
                     components = null;
                 }
+            }
+        }
+
+        public void RemoveComponent(IEntity component)
+        {
+            if (Components.ContainsValue(component))
+            {
+                component.Parent = null;
+                EntityManager.Instance.Remove(component);
+                components.Remove(component.Type);
+                component.RemoveAllChildren();
+                component.RemoveAllComponent();
+                EntityPoolManager.Instance.Recycle(component);
+
+                if (components.Count == 0)
+                {
+                    components.Recycle();
+                    components = null;
+                }
+            }
+
+        }
+        public void RemoveAllChildren()
+        {
+            while (Children.Count > 0)
+            {
+                RemoveChildren(Children.First().Value);
+            }
+        }
+        public void RemoveAllComponent()
+        {
+            while (Components.Count>0)
+            {
+                RemoveComponent(Components.First().Value);
             }
         }
 

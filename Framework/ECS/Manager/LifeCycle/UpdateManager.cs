@@ -12,15 +12,15 @@ namespace SDHK
     /// </summary>
     public interface IUpdateSystem : ISystem
     {
-        void Execute(Entity entity);
+        void Execute(IEntity entity);
     }
     /// <summary>
     /// Update系统基类
     /// </summary>
     public abstract class UpdateSystem<T> : SystemBase<T>, IUpdateSystem
-        where T : Entity
+        where T :class,IEntity
     {
-        public void Execute(Entity entity) => Update(entity as T);
+        public void Execute(IEntity entity) => Update(entity as T);
         public abstract void Update(T entity);
     }
 
@@ -32,16 +32,16 @@ namespace SDHK
     /// </summary>
     public class UpdateManager : SingletonEntityBase<UpdateManager>
     {
-        public UnitDictionary<ulong, Entity> update1 = new UnitDictionary<ulong, Entity>();
-        public UnitDictionary<ulong, Entity> update2 = new UnitDictionary<ulong, Entity>();
+        public UnitDictionary<ulong, IEntity> update1 = new UnitDictionary<ulong, IEntity>();
+        public UnitDictionary<ulong, IEntity> update2 = new UnitDictionary<ulong, IEntity>();
         public SystemGroup systems;
         public void Update()
         {
             while (update1.Count != 0)
             {
                 ulong firstKey = update1.Keys.First();
-                Entity entity = update1[firstKey];
-                Type type = entity.type;
+                IEntity entity = update1[firstKey];
+                Type type = entity.Type;
 
                 if (systems.TryGetValue(type, out UnitList<ISystem> systemList))
                 {
@@ -66,10 +66,11 @@ namespace SDHK
     /// <summary>
     /// 组件添加事件系统
     /// </summary>
-    public class UpdateManagerStartSystem : StartSystem<UpdateManager>
+    public class UpdateManagerNewSystem : NewSystem<UpdateManager>
     {
-        public override void Start(UpdateManager entity)
+        public override void OnNew(UpdateManager entity)
         {
+
             entity.systems = SystemManager.Instance.RegisterSystems<IUpdateSystem>();
         }
     }
@@ -77,23 +78,22 @@ namespace SDHK
     /// <summary>
     /// 实体监听事件系统
     /// </summary>
-    public class UpdateManagerEntityListenerSystem : EntityListenerSystem<UpdateManager>
+    public class UpdateManagerEntityListenerSystem : EntitySystem<UpdateManager>
     {
-        public override void OnAddEntitie(UpdateManager self, Entity entity)
+        public override void OnAddEntity(UpdateManager self, IEntity entity)
         {
-            Type typeKey = entity.type;
-            if (self.systems.ContainsKey(typeKey))
+            if (self.systems.ContainsKey(entity.Type))
             {
-                self.update1.Add(entity.ID, entity);
+                self.update1.Add(entity.Id, entity);
             }
         }
 
-        public override void OnRemoveEntitie(UpdateManager self, Entity entity)
+        public override void OnRemoveEntity(UpdateManager self, IEntity entity)
         {
-            Type typeKey = entity.type;
-            if (self.systems.ContainsKey(typeKey))
+            if (self.systems.ContainsKey(entity.Type))
             {
-                self.update1.Remove(entity.ID);
+                self.update1.Remove(entity.Id);
+                self.update2.Remove(entity.Id);
             }
         }
     }

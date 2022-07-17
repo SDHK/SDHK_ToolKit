@@ -10,9 +10,14 @@ namespace SDHK
     /// <summary>
     /// 根节点实体
     /// </summary>
-    public class Root : Entity
+    public class EntityRoot : Entity
     {
-        public Root() { root = this; }
+        public EntityRoot()
+        {
+            Id = IdManager.GetID;
+            Type = GetType();
+            Root = this;
+        }
     }
 
     /// <summary>
@@ -20,22 +25,31 @@ namespace SDHK
     /// </summary>
     public class EntityManager : SingletonBase<EntityManager>
     {
-        public UnitDictionary<ulong, Entity> allEntities = new UnitDictionary<ulong, Entity>();
+        public UnitDictionary<ulong, IEntity> allEntities = new UnitDictionary<ulong, IEntity>();
 
-        private UnitDictionary<Type, Entity> listeners;//遍历实例执行方法
-        
+        private UnitDictionary<Type, IEntity> listeners;//遍历实例执行方法
+
         private SystemGroup singletonEntitys;
-        private SystemGroup listenersSystems;
-        private SystemGroup startSystems;
+        private SystemGroup entitySystems;
+
+
+        private SystemManager systemManager;
+        private EntityPoolManager poolManager;
 
         public override void OnInstance()
         {
-            listeners = UnitDictionary<Type, Entity>.GetObject();
 
-            singletonEntitys = SystemManager.Instance.RegisterSystems<ISingletonEagerSystem>();
+            systemManager = SystemManager.Instance;
+            listeners = UnitDictionary<Type, IEntity>.GetObject();
 
-            listenersSystems = SystemManager.Instance.RegisterSystems<IEntityListenerSystem>();
-            startSystems = SystemManager.Instance.RegisterSystems<IStartSystem>();
+
+            //管理器系统
+            entitySystems = systemManager.RegisterSystems<IEntitySystem>();
+            //单例系统
+            singletonEntitys = systemManager.RegisterSystems<ISingletonEagerSystem>();
+
+            //实体对象池实例化
+            poolManager = new EntityPoolManager();
 
 
             foreach (var singletonEntity in singletonEntitys)
@@ -43,35 +57,44 @@ namespace SDHK
                 foreach (ISingletonEagerSystem item in singletonEntity.Value)
                 {
                     item.Instance();
-                } 
+                }
             }
-
         }
 
-        public void Add(Entity entity)
+        public override void OnDispose()
         {
-            Type typeKey = entity.type;
+            listeners.Clear();
+            listeners.Recycle();
+
+            entitySystems.Clear();
+            entitySystems.Recycle();
+
+            singletonEntitys.Clear();
+            singletonEntitys.Recycle();
+
+            poolManager.Dispose();
+            systemManager.Dispose();
+
+            instance = null;
+        }
+
+        public void Add(IEntity entity)
+        {
+            Type typeKey = entity.Type;
 
             foreach (var manager in listeners)//广播给全部管理器
             {
-                if (listenersSystems.TryGetValue(manager.Key, out UnitList<ISystem> systems))
+                if (entitySystems.TryGetValue(manager.Key, out UnitList<ISystem> systems))
                 {
-                    foreach (IEntityListenerSystem system in systems)
+                    foreach (IEntitySystem system in systems)
                     {
                         system.AddEntity(manager.Value, entity);
                     }
                 }
             }
 
-            if (startSystems.TryGetValue(typeKey, out UnitList<ISystem> awakes))
-            {
-                foreach (IStartSystem system in awakes)
-                {
-                    system.Execute(entity);
-                }
-            }
 
-            if (listenersSystems.ContainsKey(typeKey))//检测到系统存在，则说明这是个管理器
+            if (entitySystems.ContainsKey(typeKey))//检测到系统存在，则说明这是个管理器
             {
                 listeners.TryAdd(typeKey, entity);
             }
@@ -79,19 +102,20 @@ namespace SDHK
 
         }
 
-        public void Remove(Entity entity)
+        public void Remove(IEntity entity)
         {
-            Type typeKey = entity.type;
-            if (listenersSystems.ContainsKey(typeKey))//检测到系统存在，则说明这是个管理器
+            Type typeKey = entity.Type;
+            if (entitySystems.ContainsKey(typeKey))//检测到系统存在，则说明这是个管理器
             {
                 listeners.Remove(typeKey);
             }
 
             foreach (var manager in listeners)//广播给全部管理器
             {
-                if (listenersSystems.TryGetValue(manager.Key, out UnitList<ISystem> systems))
+
+                if (entitySystems.TryGetValue(manager.Key, out UnitList<ISystem> systems))
                 {
-                    foreach (IEntityListenerSystem system in systems)
+                    foreach (IEntitySystem system in systems)
                     {
                         system.RemoveEntity(manager.Value, entity);
                     }

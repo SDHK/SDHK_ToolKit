@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace SDHK
 {
+
+
+
     /// <summary>
     /// 系统集合组
     /// </summary>
@@ -19,11 +22,11 @@ namespace SDHK
             return UnitPoolManager.Instance.Get<SystemGroup>();
         }
 
+
         /// <summary>
         /// 获取系统类列表
         /// </summary>
-        public UnitList<T> GetSystems<T>(Type type)
-            where T : ISystem
+        public UnitList<ISystem> GetSystems(Type type)
         {
             UnitList<ISystem> Isystems;
             if (!TryGetValue(type, out Isystems))
@@ -32,7 +35,7 @@ namespace SDHK
                 Add(type, Isystems);
             }
 
-            return Isystems as UnitList<T>;
+            return Isystems;
         }
 
 

@@ -21,18 +21,26 @@ namespace SDHK
 {
 
     /// <summary>
+    /// 执行系统
+    /// </summary>
+    public interface ICallSystem : ISystem//或许可以成为单例组件
+    {
+        void Call(IEntity self);
+    }
+
+
+
+    /// <summary>
     /// 系统管理器
     /// </summary>
     public class SystemManager : SingletonBase<SystemManager>
     {
         //接口类型，（实例类型，实例方法）
         private UnitDictionary<Type, SystemGroup> InterfaceSystems;
-        private UnitDictionary<Type, SystemGroup> typeSystems;
 
         public override void OnInstance()
         {
             InterfaceSystems = UnitDictionary<Type, SystemGroup>.GetObject();
-            //typeSystems = UnitDictionary<Type, SystemGroup>.GetObject();
         }
 
         /// <summary>
@@ -40,9 +48,11 @@ namespace SDHK
         /// </summary>
         public SystemGroup RegisterSystems<T>() where T : ISystem => RegisterSystems(typeof(T));
 
+        /// <summary>
+        /// 注册系统
+        /// </summary>
         public SystemGroup RegisterSystems(Type Interface)
         {
-           
             //查找继承了接口的类
             var types = FindTypesIsInterface(Interface);
 
@@ -53,13 +63,12 @@ namespace SDHK
                 {
                     InterfaceSystems.Add(Interface, SystemGroup.GetObject());
                 }
-                InterfaceSystems[Interface].GetSystems<ISystem>(system.EntityType).Add(system);
+                UnitList<ISystem> systems = InterfaceSystems[Interface].GetSystems(system.EntityType);
 
-                //if (!typeSystems.ContainsKey(system.EntityType))
-                //{
-                //    typeSystems.Add(system.EntityType, SystemGroup.GetObject());
-                //}
-                //typeSystems[system.EntityType].GetSystems<ISystem>(Interface).Add(system);
+                if (!systems.Contains(system))
+                {
+                    systems.Add(system);
+                }
             }
             if (InterfaceSystems.ContainsKey(Interface))
             {
@@ -67,32 +76,21 @@ namespace SDHK
             }
             else
             {
-               
                 return null;
             }
-        }
-
-        /// <summary>
-        /// 获取系统组
-        /// </summary>
-        public SystemGroup GetSystemGroup<T>()
-        {
-            InterfaceSystems.TryGetValue(typeof(T), out SystemGroup systemGroup);
-            return systemGroup;
         }
 
 
         /// <summary>
         /// 获取单类型系统列表
         /// </summary>
-        public UnitList<T> GetSystems<T>(Type type)
-             where T : ISystem
+        public UnitList<ISystem> GetSystems<T>(Type type)
         {
             if (InterfaceSystems.TryGetValue(typeof(T), out SystemGroup systemGroup))
             {
                 if (systemGroup.ContainsKey(type))
                 {
-                    return systemGroup[type] as UnitList<T>;
+                    return systemGroup[type];
                 }
             }
             return null;
@@ -100,7 +98,9 @@ namespace SDHK
 
         public override void OnDispose()
         {
-
+            InterfaceSystems.Clear();
+            InterfaceSystems.Recycle();
+            instance = null;
         }
 
         /// <summary>
@@ -109,6 +109,21 @@ namespace SDHK
         private static Type[] FindTypesIsInterface(Type Interface)
         {
             return AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes().Where(T => T.GetInterfaces().Contains(Interface) && !T.IsAbstract)).ToArray();
+        }
+
+
+        public void CallSystems<T>(IEntity entity)
+               where T : ISystem
+        {
+
+            if (InterfaceSystems.TryGetValue(typeof(T), out SystemGroup systemGroup))
+            {
+
+                foreach (ICallSystem system in systemGroup.GetSystems(entity.Type))
+                {
+                    system.Call(entity);
+                }
+            }
         }
     }
 }

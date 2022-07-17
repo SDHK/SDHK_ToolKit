@@ -11,16 +11,16 @@ namespace SDHK
     /// </summary>
     public interface IStartSystem : ISystem
     {
-        void Execute(Entity entity);
+        void Execute(IEntity entity);
     }
 
     /// <summary>
     /// 开始系统
     /// </summary>
     public abstract class StartSystem<T> : SystemBase<T>, IStartSystem
-        where T : Entity
+        where T :class, IEntity
     {
-        public void Execute(Entity entity) => Start(entity as T);
+        public void Execute(IEntity entity) => Start(entity as T);
         public abstract void Start(T entity);
 
     }

@@ -9,13 +9,19 @@ namespace SDHK
     /// <summary>
     /// id管理器：单线程
     /// </summary>
-    public class IdManager
+    public class IdManager : SingletonBase<IdManager>
     {
+
+        public override void OnInstance()
+        {
+            id = 0;
+        }
+
         /// <summary>
         /// 当前id
         /// </summary>
-        public static ulong id = 0;
-        
+        public ulong id = 0;
+
         /// <summary>
         /// 获取id后递增
         /// </summary>
@@ -23,9 +29,14 @@ namespace SDHK
         {
             get
             {
-                return id++;
+                return Instance.id++;
             }
 
+        }
+
+        public override void OnDispose()
+        {
+            instance = null;
         }
     }
 }

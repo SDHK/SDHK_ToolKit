@@ -18,15 +18,11 @@ namespace SDHK
     /// 实体饿汉单例系统
     /// </summary>
     public abstract class SingletonEagerSystem<T> : SystemBase<T>, ISingletonEagerSystem
-        where T : Entity
+        where T :class ,IEntity
     {
         public void Instance()
         {
-            if (Root.root is null)
-            {
-                new Root();
-            }
-            Root.root.AddComponent<T>();
+            EntityRoot.Root.GetComponent<T>();
         }
     }
 }
