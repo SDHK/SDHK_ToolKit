@@ -8,49 +8,7 @@ using UnityEngine;
 namespace SDHK
 {
 
-    public class Node : Entity<Node>
-    {
 
-    }
-
-    public class Node2 : Entity<Node2>
-    {
-
-    }
-    public class Node3 : Entity<Node3>
-    {
-
-    }
-
-    class NodeStartSystem : NewSystem<Node>
-    {
-        public override void OnNew(Node self)
-        {
-            Debug.Log("OnNew!!!");
-        }
-    }
-    class NodeUpdateSystem : UpdateSystem<Node>
-    {
-        public override void Update(Node self)
-        {
-            Debug.Log("Update!!!");
-        }
-    }
-
-    class Node2LateUpdateSystem : LateUpdateSystem<Node2>
-    {
-        public override void LateUpdate(Node2 self)
-        {
-            Debug.Log("LateUpdate!!!");
-        }
-    }
-    class Node3LateUpdateSystem : FixedUpdateSystem<Node3>
-    {
-        public override void FixedUpdate(Node3 self)
-        {
-            Debug.Log("FixedUpdate!!!");
-        }
-    }
 
     public class SoloistFramework : SingletonBase<SoloistFramework>
     {
@@ -59,17 +17,12 @@ namespace SDHK
         LateUpdateManager lateUpdate;
         FixedUpdateManager fixedUpdate;
 
-        public void Start()
-        {
-            Start1();
-        }
 
-        public void Start1()
+        public void Start()
         {
             Debug.Log("启动！！！");
 
             EntityManager.GetInstance();//实体管理器单例,或许应该把根节点写在管理器里
-
 
             update = UpdateManager.GetInstance();//Update管理器
             lateUpdate = LateUpdateManager.GetInstance();
@@ -133,10 +86,9 @@ namespace SDHK
                 Debug.Log(Print1(EntityRoot.Root, "\t"));
             }
 
-
             if (Input.GetKeyDown(KeyCode.A))
             {
-                Start1();
+                Start();
             }
         }
         public void LateUpdate()

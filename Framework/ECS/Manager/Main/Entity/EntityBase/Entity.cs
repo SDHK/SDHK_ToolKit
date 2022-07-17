@@ -32,9 +32,9 @@ namespace SDHK
         }
     }
 
-
+    //是否需要写一个共同回收的方法
     /// <summary>
-    /// 实体基类
+    /// 实体基类:是否有必要进行自我回收，例如buff计时回收
     /// </summary>
     public abstract class Entity : IEntity
     {
@@ -131,10 +131,6 @@ namespace SDHK
         }
 
 
-     
-
-
-
         public T GetComponent<T>()
             where T : class, IEntity
         {
@@ -209,6 +205,8 @@ namespace SDHK
             }
 
         }
+
+
         public void RemoveAllChildren()
         {
             while (Children.Count > 0)

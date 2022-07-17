@@ -20,6 +20,7 @@ namespace SDHK
         }
     }
 
+    //生命周期补全
     /// <summary>
     /// 实体管理器
     /// </summary>
