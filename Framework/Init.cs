@@ -8,6 +8,7 @@
 
 */
 
+using Sirenix.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,10 +21,13 @@ namespace SDHK
     /// <summary>
     /// 主节点
     /// </summary>
+
     public class MainEntity : SingletonEntityBase<MainEntity> { }
-   
+
+
     public class Init : MonoBehaviour
     {
+        public MainEntity entity;
 
         UpdateManager update;
         LateUpdateManager lateUpdate;
@@ -38,7 +42,7 @@ namespace SDHK
             lateUpdate = LateUpdateManager.GetInstance();
             fixedUpdate = FixedUpdateManager.GetInstance();
 
-            MainEntity.GetInstance();
+            entity= MainEntity.GetInstance();
             Debug.Log(soloist.AllEntityString(RootEntity.Root, "\t"));
 
         }

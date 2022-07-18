@@ -200,11 +200,10 @@ namespace SDHK
             if (entity != null)
             {
                 EntityManager.Instance.Remove(entity);
+                entity.RemoveAll();
 
                 entity.Parent = null;
                 Children.Remove(entity.Id);
-                RemoveAll();
-
                 EntityPoolManager.Instance.Recycle(entity);
                 if (children.Count == 0)
                 {
@@ -257,11 +256,10 @@ namespace SDHK
             {
                 IEntity component = components[type];
                 EntityManager.Instance.Remove(component);
+                component.RemoveAll();
 
                 component.Parent = null;
-
                 components.Remove(type);
-                RemoveAll();
                 EntityPoolManager.Instance.Recycle(component);
                 if (components.Count == 0)
                 {
@@ -276,9 +274,9 @@ namespace SDHK
             if (Components.ContainsValue(component))
             {
                 EntityManager.Instance.Remove(component);
+                component.RemoveAll();
                 component.Parent = null;
                 components.Remove(component.Type);
-                RemoveAll();
                 EntityPoolManager.Instance.Recycle(component);
                 if (components.Count == 0)
                 {

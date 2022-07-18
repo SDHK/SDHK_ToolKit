@@ -65,7 +65,7 @@ namespace SDHK
                 }
                 UnitList<ISystem> systems = InterfaceSystems[Interface].GetSystems(system.EntityType);
 
-                if (!systems.Contains(system))
+                if (!systems.Any((t) => t.GetType() == system.GetType()))
                 {
                     systems.Add(system);
                 }
