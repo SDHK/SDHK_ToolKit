@@ -15,9 +15,8 @@ using UnityEngine;
 
 namespace SDHK
 {
-
     /// <summary>
-    /// 实体对象池管理器//  对象池回收是销毁自己!!!
+    /// 实体对象池管理器
     /// </summary>
     public class EntityPoolManager : SingletonEntityBase<EntityPoolManager>,IUnit
     {
@@ -56,6 +55,10 @@ namespace SDHK
 
         public void OnDispose()
         {
+            foreach (var item in pools)
+            {
+                item.Value.Dispose();
+            }
             instance = null;
         }
 
@@ -74,7 +77,7 @@ namespace SDHK
             {
                 EntityPool<T> newPool = new EntityPool<T>();
                 pools.Add(type, newPool);
-                AddComponent(newPool);
+                AddChildren(newPool);
                 return newPool.Get();
             }
         }
@@ -85,10 +88,10 @@ namespace SDHK
         /// <summary>
         /// 回收对象
         /// </summary>
-        public void Recycle<T>(T obj)//禁止回收自己
+        public void Recycle<T>(T obj)
         where T : class, IEntity
         {
-            if (obj != this && !(obj is PoolBase))
+            if (obj != this && !(obj is PoolBase))//禁止回收自己和对象池
             {
                 if (pools.TryGetValue(obj.Type, out PoolBase pool))
                 {
@@ -98,7 +101,7 @@ namespace SDHK
                 {
                     EntityPool<T> newPool = new EntityPool<T>();
                     pools.Add(obj.Type, newPool);
-                    AddComponent(newPool);
+                    AddChildren(newPool);
                     newPool.Recycle(obj);
                 }
             }

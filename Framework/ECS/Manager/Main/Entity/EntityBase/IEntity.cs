@@ -22,6 +22,11 @@ namespace SDHK
         public bool IsDisposed { get; set; }
 
         /// <summary>
+        /// 组件标记
+        /// </summary>
+        public bool IsComponent { get; set; }
+
+        /// <summary>
         /// Id
         /// </summary>
         public ulong Id { get; set; }
@@ -82,6 +87,7 @@ namespace SDHK
         /// 移除组件
         /// </summary>
         public void RemoveComponent<T>() where T : class, IEntity;
+       
         /// <summary>
         /// 移除组件
         /// </summary>
@@ -91,7 +97,15 @@ namespace SDHK
         /// 移除全部组件
         /// </summary>
         public void RemoveAllComponent();
+        
+        /// <summary>
+        /// 移除全部组件和子节点
+        /// </summary>
+        public void RemoveAll();
 
-
+        /// <summary>
+        /// 回收自己
+        /// </summary>
+        public void Recycle();
     }
 }

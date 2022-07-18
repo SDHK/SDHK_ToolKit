@@ -33,14 +33,14 @@ namespace SDHK
     }
 
     //需要一个检查组件的方法
-    //是否需要写一个共同回收的方法
     /// <summary>
-    /// 实体基类:是否有必要进行自我回收，例如buff计时回收
+    /// 实体基类
     /// </summary>
     public abstract class Entity : IEntity
     {
         public bool IsDisposed { get; set; }
         public bool IsRecycle { get; set; }
+        public bool IsComponent { get; set; }
 
         public ulong Id { get; set; }
 
@@ -116,13 +116,13 @@ namespace SDHK
         {
             if (entity != null)
             {
-                entity.Parent = null;
                 EntityManager.Instance.Remove(entity);
-                EntityPoolManager.Instance.Recycle(entity);
 
+                entity.Parent = null;
                 Children.Remove(entity.Id);
-                entity.RemoveAllChildren();
-                entity.RemoveAllComponent();
+                RemoveAll();
+
+                EntityPoolManager.Instance.Recycle(entity);
                 if (children.Count == 0)
                 {
                     children.Recycle();
@@ -142,6 +142,7 @@ namespace SDHK
             {
                 component = EntityPoolManager.Instance.Get<T>();
                 component.Parent = this;
+                component.IsComponent = true;
 
                 components.Add(type, component);
                 EntityManager.Instance.Add(component);
@@ -160,6 +161,7 @@ namespace SDHK
             if (!Components.ContainsKey(type))
             {
                 component.Parent = this;
+                component.IsComponent = true;
                 components.Add(type, component);
                 EntityManager.Instance.Add(component);
             }
@@ -171,14 +173,13 @@ namespace SDHK
             if (Components.ContainsKey(type))
             {
                 IEntity component = components[type];
+                EntityManager.Instance.Remove(component);
+
                 component.Parent = null;
 
-                EntityManager.Instance.Remove(component);
                 components.Remove(type);
-                component.RemoveAllChildren();
-                component.RemoveAllComponent();
+                RemoveAll();
                 EntityPoolManager.Instance.Recycle(component);
-
                 if (components.Count == 0)
                 {
                     components.Recycle();
@@ -191,13 +192,11 @@ namespace SDHK
         {
             if (Components.ContainsValue(component))
             {
-                component.Parent = null;
                 EntityManager.Instance.Remove(component);
+                component.Parent = null;
                 components.Remove(component.Type);
-                component.RemoveAllChildren();
-                component.RemoveAllComponent();
+                RemoveAll();
                 EntityPoolManager.Instance.Recycle(component);
-
                 if (components.Count == 0)
                 {
                     components.Recycle();
@@ -217,12 +216,38 @@ namespace SDHK
         }
         public void RemoveAllComponent()
         {
-            while (Components.Count>0)
+            while (Components.Count > 0)
             {
                 RemoveComponent(Components.First().Value);
             }
         }
 
+        public void RemoveAll()
+        {
+            RemoveAllChildren();
+            RemoveAllComponent();
+        }
+
+        public void Recycle()
+        {
+            if (Parent != null)
+            {
+                if (IsComponent)
+                {
+                    Parent.RemoveComponent(this);
+                }
+                else
+                {
+                    Parent.RemoveChildren(this);
+                }
+            }
+            else
+            {
+                EntityManager.Instance.Remove(this);
+                RemoveAll();
+                EntityPoolManager.Instance.Recycle(this);
+            }
+        }
     }
 
 }

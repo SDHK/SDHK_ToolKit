@@ -23,6 +23,8 @@ namespace SDHK
         where T : class, IEntity
     {
         public bool IsRecycle { get; set; }
+        public bool IsComponent { get; set; }
+
 
         private UnitList<ISystem> newSystem;
         private UnitList<ISystem> getSystem;
@@ -161,33 +163,28 @@ namespace SDHK
         {
             if (entity != null)
             {
-                entity.Parent = this;
-                Children.TryAdd(entity.Id, entity);
-                EntityManager.Instance.Add(entity);
+                if (Children.TryAdd(entity.Id, entity))
+                {
+                    entity.Parent = this;
+                    EntityManager.Instance.Add(entity);
+                }
             }
         }
 
         public T1 GetChildren<T1>()
-           where T1 : class, IEntity
+            where T1 : class, IEntity
         {
             T1 entity = EntityPoolManager.Instance.Get<T1>();
             if (Children.TryAdd(entity.Id, entity))
             {
+                entity.Parent = this;
                 EntityManager.Instance.Add(entity);
             }
 
             return entity;
         }
 
-        public void AddComponent(IEntity entity)
-        {
-            Type type = entity.Type;
-            if (!Components.ContainsKey(type))
-            {
-                components.Add(type, entity);
-                EntityManager.Instance.Add(entity);
-            }
-        }
+
 
         public void RemoveChildren(IEntity entity)
         {
@@ -198,8 +195,7 @@ namespace SDHK
                 EntityPoolManager.Instance.Recycle(entity);
 
                 Children.Remove(entity.Id);
-                entity.RemoveAllChildren();
-                entity.RemoveAllComponent();
+                RemoveAll();
                 if (children.Count == 0)
                 {
                     children.Recycle();
@@ -208,38 +204,54 @@ namespace SDHK
             }
         }
 
+
         public T1 GetComponent<T1>()
             where T1 : class, IEntity
         {
             Type type = typeof(T1);
 
-            T1 t = null;
+            T1 component = null;
             if (!Components.TryGetValue(type, out IEntity entity))
             {
-                t = EntityPoolManager.Instance.Get<T1>();
-                components.Add(type, t);
-                EntityManager.Instance.Add(t);
+                component = EntityPoolManager.Instance.Get<T1>();
+                component.Parent = this;
+                component.IsComponent = true;
+
+                components.Add(type, component);
+                EntityManager.Instance.Add(component);
             }
             else
             {
-                t = entity as T1;
+                component = entity as T1;
             }
 
-            return t;
+            return component;
         }
 
+        public void AddComponent(IEntity component)
+        {
+            Type type = component.Type;
+            if (!Components.ContainsKey(type))
+            {
+                component.Parent = this;
+                component.IsComponent = true;
+                components.Add(type, component);
+                EntityManager.Instance.Add(component);
+            }
+        }
         public void RemoveComponent<T1>()
             where T1 : class, IEntity
         {
-            Type type = typeof(T);
+            Type type = typeof(T1);
             if (Components.ContainsKey(type))
             {
-                IEntity entity = components[type];
+                IEntity component = components[type];
+                component.Parent = null;
+
+                EntityManager.Instance.Remove(component);
                 components.Remove(type);
-                entity.RemoveAllChildren();
-                entity.RemoveAllComponent();
-                EntityManager.Instance.Remove(entity);
-                EntityPoolManager.Instance.Recycle(entity);
+                RemoveAll();
+                EntityPoolManager.Instance.Recycle(component);
 
                 if (components.Count == 0)
                 {
@@ -249,15 +261,15 @@ namespace SDHK
             }
         }
 
-        public void RemoveComponent(IEntity entity)
+        public void RemoveComponent(IEntity component)
         {
-            if (Components.ContainsValue(entity))
+            if (Components.ContainsValue(component))
             {
-                EntityManager.Instance.Remove(entity);
-                components.Remove(entity.Type);
-                entity.RemoveAllChildren();
-                entity.RemoveAllComponent();
-                EntityPoolManager.Instance.Recycle(entity);
+                component.Parent = null;
+                EntityManager.Instance.Remove(component);
+                components.Remove(component.Type);
+                RemoveAll();
+                EntityPoolManager.Instance.Recycle(component);
 
                 if (components.Count == 0)
                 {
@@ -267,6 +279,7 @@ namespace SDHK
             }
 
         }
+
 
         public void RemoveAllChildren()
         {
@@ -275,12 +288,36 @@ namespace SDHK
                 RemoveChildren(Children.First().Value);
             }
         }
-
         public void RemoveAllComponent()
         {
             while (Components.Count > 0)
             {
                 RemoveComponent(Components.First().Value);
+            }
+        }
+        public void RemoveAll()
+        {
+            RemoveAllChildren();
+            RemoveAllComponent();
+        }
+        public void Recycle()
+        {
+            if (Parent != null)
+            {
+                if (IsComponent)
+                {
+                    Parent.RemoveComponent(this);
+                }
+                else
+                {
+                    Parent.RemoveChildren(this);
+                }
+            }
+            else
+            {
+                EntityManager.Instance.Remove(this);
+                RemoveAll();
+                EntityPoolManager.Instance.Recycle(this);
             }
         }
     }

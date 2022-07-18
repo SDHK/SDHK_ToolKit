@@ -30,12 +30,6 @@ namespace SDHK
 
             EntityRoot.Root
                 .GetComponent<Node>()
-                .GetComponent<Node>()
-                .GetComponent<Node>()
-                .GetComponent<Node2>()
-                .GetComponent<Node2>()
-                .GetComponent<Node3>()
-
 
                 ;//添加空节点测试
 
@@ -76,9 +70,7 @@ namespace SDHK
 
             if (Input.GetKeyDown(KeyCode.Return))
             {
-                EntityRoot.Root.RemoveAllChildren();
-                EntityRoot.Root.RemoveAllComponent();
-
+                EntityRoot.Root.RemoveAll();
                 EntityManager.Instance.Dispose();
                 update = null;
 

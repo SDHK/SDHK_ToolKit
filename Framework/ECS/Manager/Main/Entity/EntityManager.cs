@@ -37,6 +37,10 @@ namespace SDHK
         private SystemManager systemManager;
         private EntityPoolManager poolManager;
 
+
+        private SystemGroup addSystems;
+        private SystemGroup removeSystems;
+
         public override void OnInstance()
         {
 
@@ -48,6 +52,9 @@ namespace SDHK
             entitySystems = systemManager.RegisterSystems<IEntitySystem>();
             //单例系统
             singletonEntitys = systemManager.RegisterSystems<ISingletonEagerSystem>();
+
+            addSystems = systemManager.RegisterSystems<IAddSystem>();
+            removeSystems = systemManager.RegisterSystems<IRemoveSystem>();
 
             //实体对象池实例化
             poolManager = new EntityPoolManager();
@@ -94,6 +101,14 @@ namespace SDHK
                 }
             }
 
+            //这个实体的添加事件
+            if (addSystems.TryGetValue(entity.Type, out UnitList<ISystem> addsystem))
+            {
+                foreach (IAddSystem system in addsystem)
+                {
+                    system.Add(entity);
+                }
+            }  
 
             if (entitySystems.ContainsKey(typeKey))//检测到系统存在，则说明这是个管理器
             {
@@ -109,6 +124,15 @@ namespace SDHK
             if (entitySystems.ContainsKey(typeKey))//检测到系统存在，则说明这是个管理器
             {
                 listeners.Remove(typeKey);
+            }
+
+            //这个实体的移除事件
+            if (removeSystems.TryGetValue(entity.Type, out UnitList<ISystem> removesystem))
+            {
+                foreach (IRemoveSystem system in removesystem)
+                {
+                    system.Remove(entity);
+                }
             }
 
             foreach (var manager in listeners)//广播给全部管理器
