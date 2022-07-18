@@ -1,4 +1,14 @@
-﻿using System;
+﻿
+/****************************************
+
+* 作者： 闪电黑客
+* 日期： 2022/7/18 9:35
+
+* 描述： Mono的启动端，一切从这里开始
+
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +17,9 @@ using UnityEngine;
 
 namespace SDHK
 {
-
+    /// <summary>
+    /// 主节点
+    /// </summary>
     public class MainEntity : SingletonEntityBase<MainEntity> { }
    
     public class Init : MonoBehaviour
