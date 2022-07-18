@@ -20,43 +20,19 @@ namespace SDHK
 
     public class SoloistFramework : SingletonBase<SoloistFramework>
     {
-        UpdateManager update;
-        LateUpdateManager lateUpdate;
-        FixedUpdateManager fixedUpdate;
+      
 
         public override void OnInstance()
         {
             EntityManager.GetInstance();//实体管理器单例
-
-            update = UpdateManager.GetInstance();//Update管理器
-            lateUpdate = LateUpdateManager.GetInstance();
-            fixedUpdate = FixedUpdateManager.GetInstance();
-
-        }
-
-        public void Update()
-        {
-            update.Update();
-        }
-        public void LateUpdate()
-        {
-            lateUpdate.Update();
-        }
-
-        public void FixedUpdate()
-        {
-            fixedUpdate.Update();
         }
 
         public override void OnDispose()
         {
             EntityManager.Instance.Dispose();
-            update = null;
-            lateUpdate = null;
-            fixedUpdate = null;
+          
             instance = null;
         }
-
 
         public string AllEntityString(IEntity entity, string t)
         {

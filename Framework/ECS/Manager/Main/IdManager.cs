@@ -43,10 +43,6 @@ namespace SDHK
             }
 
         }
-
-        public override void OnDispose()
-        {
-            instance = null;
-        }
+       
     }
 }

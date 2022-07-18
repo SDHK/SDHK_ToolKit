@@ -25,7 +25,7 @@ namespace SDHK
     /// <summary>
     /// 实体对象池管理器
     /// </summary>
-    public class EntityPoolManager : SingletonEntityBase<EntityPoolManager>,IUnit
+    public class EntityPoolManager : SingletonEntityBase<EntityPoolManager>, IUnit
     {
 
         UnitDictionary<Type, PoolBase> pools;
@@ -61,6 +61,8 @@ namespace SDHK
             {
                 item.Value.Dispose();
             }
+            pools.Clear();
+            pools.Recycle();
             instance = null;
         }
 
@@ -84,7 +86,7 @@ namespace SDHK
             }
         }
 
-        
+
 
 
         /// <summary>

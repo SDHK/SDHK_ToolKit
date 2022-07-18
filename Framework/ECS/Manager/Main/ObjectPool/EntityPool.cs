@@ -27,8 +27,8 @@ namespace SDHK
     /// <summary>
     /// 实体对象池
     /// </summary>
-    public class EntityPool<T> : GenericPool<T>, IEntity
-        where T : class, IEntity
+    public class EntityPool<E> : GenericPool<E>, IEntity
+        where E : class, IEntity
     {
         public bool IsRecycle { get; set; }
         public bool IsComponent { get; set; }
@@ -44,7 +44,7 @@ namespace SDHK
             Id = IdManager.GetID;
             Type = GetType();
 
-            ObjectType = typeof(T);
+            ObjectType = typeof(E);
 
             NewObject = ObjectNew;
             DestroyObject = ObjectDestroy;
@@ -65,15 +65,15 @@ namespace SDHK
             return "[EntityPool<" + ObjectType.Name + ">] ";
         }
 
-        private T ObjectNew(PoolBase pool)
+        private E ObjectNew(PoolBase pool)
         {
-            T entity = Activator.CreateInstance(ObjectType, true) as T;
+            E entity = Activator.CreateInstance(ObjectType, true) as E;
             entity.Id = IdManager.GetID;
             entity.Type = entity.GetType();
 
             return entity;
         }
-        private void ObjectDestroy(T obj)
+        private void ObjectDestroy(E obj)
         {
             if (obj != null)
             {
@@ -86,7 +86,7 @@ namespace SDHK
 
         }
 
-        private void ObjectOnNew(T obj)
+        private void ObjectOnNew(E obj)
         {
             if (newSystem != null)
             {
@@ -97,7 +97,7 @@ namespace SDHK
             }
         }
 
-        private void ObjectOnGet(T obj)
+        private void ObjectOnGet(E obj)
         {
             obj.IsRecycle = false;
             if (getSystem != null)
@@ -111,7 +111,7 @@ namespace SDHK
         }
 
 
-        private void ObjectOnRecycle(T obj)
+        private void ObjectOnRecycle(E obj)
         {
             obj.IsRecycle = true;
             if (recycleSystem != null)
@@ -123,7 +123,7 @@ namespace SDHK
             }
         }
 
-        private void ObjectOnDestroy(T obj)
+        private void ObjectOnDestroy(E obj)
         {
             if (destroySystem != null)
             {
@@ -167,6 +167,7 @@ namespace SDHK
         }
 
 
+
         public void AddChildren(IEntity entity)
         {
             if (entity != null)
@@ -179,10 +180,10 @@ namespace SDHK
             }
         }
 
-        public T1 GetChildren<T1>()
-            where T1 : class, IEntity
+        public T GetChildren<T>()
+            where T : class, IEntity
         {
-            T1 entity = EntityPoolManager.Instance.Get<T1>();
+            T entity = EntityPoolManager.Instance.Get<T>();
             if (Children.TryAdd(entity.Id, entity))
             {
                 entity.Parent = this;
@@ -198,12 +199,13 @@ namespace SDHK
         {
             if (entity != null)
             {
-                entity.Parent = null;
                 EntityManager.Instance.Remove(entity);
-                EntityPoolManager.Instance.Recycle(entity);
 
+                entity.Parent = null;
                 Children.Remove(entity.Id);
                 RemoveAll();
+
+                EntityPoolManager.Instance.Recycle(entity);
                 if (children.Count == 0)
                 {
                     children.Recycle();
@@ -213,15 +215,15 @@ namespace SDHK
         }
 
 
-        public T1 GetComponent<T1>()
-            where T1 : class, IEntity
+        public T GetComponent<T>()
+            where T : class, IEntity
         {
-            Type type = typeof(T1);
+            Type type = typeof(T);
 
-            T1 component = null;
+            T component = null;
             if (!Components.TryGetValue(type, out IEntity entity))
             {
-                component = EntityPoolManager.Instance.Get<T1>();
+                component = EntityPoolManager.Instance.Get<T>();
                 component.Parent = this;
                 component.IsComponent = true;
 
@@ -230,7 +232,7 @@ namespace SDHK
             }
             else
             {
-                component = entity as T1;
+                component = entity as T;
             }
 
             return component;
@@ -247,20 +249,20 @@ namespace SDHK
                 EntityManager.Instance.Add(component);
             }
         }
-        public void RemoveComponent<T1>()
-            where T1 : class, IEntity
+        public void RemoveComponent<T>()
+            where T : class, IEntity
         {
-            Type type = typeof(T1);
+            Type type = typeof(T);
             if (Components.ContainsKey(type))
             {
                 IEntity component = components[type];
+                EntityManager.Instance.Remove(component);
+
                 component.Parent = null;
 
-                EntityManager.Instance.Remove(component);
                 components.Remove(type);
                 RemoveAll();
                 EntityPoolManager.Instance.Recycle(component);
-
                 if (components.Count == 0)
                 {
                     components.Recycle();
@@ -273,12 +275,11 @@ namespace SDHK
         {
             if (Components.ContainsValue(component))
             {
-                component.Parent = null;
                 EntityManager.Instance.Remove(component);
+                component.Parent = null;
                 components.Remove(component.Type);
                 RemoveAll();
                 EntityPoolManager.Instance.Recycle(component);
-
                 if (components.Count == 0)
                 {
                     components.Recycle();
@@ -303,11 +304,13 @@ namespace SDHK
                 RemoveComponent(Components.First().Value);
             }
         }
+
         public void RemoveAll()
         {
             RemoveAllChildren();
             RemoveAllComponent();
         }
+
         public void Recycle()
         {
             if (Parent != null)

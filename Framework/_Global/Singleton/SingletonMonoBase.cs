@@ -67,8 +67,6 @@ namespace SDHK
         public virtual void OnInstance() { }
 
 
-
-
     }
 
 

@@ -57,6 +57,10 @@ namespace SDHK
         /// 单例实例时
         /// </summary>
         public virtual void OnInstance() { }
+        public override void OnDispose()
+        {
+            instance = null;
+        }
 
     }
 }

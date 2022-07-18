@@ -92,10 +92,18 @@ namespace SDHK
     public class Init : MonoBehaviour
     {
 
+        UpdateManager update;
+        LateUpdateManager lateUpdate;
+        FixedUpdateManager fixedUpdate;
+
         SoloistFramework soloist;
         private void Start()
         {
             soloist = SoloistFramework.Instance;
+
+            update = UpdateManager.GetInstance();
+            lateUpdate = LateUpdateManager.GetInstance();
+            fixedUpdate = FixedUpdateManager.GetInstance();
 
             Debug.Log(soloist.AllEntityString(EntityRoot.Root, "\t"));
 
@@ -103,24 +111,24 @@ namespace SDHK
 
         private void Update()
         {
-            soloist.Update();
-
+            update.Update();
         }
 
         private void LateUpdate()
         {
-            soloist.LateUpdate();
-
+            lateUpdate.Update();
         }
         private void FixedUpdate()
         {
-            soloist.FixedUpdate();
-
+            fixedUpdate.Update();
         }
 
         private void OnDestroy()
         {
             soloist.Dispose();
+            update = null;
+            lateUpdate = null;
+            fixedUpdate = null;
             Debug.Log(soloist.AllEntityString(EntityRoot.Root, "\t"));
         }
         private void OnApplicationQuit()
