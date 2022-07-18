@@ -1,4 +1,14 @@
-﻿using System;
+﻿
+/****************************************
+
+* 作者： 闪电黑客
+* 日期： 2022/7/18 9:35
+
+* 描述： 一个编号分发的管理器
+
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

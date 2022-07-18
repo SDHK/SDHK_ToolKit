@@ -3,7 +3,14 @@
 * 作者： 闪电黑客
 * 日期： 2022/7/17 17:23
 
-* 描述： 实体对象池管理器，半ECS组件
+* 描述： 实体对象池管理器，半ECS实体。
+* 为所有实体对象池的管理器。
+* 
+* 但实体设定由对象池生成，单例会导致死循环
+* 所以需要通过new来实例自己，并把自己当成组件添加到根节点
+* 
+* 
+* 
 
 */
 using System;
@@ -25,11 +32,6 @@ namespace SDHK
 
         public EntityPoolManager()//通过构造函数来打破自己单例的死循环
         {
-            if (Root is null)
-            {
-                new EntityRoot();
-            }
-
             Id = IdManager.GetID;
             Type = GetType();
             instance = this;

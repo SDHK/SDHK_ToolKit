@@ -3,7 +3,16 @@
 * 作者： 闪电黑客
 * 日期： 2022/7/17 17:23
 
-* 描述： 实体对象池，半ECS组件
+* 描述： 实体对象池，半ECS实体。
+* 掌管实体的生命周期
+* 
+* 但实体设定由对象池生成，生成自己会导致死循环。
+* 所以这个组件由管理器通过New生成后挂为管理器子物体。
+*
+* 设定为实体的目的是为了可以挂组件添加功能，例如计时销毁，或生成后的计数回收
+*
+*
+*
 
 */
 using System;
@@ -15,9 +24,8 @@ using UnityEngine;
 
 namespace SDHK
 {
-
     /// <summary>
-    /// 实体对象池,组件，需要挂在manager下
+    /// 实体对象池
     /// </summary>
     public class EntityPool<T> : GenericPool<T>, IEntity
         where T : class, IEntity

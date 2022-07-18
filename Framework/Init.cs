@@ -89,7 +89,7 @@ namespace SDHK
         }
     }
 
-    public class Init : SingletonMonoEagerBase<Init>
+    public class Init : MonoBehaviour
     {
 
         SoloistFramework soloist;
@@ -97,7 +97,8 @@ namespace SDHK
         {
             soloist = SoloistFramework.Instance;
 
-            soloist.Start();
+            Debug.Log(soloist.AllEntityString(EntityRoot.Root, "\t"));
+
         }
 
         private void Update()
@@ -119,8 +120,8 @@ namespace SDHK
 
         private void OnDestroy()
         {
-            soloist.OnInstance();
-
+            soloist.Dispose();
+            Debug.Log(soloist.AllEntityString(EntityRoot.Root, "\t"));
         }
         private void OnApplicationQuit()
         {

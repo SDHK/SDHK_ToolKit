@@ -1,4 +1,22 @@
-﻿using System;
+﻿
+/****************************************
+
+* 作者： 闪电黑客
+* 日期： 2022/7/18 9:35
+
+* 描述： 实体管理器
+* 最重要管理器，是ECS的启动入口
+* 
+* 同时启动系统管理器和对象池管理器
+* 
+* 还有ECS的单例启动
+* 
+* 管理分发全局的实体与组件的生命周期
+* 
+
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,7 +38,6 @@ namespace SDHK
         }
     }
 
-    //生命周期补全
     /// <summary>
     /// 实体管理器
     /// </summary>
@@ -28,7 +45,7 @@ namespace SDHK
     {
         public UnitDictionary<ulong, IEntity> allEntities = new UnitDictionary<ulong, IEntity>();
 
-        private UnitDictionary<Type, IEntity> listeners;//遍历实例执行方法
+        private UnitDictionary<Type, IEntity> listeners;//有监听器的实体
 
         private SystemGroup singletonEntitys;
         private SystemGroup entitySystems;
@@ -43,7 +60,7 @@ namespace SDHK
 
         public override void OnInstance()
         {
-
+            new EntityRoot();
             systemManager = SystemManager.Instance;
             listeners = UnitDictionary<Type, IEntity>.GetObject();
 
@@ -71,6 +88,8 @@ namespace SDHK
 
         public override void OnDispose()
         {
+            EntityRoot.Root.RemoveAll();
+
             listeners.Clear();
             listeners.Recycle();
 
@@ -80,8 +99,15 @@ namespace SDHK
             singletonEntitys.Clear();
             singletonEntitys.Recycle();
 
+            addSystems.Clear();
+            addSystems.Recycle();
+
+            removeSystems.Clear();
+            removeSystems.Recycle();
+
             poolManager.Dispose();
             systemManager.Dispose();
+            IdManager.Instance.Dispose();
 
             instance = null;
         }
@@ -108,7 +134,7 @@ namespace SDHK
                 {
                     system.Add(entity);
                 }
-            }  
+            }
 
             if (entitySystems.ContainsKey(typeKey))//检测到系统存在，则说明这是个管理器
             {
