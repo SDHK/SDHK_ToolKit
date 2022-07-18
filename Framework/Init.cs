@@ -21,7 +21,6 @@ namespace SDHK
     /// <summary>
     /// 主节点
     /// </summary>
-
     public class MainEntity : SingletonEntityBase<MainEntity> { }
 
 

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace SDHK
 {
+    /// <summary>
+    /// LateUpdate生命周期管理器实体
+    /// </summary>
     public class LateUpdateManager : SingletonEntityBase<LateUpdateManager>
     {
         public UnitDictionary<ulong, IEntity> update1 = new UnitDictionary<ulong, IEntity>();
