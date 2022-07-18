@@ -46,6 +46,16 @@ namespace SDHK
         }
     }
 
+    class LateUpdateManagerDestroySystem : DestroySystem<LateUpdateManager>
+    {
+        public override void OnDestroy(LateUpdateManager entity)
+        {
+            entity.systems.Clear();
+            entity.systems.Recycle();
+            entity.Dispose();
+        }
+    }
+
     class LateUpdateManagerEntityListenerSystem : EntitySystem<LateUpdateManager>
     {
         public override void OnAddEntity(LateUpdateManager self, IEntity entity)

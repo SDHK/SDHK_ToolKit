@@ -9,7 +9,7 @@ namespace SDHK
     /// <summary>
     /// 实体单例化
     /// </summary>
-    public class SingletonEntityBase<T> : Entity
+    public class SingletonEntityBase<T> : Entity, IUnit
         where T : class, IEntity
     {
         protected static T instance;//实例
@@ -35,6 +35,20 @@ namespace SDHK
         public static T GetInstance()
         {
             return Instance;
+        }
+        /// <summary>
+        /// 直接释放：释放后IsDisposed标记为true
+        /// </summary>
+        public virtual void Dispose()
+        {
+            if (IsDisposed) return;
+            OnDispose();
+            IsDisposed = true;
+        }
+
+        public virtual void OnDispose()
+        {
+            instance = null;
         }
     }
 

@@ -34,7 +34,7 @@ namespace SDHK
     {
         public void Instance()
         {
-            EntityRoot.Root.GetComponent<T>();
+            RootEntity.Root.GetComponent<T>();
         }
     }
 }

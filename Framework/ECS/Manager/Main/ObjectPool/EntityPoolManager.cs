@@ -43,19 +43,10 @@ namespace SDHK
             SystemManager.Instance.RegisterSystems<IRecycleSystem>();
             SystemManager.Instance.RegisterSystems<IDestroySystem>();
             Root.AddComponent(this);
-        }
 
-        /// <summary>
-        /// 直接释放：释放后IsDisposed标记为true
-        /// </summary>
-        public void Dispose()
-        {
-            if (IsDisposed) return;
-            OnDispose();
-            IsDisposed = true;
         }
-
-        public void OnDispose()
+      
+        public override void OnDispose()
         {
             foreach (var item in pools)
             {

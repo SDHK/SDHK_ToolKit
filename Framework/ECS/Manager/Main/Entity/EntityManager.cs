@@ -28,9 +28,9 @@ namespace SDHK
     /// <summary>
     /// 根节点实体
     /// </summary>
-    public class EntityRoot : Entity
+    public class RootEntity : Entity
     {
-        public EntityRoot()
+        public RootEntity()
         {
             Id = IdManager.GetID;
             Type = GetType();
@@ -47,6 +47,8 @@ namespace SDHK
 
         private UnitDictionary<Type, IEntity> listeners;//有监听器的实体
 
+        private RootEntity rootEntity;
+
         private SystemGroup singletonEntitys;
         private SystemGroup entitySystems;
 
@@ -60,7 +62,7 @@ namespace SDHK
 
         public override void OnInstance()
         {
-            new EntityRoot();
+            rootEntity= new RootEntity();
             systemManager = SystemManager.Instance;
             listeners = UnitDictionary<Type, IEntity>.GetObject();
 
@@ -88,7 +90,7 @@ namespace SDHK
 
         public override void OnDispose()
         {
-            EntityRoot.Root.RemoveAll();
+            rootEntity.RemoveAll();
 
             listeners.Clear();
             listeners.Recycle();

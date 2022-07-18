@@ -45,6 +45,16 @@ namespace SDHK
         }
     }
 
+    class FixedUpdateManagerDestroySystem : DestroySystem<FixedUpdateManager>
+    {
+        public override void OnDestroy(FixedUpdateManager entity)
+        {
+            entity.systems.Clear();
+            entity.systems.Recycle();
+            entity.Dispose();
+        }
+    }
+
     class FixedUpdateManagerEntityListenerSystem : EntitySystem<FixedUpdateManager>
     {
         public override void OnAddEntity(FixedUpdateManager self, IEntity entity)

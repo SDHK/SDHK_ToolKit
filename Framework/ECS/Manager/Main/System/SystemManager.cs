@@ -76,7 +76,7 @@ namespace SDHK
             }
             else
             {
-                return null;
+                return SystemGroup.GetObject();
             }
         }
 

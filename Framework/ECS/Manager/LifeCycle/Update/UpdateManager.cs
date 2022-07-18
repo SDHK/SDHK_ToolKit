@@ -37,15 +37,10 @@ namespace SDHK
         }
     }
 
-    /// <summary>
-    /// 饿汉单例事件系统
-    /// </summary>
+
     public class UpdateManagerSingletonEagerSystem : SingletonEagerSystem<UpdateManager> { }
 
 
-    /// <summary>
-    /// 组件添加事件系统
-    /// </summary>
     public class UpdateManagerNewSystem : NewSystem<UpdateManager>
     {
         public override void OnNew(UpdateManager entity)
@@ -54,6 +49,15 @@ namespace SDHK
         }
     }
 
+    class UpdateManagerDestroySystem : DestroySystem<UpdateManager>
+    {
+        public override void OnDestroy(UpdateManager entity)
+        {
+            entity.systems.Clear();
+            entity.systems.Recycle();
+            entity.Dispose();
+        }
+    }
 
     public class UpdateManagerEntityListenerSystem : EntitySystem<UpdateManager>
     {

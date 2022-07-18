@@ -30,7 +30,6 @@ namespace SDHK
         public override void OnDispose()
         {
             EntityManager.Instance.Dispose();
-          
             instance = null;
         }
 
