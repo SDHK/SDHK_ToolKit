@@ -37,9 +37,6 @@ namespace SDHK
     }
 
 
-    class FixedUpdateManagerSingletonEagerSystem : SingletonEagerSystem<FixedUpdateManager> { }
-
-
     class FixedUpdateManagerNewSystem : NewSystem<FixedUpdateManager>
     {
         public override void OnNew(FixedUpdateManager entity)

@@ -38,9 +38,6 @@ namespace SDHK
     }
 
 
-    public class UpdateManagerSingletonEagerSystem : SingletonEagerSystem<UpdateManager> { }
-
-
     public class UpdateManagerNewSystem : NewSystem<UpdateManager>
     {
         public override void OnNew(UpdateManager entity)

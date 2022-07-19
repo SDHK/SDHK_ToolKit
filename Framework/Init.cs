@@ -28,11 +28,13 @@ namespace SDHK
     {
         public MainEntity entity;
 
+        SoloistFramework soloist;
+
+
         UpdateManager update;
         LateUpdateManager lateUpdate;
         FixedUpdateManager fixedUpdate;
 
-        SoloistFramework soloist;
         private void Start()
         {
             soloist = SoloistFramework.GetInstance();
@@ -72,5 +74,6 @@ namespace SDHK
         {
 
         }
+
     }
 }

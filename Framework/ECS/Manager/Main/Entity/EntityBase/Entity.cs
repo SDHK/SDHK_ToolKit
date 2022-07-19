@@ -33,6 +33,11 @@ namespace SDHK
         }
     }
 
+    //或许需要一个Edit的根节点，Main应该是域的概念：组件
+    //需要一个bool激活标记
+    //可以设置任意组件为域
+
+
     /// <summary>
     /// 实体基类
     /// </summary>

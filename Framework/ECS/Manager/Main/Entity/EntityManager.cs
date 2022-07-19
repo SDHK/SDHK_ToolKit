@@ -32,9 +32,12 @@ namespace SDHK
     {
         public RootEntity()
         {
-            Id = IdManager.GetID;
-            Type = GetType();
-            Root = this;
+            if (Root==null)
+            {
+                Id = IdManager.GetID;
+                Type = GetType();
+                Root = this;
+            }
         }
     }
 

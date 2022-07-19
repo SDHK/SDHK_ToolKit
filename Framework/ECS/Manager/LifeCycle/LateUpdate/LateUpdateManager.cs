@@ -37,9 +37,6 @@ namespace SDHK
     }
 
 
-    class LateUpdateManagerSingletonEagerSystem : SingletonEagerSystem<LateUpdateManager> { }
-
-
     class LateUpdateManagerNewSystem : NewSystem<LateUpdateManager>
     {
         public override void OnNew(LateUpdateManager entity)
