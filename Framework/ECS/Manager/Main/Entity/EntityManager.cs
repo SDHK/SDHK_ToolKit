@@ -32,14 +32,21 @@ namespace SDHK
     {
         public RootEntity()
         {
+
+            Debug.Log("NewRoot");
+
             if (Root==null)
             {
+                Debug.Log("Root");
                 Id = IdManager.GetID;
                 Type = GetType();
                 Root = this;
             }
         }
     }
+
+    // 改成实体并定义为域,需要一个主域?作为主生命周期，
+    // 大域后 ，分生命周期组（层）
 
     /// <summary>
     /// 实体管理器
