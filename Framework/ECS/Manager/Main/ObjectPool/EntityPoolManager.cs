@@ -25,17 +25,16 @@ namespace SDHK
     /// <summary>
     /// 实体对象池管理器
     /// </summary>
-    public class EntityPoolManager : SingletonEntityBase<EntityPoolManager>, IUnit
+    public class EntityPoolManager : Entity, IUnit
     {
 
-        UnitDictionary<Type, PoolBase> pools;
+        UnitDictionary<Type, EntityPool> pools;
 
         public EntityPoolManager()//通过构造函数来打破自己单例的死循环
         {
             Id = IdManager.GetID;
             Type = GetType();
-            instance = this;
-            pools = UnitDictionary<Type, PoolBase>.GetObject();
+            pools = UnitDictionary<Type, EntityPool>.GetObject();
 
             //注册生命周期系统
             SystemManager.Instance.RegisterSystems<INewSystem>();
@@ -45,8 +44,15 @@ namespace SDHK
             Root.AddComponent(this);
 
         }
-      
-        public override void OnDispose()
+
+        public void Dispose()
+        {
+            if (IsDisposed) return;
+            OnDispose();
+            IsDisposed = true;
+        }
+
+        public void OnDispose()
         {
             foreach (var item in pools)
             {
@@ -54,54 +60,60 @@ namespace SDHK
             }
             pools.Clear();
             pools.Recycle();
-            instance = null;
         }
 
         /// <summary>
-        /// 获取单位
+        /// 获取实体
         /// </summary>
         public T Get<T>()
         where T : class, IEntity
         {
             Type type = typeof(T);
-            if (pools.TryGetValue(type, out PoolBase pool))
+            return Get(type) as T;
+        }
+
+        /// <summary>
+        /// 获取实体
+        /// </summary>
+        public IEntity Get(Type type) {
+
+            if (pools.TryGetValue(type, out EntityPool pool))
             {
-                return (pool as EntityPool<T>).Get();
+                return pool.GetObject() ;
             }
             else
             {
-                EntityPool<T> newPool = new EntityPool<T>();
+                EntityPool newPool = new EntityPool();
+                newPool.ObjectType = type;
+
                 pools.Add(type, newPool);
                 AddChildren(newPool);
-                return newPool.Get();
+                return newPool.GetObject();
             }
         }
-
-
 
 
         /// <summary>
         /// 回收对象
         /// </summary>
-        public void Recycle<T>(T obj)
-        where T : class, IEntity
+        public void Recycle(IEntity obj)
         {
-            if (obj != this && !(obj is PoolBase))//禁止回收自己和对象池
+            if (obj != this && !(obj is EntityPool))//禁止回收自己和对象池
             {
-                if (pools.TryGetValue(obj.Type, out PoolBase pool))
+                if (pools.TryGetValue(obj.Type, out EntityPool pool))
                 {
                     pool.Recycle(obj);
                 }
                 else
                 {
-                    EntityPool<T> newPool = new EntityPool<T>();
+                    EntityPool newPool = new EntityPool();
                     pools.Add(obj.Type, newPool);
                     AddChildren(newPool);
                     newPool.Recycle(obj);
                 }
             }
-
         }
 
+      
     }
 }

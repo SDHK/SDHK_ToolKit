@@ -101,7 +101,7 @@ namespace SDHK
             return gameObject;
         }
 
-        private GameObject ObjectNew(PoolBase pool)
+        private GameObject ObjectNew(IPool pool)
         {
             return (prefab == null) ? new GameObject(objName) : GameObject.Instantiate(prefab);
         }

@@ -108,7 +108,7 @@ namespace SDHK
     
 
 
-        private T ObjectNew(PoolBase pool)
+        private T ObjectNew(IPool pool)
         {
             GameObject gameObj = (prefab == null) ? new GameObject(objName) : GameObject.Instantiate(prefab);
             gameObj.name = objName;

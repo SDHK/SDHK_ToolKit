@@ -49,7 +49,7 @@ namespace SDHK
     /// </summary>
     public abstract class UnitPoolItem : Unit, IUnitPoolItem
     {
-        public PoolBase thisPool { get; set; }
+        public IPool thisPool { get; set; }
 
         public bool IsRecycle { get; set; }
 

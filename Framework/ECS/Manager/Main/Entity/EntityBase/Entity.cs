@@ -17,21 +17,21 @@ using UnityEngine;
 namespace SDHK
 {
 
-    /// <summary>
-    /// 泛型实体基类：提供获取和回收对象的方法
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public abstract class Entity<T> : Entity
-        where T : Entity<T>
-    {
-        /// <summary>
-        /// 单位对象池：获取对象
-        /// </summary>
-        public static T GetObject()
-        {
-            return EntityPoolManager.Instance.Get<T>();
-        }
-    }
+    ///// <summary>
+    ///// 泛型实体基类：提供获取和回收对象的方法
+    ///// </summary>
+    ///// <typeparam name="T"></typeparam>
+    //public abstract class Entity<T> : Entity
+    //    where T : Entity<T>
+    //{
+    //    /// <summary>
+    //    /// 单位对象池：获取对象
+    //    /// </summary>
+    //    public static T GetObject()
+    //    {
+    //        return null;
+    //    }
+    //}
 
     //或许需要一个Edit的根节点，Main应该是域的概念：组件
     //需要一个bool激活标记
@@ -51,14 +51,12 @@ namespace SDHK
 
         public Type Type { get; set; }
 
-        /// <summary>
-        /// 根节点
-        /// </summary>
-        public static IEntity Root;
 
-        /// <summary>
-        /// 父节点
-        /// </summary>
+        public EntityManager Root { get; set; }
+
+        public EntityManager Domain { get; set; }//节点换域需要递归子节点
+
+
         public IEntity Parent { get; set; }
 
         private UnitDictionary<ulong, IEntity> children;
@@ -89,6 +87,12 @@ namespace SDHK
         }
 
 
+        public T To<T>()
+        where T : class, IEntity
+        {
+            return this as T;
+        }
+
         public void AddChildren(IEntity entity)
         {
             if (entity != null)
@@ -96,7 +100,9 @@ namespace SDHK
                 if (Children.TryAdd(entity.Id, entity))
                 {
                     entity.Parent = this;
-                    EntityManager.Instance.Add(entity);
+                    entity.Domain = Domain;
+                    entity.Root = Root;
+                    Domain.Add(entity);
                 }
             }
         }
@@ -104,11 +110,14 @@ namespace SDHK
         public T GetChildren<T>()
             where T : class, IEntity
         {
-            T entity = EntityPoolManager.Instance.Get<T>();
+            T entity = Domain.GetComponent<EntityPoolManager>().Get<T>();
             if (Children.TryAdd(entity.Id, entity))
             {
                 entity.Parent = this;
-                EntityManager.Instance.Add(entity);
+                entity.Domain = Domain;
+                entity.Root = Root;
+
+                Domain.Add(entity);
             }
 
             return entity;
@@ -120,13 +129,16 @@ namespace SDHK
         {
             if (entity != null)
             {
-                EntityManager.Instance.Remove(entity);
+                Domain.Remove(entity);
                 entity.RemoveAll();
 
                 entity.Parent = null;
+                entity.Domain = null;
+                entity.Root = null;
+
                 Children.Remove(entity.Id);
 
-                EntityPoolManager.Instance.Recycle(entity);
+                Domain.GetComponent<EntityPoolManager>().Recycle(entity);
                 if (children.Count == 0)
                 {
                     children.Recycle();
@@ -144,12 +156,15 @@ namespace SDHK
             T component = null;
             if (!Components.TryGetValue(type, out IEntity entity))
             {
-                component = EntityPoolManager.Instance.Get<T>();
+                component = Domain.GetComponent<EntityPoolManager>().Get<T>();
                 component.Parent = this;
+                component.Domain = Domain;
+                component.Root = Root;
+
                 component.IsComponent = true;
 
                 components.Add(type, component);
-                EntityManager.Instance.Add(component);
+                Domain.Add(component);
             }
             else
             {
@@ -165,9 +180,12 @@ namespace SDHK
             if (!Components.ContainsKey(type))
             {
                 component.Parent = this;
+                component.Domain = Domain;
+                component.Root = Root;
+
                 component.IsComponent = true;
                 components.Add(type, component);
-                EntityManager.Instance.Add(component);
+                Domain.Add(component);
             }
         }
         public void RemoveComponent<T>()
@@ -177,14 +195,16 @@ namespace SDHK
             if (Components.ContainsKey(type))
             {
                 IEntity component = components[type];
-                EntityManager.Instance.Remove(component);
+                Domain.Remove(component);
 
                 component.RemoveAll();
 
                 component.Parent = null;
+                component.Domain = null;
+                component.Root = null;
 
                 components.Remove(type);
-                EntityPoolManager.Instance.Recycle(component);
+                Domain.GetComponent<EntityPoolManager>().Recycle(component);
                 if (components.Count == 0)
                 {
                     components.Recycle();
@@ -197,12 +217,15 @@ namespace SDHK
         {
             if (Components.ContainsValue(component))
             {
-                EntityManager.Instance.Remove(component);
+                Domain.Remove(component);
                 component.RemoveAll();
 
                 component.Parent = null;
+                component.Domain = null;
+                component.Root = null;
+
                 components.Remove(component.Type);
-                EntityPoolManager.Instance.Recycle(component);
+                Domain.GetComponent<EntityPoolManager>().Recycle(component);
                 if (components.Count == 0)
                 {
                     components.Recycle();
@@ -249,9 +272,9 @@ namespace SDHK
             }
             else
             {
-                EntityManager.Instance.Remove(this);
+                Domain.Remove(this);
                 RemoveAll();
-                EntityPoolManager.Instance.Recycle(this);
+                Domain.GetComponent<EntityPoolManager>().Recycle(this);
             }
         }
     }

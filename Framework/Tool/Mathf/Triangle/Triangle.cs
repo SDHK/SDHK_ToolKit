@@ -82,7 +82,7 @@ namespace SDHK
         /// <param name="edgeA">角A的对边</param>
         /// <param name="edgeB">角B的对边</param>
         /// <param name="obtuseAngleB">角B优先解为钝角,一般为false</param>
-        public Triangle SolutionsFromAEE(float angleA, float edgeA, float edgeB, bool obtuseAngleB)//1角2边解三角，钝角锐角都可解，obtuseAngleB钝角优先解
+        public Triangle SolutionsFromAEE(float angleA, float edgeA, float edgeB, bool obtuseAngleB=false)//1角2边解三角，钝角锐角都可解，obtuseAngleB钝角优先解
         {
             this.angleA = angleA;
             this.edgeA = edgeA;

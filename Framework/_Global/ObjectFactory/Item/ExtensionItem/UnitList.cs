@@ -21,7 +21,7 @@ namespace SDHK
     /// </summary>
     public class UnitList<T> : List<T>, IUnitPoolItem
     {
-        public PoolBase thisPool { get; set; }
+        public IPool thisPool { get; set; }
         public bool IsRecycle { get; set; }
         public bool IsDisposed { get; set; }
 

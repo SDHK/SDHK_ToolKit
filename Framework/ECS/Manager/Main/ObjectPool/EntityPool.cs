@@ -27,11 +27,141 @@ namespace SDHK
     /// <summary>
     /// 实体对象池
     /// </summary>
-    public class EntityPool<E> : GenericPool<E>, IEntity
-        where E : class, IEntity
+    public class EntityPool : Entity
     {
-        public bool IsRecycle { get; set; }
-        public bool IsComponent { get; set; }
+        /// <summary>
+        /// 对象类型
+        /// </summary>
+        public Type ObjectType { get; set; }
+
+
+        /// <summary>
+        /// 对象池
+        /// </summary>
+        private Queue<IEntity> objetPool = new Queue<IEntity>();
+
+        /// <summary>
+        /// 当前保留对象数量
+        /// </summary>
+        public int Count => objetPool.Count;
+        /// <summary>
+        /// 预加载数量
+        /// </summary>
+        public int minLimit = 0;
+
+        /// <summary>
+        /// 对象回收数量限制
+        /// </summary>
+        public int maxLimit = -1;
+
+        /// <summary>
+        /// 从队列获取一个对象，假如队列无对象则新建对象
+        /// </summary>
+        public IEntity DequeueOrNewObject()
+        {
+            lock (objetPool)
+            {
+                IEntity obj = null;
+
+                while (objetPool.Count > 0 && obj == null)
+                {
+                    obj = objetPool.Dequeue();
+                }
+
+                if (obj == null)
+                {
+                    obj = ObjectNew();
+                    ObjectOnNew(obj);
+                }
+
+                return obj;
+            }
+        }
+
+        public IEntity GetObject()
+        {
+            IEntity obj = DequeueOrNewObject();
+            ObjectOnGet(obj);
+            return obj;
+        }
+
+        public void Recycle(IEntity obj)
+        {
+            lock (objetPool)
+            {
+                if (obj != null)
+                {
+
+                    if (maxLimit == -1 || objetPool.Count < maxLimit)
+                    {
+                        if (!objetPool.Contains(obj))
+                        {
+                            ObjectOnRecycle(obj);
+                            objetPool.Enqueue(obj);
+                        }
+                    }
+                    else
+                    {
+                        ObjectOnRecycle(obj);
+                        ObjectOnDestroy(obj);
+                        ObjectDestroy(obj);
+                    }
+                }
+            }
+        }
+
+        public void DisposeAll()
+        {
+            lock (objetPool)
+            {
+                while (objetPool.Count > 0)
+                {
+                    var obj = objetPool.Dequeue();
+                    ObjectOnDestroy(obj);
+                    ObjectDestroy(obj);
+                }
+            }
+        }
+
+        public void DisposeOne()
+        {
+            lock (objetPool)
+            {
+                if (objetPool.Count > 0)
+                {
+                    var obj = objetPool.Dequeue();
+                    ObjectOnDestroy(obj);
+                    ObjectDestroy(obj);
+                }
+            }
+        }
+
+        public void Preload()
+        {
+            lock (objetPool)
+            {
+                while (objetPool.Count < minLimit)
+                {
+                    IEntity obj = ObjectNew();
+                    ObjectOnNew(obj);
+                    objetPool.Enqueue(obj);
+                }
+            }
+        }
+
+
+        public void Dispose()
+        {
+            if (IsDisposed) return;
+            OnDispose();
+            IsDisposed = true;
+        }
+
+        public void OnDispose()
+        {
+            DisposeAll();
+        }
+
 
 
         private UnitList<ISystem> newSystem;
@@ -44,16 +174,6 @@ namespace SDHK
             Id = IdManager.GetID;
             Type = GetType();
 
-            ObjectType = typeof(E);
-
-            NewObject = ObjectNew;
-            DestroyObject = ObjectDestroy;
-
-            objectOnNew += ObjectOnNew;
-            objectOnGet += ObjectOnGet;
-            objectOnRecycle += ObjectOnRecycle;
-            objectOnDestroy += ObjectOnDestroy;
-
             newSystem = SystemManager.Instance.GetSystems<INewSystem>(ObjectType);
             getSystem = SystemManager.Instance.GetSystems<IGetSystem>(ObjectType);
             recycleSystem = SystemManager.Instance.GetSystems<IRecycleSystem>(ObjectType);
@@ -65,15 +185,15 @@ namespace SDHK
             return "[EntityPool<" + ObjectType.Name + ">] ";
         }
 
-        private E ObjectNew(PoolBase pool)
+        private IEntity ObjectNew()
         {
-            E entity = Activator.CreateInstance(ObjectType, true) as E;
+            IEntity entity = Activator.CreateInstance(ObjectType, true) as IEntity;
             entity.Id = IdManager.GetID;
             entity.Type = entity.GetType();
 
             return entity;
         }
-        private void ObjectDestroy(E obj)
+        private void ObjectDestroy(IEntity obj)
         {
             if (obj != null)
             {
@@ -86,7 +206,7 @@ namespace SDHK
 
         }
 
-        private void ObjectOnNew(E obj)
+        private void ObjectOnNew(IEntity obj)
         {
             if (newSystem != null)
             {
@@ -97,7 +217,7 @@ namespace SDHK
             }
         }
 
-        private void ObjectOnGet(E obj)
+        private void ObjectOnGet(IEntity obj)
         {
             obj.IsRecycle = false;
             if (getSystem != null)
@@ -110,8 +230,7 @@ namespace SDHK
 
         }
 
-
-        private void ObjectOnRecycle(E obj)
+        private void ObjectOnRecycle(IEntity obj)
         {
             obj.IsRecycle = true;
             if (recycleSystem != null)
@@ -123,7 +242,7 @@ namespace SDHK
             }
         }
 
-        private void ObjectOnDestroy(E obj)
+        private void ObjectOnDestroy(IEntity obj)
         {
             if (destroySystem != null)
             {
@@ -135,199 +254,5 @@ namespace SDHK
         }
 
 
-        public ulong Id { get; set; }
-        public Type Type { get; set; }
-        public IEntity Parent { get; set; }
-
-
-        private UnitDictionary<ulong, IEntity> children;
-        private UnitDictionary<Type, IEntity> components;
-
-        public UnitDictionary<ulong, IEntity> Children
-        {
-            get
-            {
-                if (children == null)
-                {
-                    children = UnitDictionary<ulong, IEntity>.GetObject();
-                }
-                return children;
-            }
-        }
-        public UnitDictionary<Type, IEntity> Components
-        {
-            get
-            {
-                if (components == null)
-                {
-                    components = UnitDictionary<Type, IEntity>.GetObject();
-                }
-                return components;
-            }
-        }
-
-
-
-        public void AddChildren(IEntity entity)
-        {
-            if (entity != null)
-            {
-                if (Children.TryAdd(entity.Id, entity))
-                {
-                    entity.Parent = this;
-                    EntityManager.Instance.Add(entity);
-                }
-            }
-        }
-
-        public T GetChildren<T>()
-            where T : class, IEntity
-        {
-            T entity = EntityPoolManager.Instance.Get<T>();
-            if (Children.TryAdd(entity.Id, entity))
-            {
-                entity.Parent = this;
-                EntityManager.Instance.Add(entity);
-            }
-
-            return entity;
-        }
-
-
-
-        public void RemoveChildren(IEntity entity)
-        {
-            if (entity != null)
-            {
-                EntityManager.Instance.Remove(entity);
-                entity.RemoveAll();
-
-                entity.Parent = null;
-                Children.Remove(entity.Id);
-                EntityPoolManager.Instance.Recycle(entity);
-                if (children.Count == 0)
-                {
-                    children.Recycle();
-                    children = null;
-                }
-            }
-        }
-
-
-        public T GetComponent<T>()
-            where T : class, IEntity
-        {
-            Type type = typeof(T);
-
-            T component = null;
-            if (!Components.TryGetValue(type, out IEntity entity))
-            {
-                component = EntityPoolManager.Instance.Get<T>();
-                component.Parent = this;
-                component.IsComponent = true;
-
-                components.Add(type, component);
-                EntityManager.Instance.Add(component);
-            }
-            else
-            {
-                component = entity as T;
-            }
-
-            return component;
-        }
-
-        public void AddComponent(IEntity component)
-        {
-            Type type = component.Type;
-            if (!Components.ContainsKey(type))
-            {
-                component.Parent = this;
-                component.IsComponent = true;
-                components.Add(type, component);
-                EntityManager.Instance.Add(component);
-            }
-        }
-        public void RemoveComponent<T>()
-            where T : class, IEntity
-        {
-            Type type = typeof(T);
-            if (Components.ContainsKey(type))
-            {
-                IEntity component = components[type];
-                EntityManager.Instance.Remove(component);
-                component.RemoveAll();
-
-                component.Parent = null;
-                components.Remove(type);
-                EntityPoolManager.Instance.Recycle(component);
-                if (components.Count == 0)
-                {
-                    components.Recycle();
-                    components = null;
-                }
-            }
-        }
-
-        public void RemoveComponent(IEntity component)
-        {
-            if (Components.ContainsValue(component))
-            {
-                EntityManager.Instance.Remove(component);
-                component.RemoveAll();
-                component.Parent = null;
-                components.Remove(component.Type);
-                EntityPoolManager.Instance.Recycle(component);
-                if (components.Count == 0)
-                {
-                    components.Recycle();
-                    components = null;
-                }
-            }
-
-        }
-
-
-        public void RemoveAllChildren()
-        {
-            while (Children.Count > 0)
-            {
-                RemoveChildren(Children.First().Value);
-            }
-        }
-        public void RemoveAllComponent()
-        {
-            while (Components.Count > 0)
-            {
-                RemoveComponent(Components.First().Value);
-            }
-        }
-
-        public void RemoveAll()
-        {
-            RemoveAllChildren();
-            RemoveAllComponent();
-        }
-
-        public void Recycle()
-        {
-            if (Parent != null)
-            {
-                if (IsComponent)
-                {
-                    Parent.RemoveComponent(this);
-                }
-                else
-                {
-                    Parent.RemoveChildren(this);
-                }
-            }
-            else
-            {
-                EntityManager.Instance.Remove(this);
-                RemoveAll();
-                EntityPoolManager.Instance.Recycle(this);
-            }
-        }
     }
 }

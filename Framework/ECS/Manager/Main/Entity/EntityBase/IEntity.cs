@@ -38,7 +38,13 @@ namespace SDHK
         /// <summary>
         /// 根节点
         /// </summary>
-        public static IEntity Root { get; set; }
+        public EntityManager Root { get; set; }
+
+        /// <summary>
+        /// 域节点
+        /// </summary>
+        public EntityManager Domain { get; set; }
+
         /// <summary>
         /// 父节点
         /// </summary>
@@ -52,6 +58,11 @@ namespace SDHK
         /// 组件
         /// </summary>
         public UnitDictionary<Type, IEntity> Components { get; }
+
+        /// <summary>
+        /// 类型转换
+        /// </summary>
+        public T To<T>() where T :class, IEntity;
 
         /// <summary>
         /// 添加子节点

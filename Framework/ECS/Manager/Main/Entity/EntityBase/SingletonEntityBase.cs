@@ -21,10 +21,10 @@ namespace SDHK
         {
             get
             {
-                if (instance is null)
-                {
-                    instance= Root.GetComponent<T>();
-                }
+                //if (instance is null)
+                //{
+                //    instance= Root.GetComponent<T>();
+                //}
                 return instance;
             }
         }

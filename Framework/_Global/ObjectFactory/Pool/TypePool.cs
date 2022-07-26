@@ -27,7 +27,7 @@ namespace SDHK
             NewObject = ObjectNew;
             DestroyObject = ObjectDestroy;
         }
-        private object ObjectNew(PoolBase pool)
+        private object ObjectNew(IPool pool)
         {
             return Activator.CreateInstance(ObjectType, true);
         }

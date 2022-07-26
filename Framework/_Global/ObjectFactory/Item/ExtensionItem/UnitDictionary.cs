@@ -24,7 +24,7 @@ namespace SDHK
     /// </summary>
     public class UnitDictionary<TKey,TValue>:Dictionary<TKey, TValue>,IUnitPoolItem
     {
-        public PoolBase thisPool { get; set; }
+        public IPool thisPool { get; set; }
         public bool IsRecycle { get; set; }
         public bool IsDisposed { get; set; }
 

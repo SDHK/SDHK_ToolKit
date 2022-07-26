@@ -19,7 +19,7 @@ namespace SDHK
     /// </summary>
     public class GenericPoolManager : SingletonBase<GenericPoolManager>
     {
-        private Dictionary<Type, PoolBase> pools = new Dictionary<Type, PoolBase>();
+        private Dictionary<Type, IPool> pools = new Dictionary<Type, IPool>();
 
         /// <summary>
         /// 获取对象：通用对象池需要手动添加进来
@@ -28,7 +28,7 @@ namespace SDHK
         where T : class, IUnitPoolItem
         {
             Type type = typeof(T);
-            if (pools.TryGetValue(type, out PoolBase pool))
+            if (pools.TryGetValue(type, out IPool pool))
             {
                 return pool.GetObject() as T;
             }
@@ -45,7 +45,7 @@ namespace SDHK
         where T : class
         {
             Type type = typeof(T);
-            if (pools.TryGetValue(type, out PoolBase pool))
+            if (pools.TryGetValue(type, out IPool pool))
             {
                 pool.Recycle(obj);
             }
@@ -71,7 +71,7 @@ namespace SDHK
         where T : class, IUnitPoolItem
         {
             Type type = typeof(T);
-            if (pools.TryGetValue(type, out PoolBase pool))
+            if (pools.TryGetValue(type, out IPool pool))
             {
                 return pool as UnitPool<T>;
             }
@@ -86,7 +86,7 @@ namespace SDHK
         public void DisposePool<T>()
         {
             Type type = typeof(T);
-            if (pools.TryGetValue(type, out PoolBase pool))
+            if (pools.TryGetValue(type, out IPool pool))
             {
                 pool.Dispose();
                 pools.Remove(type);

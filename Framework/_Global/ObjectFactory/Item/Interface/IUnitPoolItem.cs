@@ -36,7 +36,7 @@ namespace SDHK
         /// <summary>
         /// 产生此类的对象池：由对象池自动赋值，用于实例的自我回收
         /// </summary>
-        PoolBase thisPool { get; set; }
+        IPool thisPool { get; set; }
 
         /// <summary>
         /// 回收标记
