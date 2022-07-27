@@ -38,7 +38,8 @@ namespace SDHK
     }
 
 
-    public class UpdateManagerNewSystem : NewSystem<UpdateManager>
+
+    class UpdateManagerNewSystem : NewSystem<UpdateManager>
     {
         public override void OnNew(UpdateManager self)
         {
@@ -55,7 +56,7 @@ namespace SDHK
         }
     }
 
-    public class UpdateManagerEntityListenerSystem : EntitySystem<UpdateManager>
+    class UpdateManagerEntityListenerSystem : EntitySystem<UpdateManager>
     {
         public override void OnAddEntity(UpdateManager self, IEntity entity)
         {
