@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace SDHK
 {
@@ -39,6 +40,7 @@ namespace SDHK
     {
         public override void Update(GameDomain self)
         {
+            self.update.isActive = Input.GetKey(KeyCode.Return);
             self.update.Update();
         }
     }
