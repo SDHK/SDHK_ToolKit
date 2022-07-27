@@ -68,13 +68,16 @@ namespace SDHK
             listeners.Clear();
             listeners.Recycle();
 
+          
+
+            pool.RemoveSelf();//移除所有组件
+            pool.Dispose();//全部释放
+
             listeners = null;
             entitySystems = null;
             addSystems = null;
             removeSystems = null;
 
-            pool.RemoveSelf();//移除所有组件
-            pool.Dispose();//全部释放
         }
 
 

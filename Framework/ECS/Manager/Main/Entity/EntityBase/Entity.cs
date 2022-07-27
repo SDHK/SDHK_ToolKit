@@ -103,9 +103,11 @@ namespace SDHK
             {
                 if (Children.TryAdd(entity.Id, entity))
                 {
+                    EntityDomain domain = this as EntityDomain ?? Domain;
+
                     entity.Parent = this;
-                    entity.Domain = this as EntityDomain ?? Domain;
-                    Domain.Add(entity);
+                    entity.Domain = domain;
+                    domain.Add(entity);
                 }
             }
         }
@@ -113,14 +115,15 @@ namespace SDHK
         public T GetChildren<T>()
             where T : class, IEntity
         {
-            T entity = Domain.pool.Get<T>();
+            EntityDomain domain = this as EntityDomain ?? Domain;
+
+            T entity = domain.pool.Get<T>();
             if (Children.TryAdd(entity.Id, entity))
             {
                 entity.Parent = this;
-                entity.Domain = this as EntityDomain ?? Domain;
+                entity.Domain = domain;
 
-
-                Domain.Add(entity);
+                domain.Add(entity);
             }
 
             return entity;
@@ -132,7 +135,10 @@ namespace SDHK
         {
             if (entity != null)
             {
-                Domain.Remove(entity);
+                EntityDomain domain = this as EntityDomain ?? Domain;
+
+
+                domain.Remove(entity);
                 entity.RemoveAll();
 
                 entity.Parent = null;
@@ -142,7 +148,7 @@ namespace SDHK
 
 
 
-                Domain.pool.Recycle(entity);
+                domain.pool.Recycle(entity);
 
 
                 if (children.Count == 0)
@@ -162,16 +168,17 @@ namespace SDHK
             T component = null;
             if (!Components.TryGetValue(type, out IEntity entity))
             {
+                EntityDomain domain = this as EntityDomain ?? Domain;
 
-                component = Domain.pool.Get<T>();
+                component = domain.pool.Get<T>();
 
                 component.Parent = this;
-                component.Domain = this as EntityDomain ?? Domain;
+                component.Domain = domain;
 
                 component.IsComponent = true;
 
                 components.Add(type, component);
-                Domain.Add(component);
+                domain.Add(component);
             }
             else
             {
@@ -186,12 +193,14 @@ namespace SDHK
             Type type = component.Type;
             if (!Components.ContainsKey(type))
             {
+                EntityDomain domain = this as EntityDomain ?? Domain;
+
                 component.Parent = this;
-                component.Domain = this as EntityDomain ?? Domain;
+                component.Domain = domain;
 
                 component.IsComponent = true;
                 components.Add(type, component);
-                Domain.Add(component);
+                domain.Add(component);
             }
         }
         public void RemoveComponent<T>()
@@ -200,8 +209,10 @@ namespace SDHK
             Type type = typeof(T);
             if (Components.ContainsKey(type))
             {
+                EntityDomain domain = this as EntityDomain ?? Domain;
+
                 IEntity component = components[type];
-                Domain.Remove(component);
+                domain.Remove(component);
 
                 component.RemoveAll();
 
@@ -212,7 +223,7 @@ namespace SDHK
 
 
 
-                Domain.pool.Recycle(component);
+                domain.pool.Recycle(component);
 
                 if (components.Count == 0)
                 {
@@ -226,14 +237,16 @@ namespace SDHK
         {
             if (Components.ContainsValue(component))
             {
-                Domain.Remove(component);
+                EntityDomain domain = this as EntityDomain ?? Domain;
+
+                domain.Remove(component);
                 component.RemoveAll();
 
                 component.Parent = null;
                 component.Domain = null;
 
                 components.Remove(component.Type);
-                Domain.pool.Recycle(component);
+                domain.pool.Recycle(component);
                 if (components.Count == 0)
                 {
                     components.Recycle();
