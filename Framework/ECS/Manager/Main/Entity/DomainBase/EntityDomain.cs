@@ -25,73 +25,58 @@ using UnityEngine;
 
 namespace SDHK
 {
-    /// <summary>
-    /// 根节点实体
-    /// </summary>
-    public class RootEntity : Entity
-    {
-        public RootEntity()
-        {
-
-            Debug.Log("NewRoot");
-
-            if (Root == null)
-            {
-                Debug.Log("Root");
-                Id = IdManager.GetID;
-                Type = GetType();
-                //Root = this;
-            }
-        }
-    }
-
-    // 改成实体并定义为域,需要一个主域?作为主生命周期。
 
     /// <summary>
-    /// 实体管理器
+    /// 实体域
     /// </summary>
-    public class EntityManager : Entity
+    public abstract class EntityDomain : Entity
     {
         public UnitDictionary<ulong, IEntity> allEntities = new UnitDictionary<ulong, IEntity>();
 
-        private UnitDictionary<Type, IEntity> listeners;//有监听器的实体
+        public UnitDictionary<Type, IEntity> listeners;//有监听器的实体
 
-        private SystemGroup entitySystems;
-
-        private SystemManager systemManager;
-
-        private EntityPoolManager poolManager;
-        //private SystemGroup addSystems;
-        //private SystemGroup removeSystems;
+        public SystemGroup entitySystems;
 
 
-        public void Initialize()
+        public EntityPoolManager pool;
+
+        private SystemGroup addSystems;
+        private SystemGroup removeSystems;
+
+        /// <summary>
+        /// 初始化：对象池的生命周期
+        /// </summary>
+        public void OnNew()
         {
-            Domain = this;
+            pool = new EntityPoolManager();
+            pool.Root = Root;
 
-            poolManager = new EntityPoolManager();
-            AddComponent(poolManager);
-
-
-            systemManager = SystemManager.Instance;
             listeners = UnitDictionary<Type, IEntity>.GetObject();
 
-            //管理器系统
-            entitySystems = systemManager.RegisterSystems<IEntitySystem>();
+            entitySystems = Root.systemManager.RegisterSystems<IEntitySystem>();
+            addSystems = Root.systemManager.RegisterSystems<IAddSystem>();
+            removeSystems = Root.systemManager.RegisterSystems<IRemoveSystem>();
 
+            AddComponent(pool);
         }
 
-
-        public void OnDispose()
+        /// <summary>
+        /// 回收时的内部释放
+        /// </summary>
+        public void OnRecycle()
         {
-            //rootEntity.RemoveAll();
-
             listeners.Clear();
             listeners.Recycle();
 
-            entitySystems.Clear();
-            entitySystems.Recycle();
+            listeners = null;
+            entitySystems = null;
+            addSystems = null;
+            removeSystems = null;
+
+            pool.RemoveSelf();//移除所有组件
+            pool.Dispose();//全部释放
         }
+
 
         public void Add(IEntity entity)
         {
@@ -109,13 +94,13 @@ namespace SDHK
             }
 
             //这个实体的添加事件
-            //if (addSystems.TryGetValue(entity.Type, out UnitList<ISystem> addsystem))
-            //{
-            //    foreach (IAddSystem system in addsystem)
-            //    {
-            //        system.Add(entity);
-            //    }
-            //}
+            if (addSystems.TryGetValue(entity.Type, out UnitList<ISystem> addsystem))
+            {
+                foreach (IAddSystem system in addsystem)
+                {
+                    system.Add(entity);
+                }
+            }
 
             if (entitySystems.ContainsKey(typeKey))//检测到系统存在，则说明这是个管理器
             {
@@ -128,19 +113,20 @@ namespace SDHK
         public void Remove(IEntity entity)
         {
             Type typeKey = entity.Type;
+
             if (entitySystems.ContainsKey(typeKey))//检测到系统存在，则说明这是个管理器
             {
                 listeners.Remove(typeKey);
             }
 
             //这个实体的移除事件
-            //if (removeSystems.TryGetValue(entity.Type, out UnitList<ISystem> removesystem))
-            //{
-            //    foreach (IRemoveSystem system in removesystem)
-            //    {
-            //        system.Remove(entity);
-            //    }
-            //}
+            if (removeSystems.TryGetValue(entity.Type, out UnitList<ISystem> removesystem))
+            {
+                foreach (IRemoveSystem system in removesystem)
+                {
+                    system.Remove(entity);
+                }
+            }
 
             foreach (var manager in listeners)//广播给全部管理器
             {

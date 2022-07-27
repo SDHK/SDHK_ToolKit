@@ -4,10 +4,13 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
+public class EditorDomain : EntityRoot { }
+
 public class PathAssetsFileEditorWindow : EditorWindow
 {
     public static PathAssetsFileEditorWindow windows;
 
+    public EntityDomain root;
     public SoloistFramework soloist;
 
     public UpdateManager update;
@@ -20,14 +23,25 @@ public class PathAssetsFileEditorWindow : EditorWindow
         {
             windows = EditorWindow.GetWindow<PathAssetsFileEditorWindow>(false, "路径资源编辑器");
 
-            windows.soloist = SoloistFramework.GetInstance();//实体管理器单例
-            windows.update = UpdateManager.GetInstance();
-            MainEntity.GetInstance();
 
-            Debug.Log(windows.soloist.AllEntityString(RootEntity.Root, "\t"));
+            //MainEntity.GetInstance();
+
+            //Debug.Log(windows.soloist.AllEntityString(RootEntity.Root, "\t"));
         }
         windows.Show();//显示窗口
+    }
 
+    public PathAssetsFileEditorWindow()
+    {
+        soloist= SoloistFramework.GetInstance();
+        root = soloist.root;
+
+        //root = new EditorDomain();
+
+        update = root.GetComponent<UpdateManager>();
+        root.GetComponent<MainEntity>();
+
+        Debug.Log(SoloistFramework.AllEntityString(root, "\t"));
 
     }
 
@@ -51,6 +65,7 @@ public class PathAssetsFileEditorWindow : EditorWindow
     {
         soloist.Dispose();
         update = null;
+        Debug.Log(SoloistFramework.AllEntityString(root, "\t"));
 
     }
 

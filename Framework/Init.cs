@@ -21,7 +21,7 @@ namespace SDHK
     /// <summary>
     /// 主节点
     /// </summary>
-    public class MainEntity : SingletonEntityBase<MainEntity> { }
+    public class MainEntity :Entity { }
 
 
     public class Init : MonoBehaviour
@@ -37,14 +37,15 @@ namespace SDHK
 
         private void Start()
         {
-            soloist = SoloistFramework.GetInstance();
+            soloist =  SoloistFramework.GetInstance();
 
-            update = UpdateManager.GetInstance();
-            lateUpdate = LateUpdateManager.GetInstance();
-            fixedUpdate = FixedUpdateManager.GetInstance();
+            update= soloist.root.GetComponent<UpdateManager>();
+            lateUpdate = soloist.root.GetComponent<LateUpdateManager>();
+            fixedUpdate = soloist.root.GetComponent<FixedUpdateManager>();
 
-            entity= MainEntity.GetInstance();
-            Debug.Log(soloist.AllEntityString(RootEntity.Root, "\t"));
+            soloist.root.GetComponent<MainEntity>();
+
+            Debug.Log(SoloistFramework.AllEntityString(soloist.root, "\t"));
 
         }
 
@@ -68,7 +69,7 @@ namespace SDHK
             update = null;
             lateUpdate = null;
             fixedUpdate = null;
-            Debug.Log(soloist.AllEntityString(RootEntity.Root, "\t"));
+            Debug.Log(SoloistFramework.AllEntityString(soloist.root, "\t"));
         }
         private void OnApplicationQuit()
         {

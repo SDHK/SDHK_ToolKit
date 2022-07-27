@@ -9,7 +9,7 @@ namespace SDHK
     /// <summary>
     /// LateUpdate生命周期管理器实体
     /// </summary>
-    public class LateUpdateManager : SingletonEntityBase<LateUpdateManager>
+    public class LateUpdateManager : Entity
     {
         public UnitDictionary<ulong, IEntity> update1 = new UnitDictionary<ulong, IEntity>();
         public UnitDictionary<ulong, IEntity> update2 = new UnitDictionary<ulong, IEntity>();
@@ -39,20 +39,18 @@ namespace SDHK
 
     class LateUpdateManagerNewSystem : NewSystem<LateUpdateManager>
     {
-        public override void OnNew(LateUpdateManager entity)
+        public override void OnNew(LateUpdateManager self)
         {
-
-            entity.systems = SystemManager.Instance.RegisterSystems<ILateUpdateSystem>();
+            self.systems = self.Root.systemManager.RegisterSystems<ILateUpdateSystem>();
         }
     }
 
     class LateUpdateManagerDestroySystem : DestroySystem<LateUpdateManager>
     {
-        public override void OnDestroy(LateUpdateManager entity)
+        public override void OnDestroy(LateUpdateManager self)
         {
-            entity.systems.Clear();
-            entity.systems.Recycle();
-            entity.Dispose();
+            self.systems.Clear();
+            self.systems.Recycle();
         }
     }
 

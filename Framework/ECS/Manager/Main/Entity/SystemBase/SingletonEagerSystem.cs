@@ -23,18 +23,18 @@ namespace SDHK
     /// </summary>
     public interface ISingletonEagerSystem : ISystem
     {
-        void Instance();
+        void Instance(EntityDomain domain);
     }
 
     /// <summary>
     /// 实体饿汉单例系统：生成组件挂在根节点下
     /// </summary>
     public abstract class SingletonEagerSystem<T> : SystemBase<T>, ISingletonEagerSystem
-        where T :class ,IEntity
+        where T : class, IEntity
     {
-        public void Instance()
+        public void Instance(EntityDomain domain)
         {
-            RootEntity.Root.GetComponent<T>();
+            domain.GetComponent<T>();
         }
     }
 }

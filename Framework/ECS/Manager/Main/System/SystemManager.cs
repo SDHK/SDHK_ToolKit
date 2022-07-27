@@ -33,13 +33,15 @@ namespace SDHK
     /// <summary>
     /// 系统管理器
     /// </summary>
-    public class SystemManager : SingletonBase<SystemManager>
+    public class SystemManager : Entity,IUnit
     {
         //接口类型，（实例类型，实例方法）
         private UnitDictionary<Type, SystemGroup> InterfaceSystems;
 
-        public override void OnInstance()
+        public SystemManager()
         {
+            Id = IdManager.GetID;
+            Type = GetType();
             InterfaceSystems = UnitDictionary<Type, SystemGroup>.GetObject();
         }
 
@@ -65,7 +67,7 @@ namespace SDHK
                 }
                 UnitList<ISystem> systems = InterfaceSystems[Interface].GetSystems(system.EntityType);
 
-                if (!systems.Any((t) => t.GetType() == system.GetType()))
+                if (!systems.Any((t) => t.GetType() == system.GetType()))//每个系统只能单独一个
                 {
                     systems.Add(system);
                 }
@@ -96,11 +98,20 @@ namespace SDHK
             return null;
         }
 
-        public override void OnDispose()
+        /// <summary>
+        /// 释放自己
+        /// </summary>
+        public void Dispose()
+        {
+            if (IsDisposed) return;
+            OnDispose();
+            IsDisposed = true;
+        }
+
+        public  void OnDispose()
         {
             InterfaceSystems.Clear();
             InterfaceSystems.Recycle();
-            instance = null;
         }
 
         /// <summary>

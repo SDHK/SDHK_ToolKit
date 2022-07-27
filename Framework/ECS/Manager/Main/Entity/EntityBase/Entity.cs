@@ -52,9 +52,9 @@ namespace SDHK
         public Type Type { get; set; }
 
 
-        public EntityManager Root { get; set; }
+        public EntityRoot Root { get; set; }
 
-        public EntityManager Domain { get; set; }//节点换域需要递归子节点
+        public EntityDomain Domain { get; set; }//节点换域需要递归子节点
 
 
         public IEntity Parent { get; set; }
@@ -62,6 +62,10 @@ namespace SDHK
         private UnitDictionary<ulong, IEntity> children;
         private UnitDictionary<Type, IEntity> components;
 
+        public override string ToString()
+        {
+            return Type.Name;
+        }
 
         public UnitDictionary<ulong, IEntity> Children
         {
@@ -100,8 +104,7 @@ namespace SDHK
                 if (Children.TryAdd(entity.Id, entity))
                 {
                     entity.Parent = this;
-                    entity.Domain = Domain;
-                    entity.Root = Root;
+                    entity.Domain = this as EntityDomain ?? Domain;
                     Domain.Add(entity);
                 }
             }
@@ -110,12 +113,12 @@ namespace SDHK
         public T GetChildren<T>()
             where T : class, IEntity
         {
-            T entity = Domain.GetComponent<EntityPoolManager>().Get<T>();
+            T entity = Domain.pool.Get<T>();
             if (Children.TryAdd(entity.Id, entity))
             {
                 entity.Parent = this;
-                entity.Domain = Domain;
-                entity.Root = Root;
+                entity.Domain = this as EntityDomain ?? Domain;
+
 
                 Domain.Add(entity);
             }
@@ -134,11 +137,14 @@ namespace SDHK
 
                 entity.Parent = null;
                 entity.Domain = null;
-                entity.Root = null;
 
                 Children.Remove(entity.Id);
 
-                Domain.GetComponent<EntityPoolManager>().Recycle(entity);
+
+
+                Domain.pool.Recycle(entity);
+
+
                 if (children.Count == 0)
                 {
                     children.Recycle();
@@ -156,10 +162,11 @@ namespace SDHK
             T component = null;
             if (!Components.TryGetValue(type, out IEntity entity))
             {
-                component = Domain.GetComponent<EntityPoolManager>().Get<T>();
+
+                component = Domain.pool.Get<T>();
+
                 component.Parent = this;
-                component.Domain = Domain;
-                component.Root = Root;
+                component.Domain = this as EntityDomain ?? Domain;
 
                 component.IsComponent = true;
 
@@ -180,8 +187,7 @@ namespace SDHK
             if (!Components.ContainsKey(type))
             {
                 component.Parent = this;
-                component.Domain = Domain;
-                component.Root = Root;
+                component.Domain = this as EntityDomain ?? Domain;
 
                 component.IsComponent = true;
                 components.Add(type, component);
@@ -201,10 +207,13 @@ namespace SDHK
 
                 component.Parent = null;
                 component.Domain = null;
-                component.Root = null;
 
                 components.Remove(type);
-                Domain.GetComponent<EntityPoolManager>().Recycle(component);
+
+
+
+                Domain.pool.Recycle(component);
+
                 if (components.Count == 0)
                 {
                     components.Recycle();
@@ -222,10 +231,9 @@ namespace SDHK
 
                 component.Parent = null;
                 component.Domain = null;
-                component.Root = null;
 
                 components.Remove(component.Type);
-                Domain.GetComponent<EntityPoolManager>().Recycle(component);
+                Domain.pool.Recycle(component);
                 if (components.Count == 0)
                 {
                     components.Recycle();
@@ -240,14 +248,14 @@ namespace SDHK
         {
             while (Children.Count > 0)
             {
-                RemoveChildren(Children.First().Value);
+                RemoveChildren(Children.Last().Value);
             }
         }
         public void RemoveAllComponent()
         {
             while (Components.Count > 0)
             {
-                RemoveComponent(Components.First().Value);
+                RemoveComponent(Components.Last().Value);
             }
         }
 
@@ -257,7 +265,7 @@ namespace SDHK
             RemoveAllComponent();
         }
 
-        public void Recycle()
+        public void RemoveSelf()
         {
             if (Parent != null)
             {
@@ -270,11 +278,9 @@ namespace SDHK
                     Parent.RemoveChildren(this);
                 }
             }
-            else
+            else if (this == Domain)
             {
-                Domain.Remove(this);
                 RemoveAll();
-                Domain.GetComponent<EntityPoolManager>().Recycle(this);
             }
         }
     }

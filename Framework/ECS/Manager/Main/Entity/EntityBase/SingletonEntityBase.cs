@@ -9,7 +9,7 @@ namespace SDHK
     /// <summary>
     /// 实体单例化
     /// </summary>
-    public class SingletonEntityBase<T> : Entity, IUnit
+    public class SingletonEntityBase1<T> : Entity, IUnit
         where T : class, IEntity
     {
         protected static T instance;//实例

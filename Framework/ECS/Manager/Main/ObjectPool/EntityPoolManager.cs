@@ -6,10 +6,26 @@
 * 描述： 实体对象池管理器，半ECS实体。
 * 为所有实体对象池的管理器。
 * 
-* 但实体设定由对象池生成，单例会导致死循环
-* 所以需要通过new来实例自己，并把自己当成组件添加到根节点
+* 关于生成：
 * 
+* 实体设定是由对象池生成，
+* 但对象池自己并不能实例自己，所以是通过new来实例的。
 * 
+* 并且由于是在域之后第一个生成，
+* 其余生命周期管理器是通过对象池生成。
+* 
+* 对象池和管理器在生成时是没有任何生命周期事件可以触发的。
+* 所以设定他们为半实体，面向对象的同时可以挂为节点。
+*
+*
+* 关于回收：
+* 
+* 域在回收的时候会先回收全部节点，
+* 然后释放掉对象池管理器和全部对象池，
+* 
+* 与生成同理，回收时是忽略自己和对象池的，所以也触发不了生命周期事件。
+* 
+* 最后只有全部释放掉。
 * 
 
 */
@@ -22,6 +38,19 @@ using UnityEngine;
 
 namespace SDHK
 {
+
+    public class EntityPoolManagerAddSystem : AddSystem<EntityPoolManager>
+    {
+        public override void OnAdd(EntityPoolManager self)
+        {
+            //注册生命周期系统
+            self.Root.systemManager.RegisterSystems<INewSystem>();
+            self.Root.systemManager.RegisterSystems<IGetSystem>();
+            self.Root.systemManager.RegisterSystems<IRecycleSystem>();
+            self.Root.systemManager.RegisterSystems<IDestroySystem>();
+        }
+    }
+
     /// <summary>
     /// 实体对象池管理器
     /// </summary>
@@ -35,14 +64,6 @@ namespace SDHK
             Id = IdManager.GetID;
             Type = GetType();
             pools = UnitDictionary<Type, EntityPool>.GetObject();
-
-            //注册生命周期系统
-            SystemManager.Instance.RegisterSystems<INewSystem>();
-            SystemManager.Instance.RegisterSystems<IGetSystem>();
-            SystemManager.Instance.RegisterSystems<IRecycleSystem>();
-            SystemManager.Instance.RegisterSystems<IDestroySystem>();
-            Root.AddComponent(this);
-
         }
 
         public void Dispose()
@@ -75,17 +96,17 @@ namespace SDHK
         /// <summary>
         /// 获取实体
         /// </summary>
-        public IEntity Get(Type type) {
+        public IEntity Get(Type type)
+        {
 
             if (pools.TryGetValue(type, out EntityPool pool))
             {
-                return pool.GetObject() ;
+                return pool.GetObject();
             }
             else
             {
-                EntityPool newPool = new EntityPool();
-                newPool.ObjectType = type;
-
+                EntityPool newPool = new EntityPool(type);
+                newPool.Root = Root;
                 pools.Add(type, newPool);
                 AddChildren(newPool);
                 return newPool.GetObject();
@@ -106,7 +127,8 @@ namespace SDHK
                 }
                 else
                 {
-                    EntityPool newPool = new EntityPool();
+                    EntityPool newPool = new EntityPool(obj.Type);
+                    newPool.Root = Root;
                     pools.Add(obj.Type, newPool);
                     AddChildren(newPool);
                     newPool.Recycle(obj);
@@ -114,6 +136,6 @@ namespace SDHK
             }
         }
 
-      
+
     }
 }

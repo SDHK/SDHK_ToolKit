@@ -12,7 +12,6 @@
 * 设定为实体的目的是为了可以挂组件添加功能，例如计时销毁，或生成后的计数回收
 *
 *
-*
 
 */
 using System;
@@ -24,16 +23,31 @@ using UnityEngine;
 
 namespace SDHK
 {
-    /// <summary>
-    /// 实体对象池
-    /// </summary>
-    public class EntityPool : Entity
+
+    public class EntityPoolAddSystem : AddSystem<EntityPool>
     {
+        public override void OnAdd(EntityPool self)
+        {
+            //注册生命周期系统
+            self.newSystem = self.Root.systemManager.GetSystems<INewSystem>(self.ObjectType);
+            self.getSystem = self.Root.systemManager.GetSystems<IGetSystem>(self.ObjectType);
+            self.recycleSystem = self.Root.systemManager.GetSystems<IRecycleSystem>(self.ObjectType);
+            self.destroySystem = self.Root.systemManager.GetSystems<IDestroySystem>(self.ObjectType);
+        }
+    }
+
+
+    /// <summary>
+    /// 实体类型对象池
+    /// </summary>
+    public class EntityPool : Entity, IUnit
+    {
+
+        #region 对象池功能
         /// <summary>
         /// 对象类型
         /// </summary>
         public Type ObjectType { get; set; }
-
 
         /// <summary>
         /// 对象池
@@ -78,6 +92,9 @@ namespace SDHK
             }
         }
 
+        /// <summary>
+        /// 获取对象
+        /// </summary>
         public IEntity GetObject()
         {
             IEntity obj = DequeueOrNewObject();
@@ -85,6 +102,9 @@ namespace SDHK
             return obj;
         }
 
+        /// <summary>
+        /// 回收对象
+        /// </summary>
         public void Recycle(IEntity obj)
         {
             lock (objetPool)
@@ -110,6 +130,9 @@ namespace SDHK
             }
         }
 
+        /// <summary>
+        /// 释放所有
+        /// </summary>
         public void DisposeAll()
         {
             lock (objetPool)
@@ -123,6 +146,9 @@ namespace SDHK
             }
         }
 
+        /// <summary>
+        /// 释放一个
+        /// </summary>
         public void DisposeOne()
         {
             lock (objetPool)
@@ -136,6 +162,9 @@ namespace SDHK
             }
         }
 
+        /// <summary>
+        /// 预加载
+        /// </summary>
         public void Preload()
         {
             lock (objetPool)
@@ -149,7 +178,9 @@ namespace SDHK
             }
         }
 
-
+        /// <summary>
+        /// 释放自己
+        /// </summary>
         public void Dispose()
         {
             if (IsDisposed) return;
@@ -161,23 +192,21 @@ namespace SDHK
         {
             DisposeAll();
         }
+        #endregion
 
+        #region ECS生命周期事件
 
+        public UnitList<ISystem> newSystem;
+        public UnitList<ISystem> getSystem;
+        public UnitList<ISystem> recycleSystem;
+        public UnitList<ISystem> destroySystem;
 
-        private UnitList<ISystem> newSystem;
-        private UnitList<ISystem> getSystem;
-        private UnitList<ISystem> recycleSystem;
-        private UnitList<ISystem> destroySystem;
-
-        public EntityPool()
+        public EntityPool(Type type)
         {
             Id = IdManager.GetID;
             Type = GetType();
+            ObjectType = type;
 
-            newSystem = SystemManager.Instance.GetSystems<INewSystem>(ObjectType);
-            getSystem = SystemManager.Instance.GetSystems<IGetSystem>(ObjectType);
-            recycleSystem = SystemManager.Instance.GetSystems<IRecycleSystem>(ObjectType);
-            destroySystem = SystemManager.Instance.GetSystems<IDestroySystem>(ObjectType);
         }
 
         public override string ToString()
@@ -190,6 +219,7 @@ namespace SDHK
             IEntity entity = Activator.CreateInstance(ObjectType, true) as IEntity;
             entity.Id = IdManager.GetID;
             entity.Type = entity.GetType();
+            entity.Root = Root;
 
             return entity;
         }
@@ -253,6 +283,6 @@ namespace SDHK
             }
         }
 
-
+        #endregion
     }
 }

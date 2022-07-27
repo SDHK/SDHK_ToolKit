@@ -38,12 +38,12 @@ namespace SDHK
         /// <summary>
         /// 根节点
         /// </summary>
-        public EntityManager Root { get; set; }
+        public EntityRoot Root { get; set; }
 
         /// <summary>
         /// 域节点
         /// </summary>
-        public EntityManager Domain { get; set; }
+        public EntityDomain Domain { get; set; }
 
         /// <summary>
         /// 父节点
@@ -55,7 +55,7 @@ namespace SDHK
         /// </summary>
         public UnitDictionary<ulong, IEntity> Children { get; }
         /// <summary>
-        /// 组件
+        /// 组件节点
         /// </summary>
         public UnitDictionary<Type, IEntity> Components { get; }
 
@@ -115,8 +115,8 @@ namespace SDHK
         public void RemoveAll();
 
         /// <summary>
-        /// 回收自己
+        /// 移除自己
         /// </summary>
-        public void Recycle();
+        public void RemoveSelf();
     }
 }

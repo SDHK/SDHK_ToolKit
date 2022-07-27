@@ -9,7 +9,7 @@ namespace SDHK
     /// <summary>
     /// FixedUpdate生命周期管理器实体
     /// </summary>
-    public class FixedUpdateManager : SingletonEntityBase<FixedUpdateManager>
+    public class FixedUpdateManager : Entity
     {
         public UnitDictionary<ulong, IEntity> update1 = new UnitDictionary<ulong, IEntity>();
         public UnitDictionary<ulong, IEntity> update2 = new UnitDictionary<ulong, IEntity>();
@@ -39,19 +39,18 @@ namespace SDHK
 
     class FixedUpdateManagerNewSystem : NewSystem<FixedUpdateManager>
     {
-        public override void OnNew(FixedUpdateManager entity)
+        public override void OnNew(FixedUpdateManager self)
         {
-            entity.systems = SystemManager.Instance.RegisterSystems<IFixedUpdateSystem>();
+            self.systems = self.Root.systemManager.RegisterSystems<IFixedUpdateSystem>();
         }
     }
 
     class FixedUpdateManagerDestroySystem : DestroySystem<FixedUpdateManager>
     {
-        public override void OnDestroy(FixedUpdateManager entity)
+        public override void OnDestroy(FixedUpdateManager self)
         {
-            entity.systems.Clear();
-            entity.systems.Recycle();
-            entity.Dispose();
+            self.systems.Clear();
+            self.systems.Recycle();
         }
     }
 

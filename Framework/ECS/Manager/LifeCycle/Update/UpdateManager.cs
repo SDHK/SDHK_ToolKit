@@ -11,7 +11,7 @@ namespace SDHK
     /// <summary>
     /// Update生命周期管理器实体
     /// </summary>
-    public class UpdateManager : SingletonEntityBase<UpdateManager>
+    public class UpdateManager : Entity
     {
         public UnitDictionary<ulong, IEntity> update1 = new UnitDictionary<ulong, IEntity>();
         public UnitDictionary<ulong, IEntity> update2 = new UnitDictionary<ulong, IEntity>();
@@ -40,19 +40,18 @@ namespace SDHK
 
     public class UpdateManagerNewSystem : NewSystem<UpdateManager>
     {
-        public override void OnNew(UpdateManager entity)
+        public override void OnNew(UpdateManager self)
         {
-            entity.systems = SystemManager.Instance.RegisterSystems<IUpdateSystem>();
+            self.systems = self.Root.systemManager.RegisterSystems<IUpdateSystem>();
         }
     }
 
     class UpdateManagerDestroySystem : DestroySystem<UpdateManager>
     {
-        public override void OnDestroy(UpdateManager entity)
+        public override void OnDestroy(UpdateManager self)
         {
-            entity.systems.Clear();
-            entity.systems.Recycle();
-            entity.Dispose();
+            self.systems.Clear();
+            self.systems.Recycle();
         }
     }
 
