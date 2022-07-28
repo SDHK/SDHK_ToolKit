@@ -13,7 +13,15 @@ namespace Scripts
         public override void OnAdd(MainEntity self)
         {
             Debug.Log("MainAdd!!!");
-            self.GetComponent<GameDomain>();
+            self.Domain.GetComponent<GameDomain>().GetChildren<Node>();
+            self.Domain.GetComponent<UiDomain>();
+
+            //root.GetComponent<PathAsset>().Get("A/B/C");
+            //root.GetComponent<UIDomain>().GetComponent<UIManager>();
+            //root.GetComponent<UIManager>();
+
+
+            //self.GetNode<GameDomain>();
         }
     }
 

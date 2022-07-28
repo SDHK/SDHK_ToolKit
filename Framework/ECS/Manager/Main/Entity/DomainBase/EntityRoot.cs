@@ -19,7 +19,7 @@ namespace SDHK
             Root = this;
             Domain = this;
             systemManager = new SystemManager();
-            base.OnNew();
+            OnNew();
             AddComponent(systemManager);
         }
 

@@ -1,26 +1,25 @@
-﻿using Scripts;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using UnityEngine;
 
 namespace SDHK
-{
-    public class GameDomain : EntityDomain
+{ 
+    public class UiDomain : EntityDomain
     {
+
         public UpdateManager update;
         public LateUpdateManager lateUpdate;
         public FixedUpdateManager fixedUpdate;
+
     }
 
-    class GameDomainAddSystem : NewSystem<GameDomain>
+    class UiDomainAddSystem : NewSystem<UiDomain>
     {
-        public override void OnNew(GameDomain self)
+        public override void OnNew(UiDomain self)
         {
             self.OnNew();
-            //UpdateService
             self.update = self.GetComponent<UpdateManager>();
             self.lateUpdate = self.GetComponent<LateUpdateManager>();
             self.fixedUpdate = self.GetComponent<FixedUpdateManager>();
@@ -28,33 +27,33 @@ namespace SDHK
     }
 
 
-    class GameDomainRemoveSystem : RecycleSystem<GameDomain>
+    class UiDomainRemoveSystem : RecycleSystem<UiDomain>
     {
-        public override void OnRecycle(GameDomain self)
+        public override void OnRecycle(UiDomain self)
         {
             self.OnRecycle();
         }
     }
 
-    class GameDomainUpdateSystem : UpdateSystem<GameDomain>
+    class UiDomainUpdateSystem : UpdateSystem<UiDomain>
     {
-        public override void Update(GameDomain self)
+        public override void Update(UiDomain self)
         {
             self.update.Update();
         }
     }
 
-    class GameDomainLateUpdateSystem : LateUpdateSystem<GameDomain>
+    class UiDomainLateUpdateSystem : LateUpdateSystem<UiDomain>
     {
-        public override void LateUpdate(GameDomain self)
+        public override void LateUpdate(UiDomain self)
         {
             self.lateUpdate.Update();
         }
     }
 
-    class GameDomainFixedUpdateSystem : FixedUpdateSystem<GameDomain>
+    class UiDomainFixedUpdateSystem : FixedUpdateSystem<UiDomain>
     {
-        public override void FixedUpdate(GameDomain self)
+        public override void FixedUpdate(UiDomain self)
         {
             self.fixedUpdate.Update();
         }

@@ -44,7 +44,7 @@ namespace SDHK
         private SystemGroup removeSystems;
 
         /// <summary>
-        /// 初始化：对象池的生命周期
+        /// 初始化：对象池的新建
         /// </summary>
         public void OnNew()
         {
@@ -61,7 +61,7 @@ namespace SDHK
         }
 
         /// <summary>
-        /// 回收时的内部释放
+        /// 回收时:对象池全部释放
         /// </summary>
         public void OnRecycle()
         {

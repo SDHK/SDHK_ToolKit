@@ -33,7 +33,7 @@ namespace SDHK
     /// <summary>
     /// 系统管理器
     /// </summary>
-    public class SystemManager : Entity,IUnit
+    public class SystemManager : Entity, IUnit
     {
         //接口类型，（实例类型，实例方法）
         private UnitDictionary<Type, SystemGroup> InterfaceSystems;
@@ -55,31 +55,22 @@ namespace SDHK
         /// </summary>
         public SystemGroup RegisterSystems(Type Interface)
         {
-            //查找继承了接口的类
-            var types = FindTypesIsInterface(Interface);
-
-            foreach (var itemType in types)//遍历实现接口的类
+            if (!InterfaceSystems.TryGetValue(Interface, out SystemGroup systemGroup))
             {
-                ISystem system = Activator.CreateInstance(itemType, true) as ISystem;
-                if (!InterfaceSystems.ContainsKey(Interface))
-                {
-                    InterfaceSystems.Add(Interface, SystemGroup.GetObject());
-                }
-                UnitList<ISystem> systems = InterfaceSystems[Interface].GetSystems(system.EntityType);
+                systemGroup = SystemGroup.GetObject();
+                InterfaceSystems.Add(Interface, systemGroup);
 
-                if (!systems.Any((t) => t.GetType() == system.GetType()))//每个系统只能单独一个
+                //查找继承了接口的类
+                var types = FindTypesIsInterface(Interface);
+
+                foreach (var itemType in types)//遍历实现接口的类
                 {
-                    systems.Add(system);
+                    //实例化系统类
+                    ISystem system = Activator.CreateInstance(itemType, true) as ISystem;
+                    systemGroup.GetSystems(system.EntityType).Add(system);
                 }
             }
-            if (InterfaceSystems.ContainsKey(Interface))
-            {
-                return InterfaceSystems[Interface];
-            }
-            else
-            {
-                return SystemGroup.GetObject();
-            }
+            return systemGroup;
         }
 
 
@@ -108,7 +99,7 @@ namespace SDHK
             IsDisposed = true;
         }
 
-        public  void OnDispose()
+        public void OnDispose()
         {
             InterfaceSystems.Clear();
             InterfaceSystems.Recycle();
