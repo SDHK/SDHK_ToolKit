@@ -6,12 +6,16 @@ using System.Threading.Tasks;
 
 namespace SDHK
 { 
+    /// <summary>
+    /// UI域
+    /// </summary>
     public class UiDomain : EntityDomain
     {
 
         public UpdateManager update;
         public LateUpdateManager lateUpdate;
         public FixedUpdateManager fixedUpdate;
+
 
     }
 
