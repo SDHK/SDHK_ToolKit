@@ -103,11 +103,11 @@ namespace SDHK
             {
                 if (Children.TryAdd(entity.Id, entity))
                 {
-                    EntityDomain domain = this as EntityDomain ?? Domain;
+                    //EntityDomain domain = this as EntityDomain ?? Domain;
 
                     entity.Parent = this;
-                    entity.Domain = domain;
-                    domain.Add(entity);
+                    entity.Domain = Domain;
+                    Domain.Add(entity);
                 }
             }
         }
@@ -115,15 +115,15 @@ namespace SDHK
         public T GetChildren<T>()
             where T : class, IEntity
         {
-            EntityDomain domain = this as EntityDomain ?? Domain;
+            //EntityDomain domain = this as EntityDomain ?? Domain;
 
-            T entity = domain.pool.Get<T>();
+            T entity = Root.pool.Get<T>();
             if (Children.TryAdd(entity.Id, entity))
             {
                 entity.Parent = this;
-                entity.Domain = domain;
+                entity.Domain = Domain;
 
-                domain.Add(entity);
+                Domain.Add(entity);
             }
 
             return entity;
@@ -135,10 +135,10 @@ namespace SDHK
         {
             if (entity != null)
             {
-                EntityDomain domain = this as EntityDomain ?? Domain;
+                //EntityDomain domain = this as EntityDomain ?? Domain;
 
 
-                domain.Remove(entity);
+                Domain.Remove(entity);
                 entity.RemoveAll();
 
                 entity.Parent = null;
@@ -148,7 +148,7 @@ namespace SDHK
 
 
 
-                domain.pool.Recycle(entity);
+                Root.pool.Recycle(entity);
 
 
                 if (children.Count == 0)
@@ -168,17 +168,17 @@ namespace SDHK
             T component = null;
             if (!Components.TryGetValue(type, out IEntity entity))
             {
-                EntityDomain domain = this as EntityDomain ?? Domain;
+                //EntityDomain domain = this as EntityDomain ?? Domain;
 
-                component = domain.pool.Get<T>();
+                component = Root.pool.Get<T>();
 
                 component.Parent = this;
-                component.Domain = domain;
+                component.Domain = Domain;
 
                 component.IsComponent = true;
 
                 components.Add(type, component);
-                domain.Add(component);
+                Domain.Add(component);
             }
             else
             {
@@ -193,14 +193,14 @@ namespace SDHK
             Type type = component.Type;
             if (!Components.ContainsKey(type))
             {
-                EntityDomain domain = this as EntityDomain ?? Domain;
+                //EntityDomain domain = this as EntityDomain ?? Domain;
 
                 component.Parent = this;
-                component.Domain = domain;
+                component.Domain = Domain;
 
                 component.IsComponent = true;
                 components.Add(type, component);
-                domain.Add(component);
+                Domain.Add(component);
             }
         }
         public void RemoveComponent<T>()
@@ -209,10 +209,10 @@ namespace SDHK
             Type type = typeof(T);
             if (Components.ContainsKey(type))
             {
-                EntityDomain domain = this as EntityDomain ?? Domain;
+                //EntityDomain domain = this as EntityDomain ?? Domain;
 
                 IEntity component = components[type];
-                domain.Remove(component);
+                Domain.Remove(component);
 
                 component.RemoveAll();
 
@@ -223,7 +223,7 @@ namespace SDHK
 
 
 
-                domain.pool.Recycle(component);
+                Root.pool.Recycle(component);
 
                 if (components.Count == 0)
                 {
@@ -237,16 +237,16 @@ namespace SDHK
         {
             if (Components.ContainsValue(component))
             {
-                EntityDomain domain = this as EntityDomain ?? Domain;
+                //EntityDomain domain = this as EntityDomain ?? Domain;
 
-                domain.Remove(component);
+                Domain.Remove(component);
                 component.RemoveAll();
 
                 component.Parent = null;
                 component.Domain = null;
 
                 components.Remove(component.Type);
-                domain.pool.Recycle(component);
+                Root.pool.Recycle(component);
                 if (components.Count == 0)
                 {
                     components.Recycle();

@@ -27,37 +27,33 @@ namespace SDHK
 {
 
     /// <summary>
-    /// 实体域
+    /// 实体管理器：集权
     /// </summary>
-    public abstract class EntityDomain : Entity
+    public  class EntityDomain : Entity
     {
         public UnitDictionary<ulong, IEntity> allEntities = new UnitDictionary<ulong, IEntity>();
 
-        public UnitDictionary<Type, IEntity> listeners;//有监听器的实体
+        public UnitDictionary<Type, IEntity> listeners;//有监听器的实体//分域
 
         public SystemGroup entitySystems;
 
 
-        public EntityPoolManager pool;
+        //public EntityPoolManager pool;
 
         private SystemGroup addSystems;
         private SystemGroup removeSystems;
+
+  
 
         /// <summary>
         /// 初始化：对象池的新建
         /// </summary>
         public void OnNew()
         {
-            pool = new EntityPoolManager();
-            pool.Root = Root;
-
             listeners = UnitDictionary<Type, IEntity>.GetObject();
-
             entitySystems = Root.systemManager.RegisterSystems<IEntitySystem>();
             addSystems = Root.systemManager.RegisterSystems<IAddSystem>();
             removeSystems = Root.systemManager.RegisterSystems<IRemoveSystem>();
-
-            AddComponent(pool);
         }
 
         /// <summary>
@@ -67,11 +63,6 @@ namespace SDHK
         {
             listeners.Clear();
             listeners.Recycle();
-
-          
-
-            pool.RemoveSelf();//移除所有组件
-            pool.Dispose();//全部释放
 
             listeners = null;
             entitySystems = null;

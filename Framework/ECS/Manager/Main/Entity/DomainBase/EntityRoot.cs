@@ -12,14 +12,17 @@ namespace SDHK
     public abstract class EntityRoot : EntityDomain, IUnit
     {
         public SystemManager systemManager;
+        public EntityPoolManager pool;
 
         public EntityRoot()
         {
             Type = GetType();
             Root = this;
-            Domain = this;
             systemManager = new SystemManager();
+            pool = new EntityPoolManager();
+            pool.Root = Root;
             OnNew();
+            AddComponent(pool);
             AddComponent(systemManager);
         }
 
@@ -36,6 +39,8 @@ namespace SDHK
         {
             RemoveAll();
             OnRecycle();
+            pool.RemoveSelf();//移除所有组件
+            pool.Dispose();//全部释放
             systemManager.Dispose();
         }
     }

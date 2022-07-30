@@ -29,6 +29,7 @@ namespace Scripts
         public override void OnNew(Node self)
         {
             Debug.Log("OnNew!!!");
+            Debug.Log(self.Domain);
         }
     }
     class NodeAddSystem : AddSystem<Node>
