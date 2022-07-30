@@ -23,7 +23,7 @@ namespace SDHK
     /// </summary>
     public abstract class Unit : IUnit
     {
-        public bool IsDisposed { get; set; }
+        public bool isDisposed { get; set; }
 
 
         /// <summary>
@@ -31,9 +31,9 @@ namespace SDHK
         /// </summary>
         public void Dispose()
         {
-            if (IsDisposed) return;
+            if (isDisposed) return;
             OnDispose();
-            IsDisposed = true;
+            isDisposed = true;
         }
 
         public virtual void OnDispose() { }

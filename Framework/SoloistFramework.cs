@@ -21,11 +21,11 @@ namespace SDHK
     public class SoloistFramework : SingletonBase<SoloistFramework>
     {
 
-        public RuntimeDomain root;
+        public EntityManager root;
         public override void OnInstance()
         {
             Debug.Log("!!!!!!!!!!!!!!!!!!!!!!!!!");
-            root = new RuntimeDomain();//实体管理器单例
+            root = new EntityManager();//实体管理器单例
         }
 
         public override void OnDispose()
@@ -34,12 +34,12 @@ namespace SDHK
             instance = null;
         }
 
-        public static string AllEntityString(IEntity entity, string t)
+        public static string AllEntityString(Entity entity, string t)
         {
             string t1 = "\t" + t;
             string str = "";
 
-            str += t1 + $"[{entity.Id}] " + entity.ToString() + "\n";
+            str += t1 + $"[{entity.id}] " + entity.ToString() + "\n";
 
             if (entity.Children.Count > 0)
             {

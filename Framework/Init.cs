@@ -21,14 +21,14 @@ namespace SDHK
     /// <summary>
     /// 主节点
     /// </summary>
-    public class MainEntity :Entity { }
+    public class MainEntity : Entity { }
 
 
     public class Init : MonoBehaviour
     {
-        public MainEntity entity;
+        public EntityManager root;
 
-        SoloistFramework soloist;
+
 
 
         UpdateManager update;
@@ -37,15 +37,15 @@ namespace SDHK
 
         private void Start()
         {
-            soloist =  SoloistFramework.GetInstance();
+            root = new EntityManager();
 
-            update= soloist.root.GetComponent<UpdateManager>();
-            lateUpdate = soloist.root.GetComponent<LateUpdateManager>();
-            fixedUpdate = soloist.root.GetComponent<FixedUpdateManager>();
+            update = root.GetComponent<UpdateManager>();
+            lateUpdate = root.GetComponent<LateUpdateManager>();
+            fixedUpdate = root.GetComponent<FixedUpdateManager>();
 
-            soloist.root.GetComponent<MainEntity>();
+            root.GetComponent<MainEntity>();
 
-            Debug.Log(SoloistFramework.AllEntityString(soloist.root, "\t"));
+            Debug.Log(SoloistFramework.AllEntityString(root, "\t"));
 
         }
 
@@ -65,15 +65,42 @@ namespace SDHK
 
         private void OnDestroy()
         {
-            soloist.Dispose();
+            root.Dispose();
             update = null;
             lateUpdate = null;
             fixedUpdate = null;
-            Debug.Log(SoloistFramework.AllEntityString(soloist.root, "\t"));
+            Debug.Log(SoloistFramework.AllEntityString(root, "\t"));
         }
         private void OnApplicationQuit()
         {
 
+        }
+
+
+        public static string AllEntityString(Entity entity, string t)
+        {
+            string t1 = "\t" + t;
+            string str = "";
+
+            str += t1 + $"[{entity.id}] " + entity.ToString() + "\n";
+
+            if (entity.Children.Count > 0)
+            {
+                str += t1 + "   Children:\n";
+                foreach (var item in entity.Children.Values)
+                {
+                    str += AllEntityString(item, t1);
+                }
+            }
+            if (entity.Components.Count > 0)
+            {
+                str += t1 + "   Components:\n";
+                foreach (var item in entity.Components.Values)
+                {
+                    str += AllEntityString(item, t1);
+                }
+            }
+            return str;
         }
 
     }

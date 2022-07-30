@@ -23,7 +23,7 @@ namespace SDHK
     {
         public IPool thisPool { get; set; }
         public bool IsRecycle { get; set; }
-        public bool IsDisposed { get; set; }
+        public bool isDisposed { get; set; }
 
         /// <summary>
         /// 单位对象池：获取对象
@@ -38,9 +38,9 @@ namespace SDHK
         /// </summary>
         public void Dispose()
         {
-            if (IsDisposed) return;
+            if (isDisposed) return;
             OnDispose();
-            IsDisposed = true;
+            isDisposed = true;
         }
 
         public virtual void OnDispose()
@@ -65,7 +65,7 @@ namespace SDHK
         {
             if (thisPool != null)
             {
-                if (!thisPool.IsDisposed)
+                if (!thisPool.isDisposed)
                 {
                     if (!IsRecycle)
                     {

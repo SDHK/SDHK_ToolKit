@@ -24,12 +24,11 @@ namespace Scripts
 
     }
 
-    class NodeNewSystem : NewSystem<Node>
+    class NodeNewSystem : AddSystem<Node>
     {
-        public override void OnNew(Node self)
+        public override void OnAdd(Node self)
         {
             Debug.Log("OnNew!!!");
-            Debug.Log(self.Domain);
         }
     }
     class NodeAddSystem : AddSystem<Node>

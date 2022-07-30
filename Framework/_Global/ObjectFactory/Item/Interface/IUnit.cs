@@ -24,7 +24,7 @@ namespace SDHK
         /// <summary>
         /// 释放标记
         /// </summary>
-        bool IsDisposed { get; set; }
+        bool isDisposed { get; set; }
 
         /// <summary>
         /// 对象释放时

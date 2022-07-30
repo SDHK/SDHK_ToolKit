@@ -58,7 +58,7 @@ namespace SDHK
         {
             if (thisPool!=null)
             {
-                if (!thisPool.IsDisposed)
+                if (!thisPool.isDisposed)
                 {
                     if (!IsRecycle)
                     {

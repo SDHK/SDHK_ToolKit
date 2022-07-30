@@ -15,57 +15,19 @@ namespace SDHK
     // 域的减责思考
     // 减责后域应该能自我化。从而减去子节点的判断
 
-    public class GameDomain : EntityDomain
+    public class GameDomain : Entity
     {
-        public UpdateManager update;
-        public LateUpdateManager lateUpdate;
-        public FixedUpdateManager fixedUpdate;
+
     }
 
-    class GameDomainAddSystem : NewSystem<GameDomain>
+    class GameDomainAddSystem : AddSystem<GameDomain>
     {
-        public override void OnNew(GameDomain self)
+        public override void OnAdd(GameDomain self)
         {
-            self.OnNew();
-            //UpdateService
-            self.update = self.GetComponent<UpdateManager>();
-            self.lateUpdate = self.GetComponent<LateUpdateManager>();
-            self.fixedUpdate = self.GetComponent<FixedUpdateManager>();
+        
+            Debug.Log(self.Domain);
         }
     }
 
 
-    class GameDomainRemoveSystem : RecycleSystem<GameDomain>
-    {
-        public override void OnRecycle(GameDomain self)
-        {
-            self.OnRecycle();
-        }
-    }
-
-    class GameDomainUpdateSystem : UpdateSystem<GameDomain>
-    {
-        public override void Update(GameDomain self)
-        {
-
-            self.update.isActive = Input.GetKey(KeyCode.Return);
-            self.update.Update();
-        }
-    }
-
-    class GameDomainLateUpdateSystem : LateUpdateSystem<GameDomain>
-    {
-        public override void LateUpdate(GameDomain self)
-        {
-            self.lateUpdate.Update();
-        }
-    }
-
-    class GameDomainFixedUpdateSystem : FixedUpdateSystem<GameDomain>
-    {
-        public override void FixedUpdate(GameDomain self)
-        {
-            self.fixedUpdate.Update();
-        }
-    }
 }

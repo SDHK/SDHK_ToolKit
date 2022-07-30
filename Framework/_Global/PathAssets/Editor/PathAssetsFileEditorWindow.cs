@@ -4,14 +4,13 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-public class EditorDomain : EntityRoot { }
+public class EditorDomain : EntityManager { }
 
 public class PathAssetsFileEditorWindow : EditorWindow
 {
     public static PathAssetsFileEditorWindow windows;
 
-    public EntityDomain root;
-    public SoloistFramework soloist;
+    public EntityManager root;
 
     public UpdateManager update;
 
@@ -33,10 +32,8 @@ public class PathAssetsFileEditorWindow : EditorWindow
 
     public PathAssetsFileEditorWindow()
     {
-        soloist= SoloistFramework.GetInstance();
-        root = soloist.root;
 
-        //root = new EditorDomain();
+        root = new EntityManager();
 
         update = root.GetComponent<UpdateManager>();
         root.GetComponent<MainEntity>();
@@ -63,7 +60,7 @@ public class PathAssetsFileEditorWindow : EditorWindow
 
     private void OnDestroy()
     {
-        soloist.Dispose();
+        root.Dispose();
         update = null;
         Debug.Log(SoloistFramework.AllEntityString(root, "\t"));
 
