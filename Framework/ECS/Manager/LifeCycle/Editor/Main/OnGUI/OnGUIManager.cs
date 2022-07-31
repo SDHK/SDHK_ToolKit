@@ -4,7 +4,9 @@ using System.Linq;
 using UnityEngine;
 
 namespace SDHK
-{ 
+{
+
+  
     public class OnGUIManager : Entity
     {
         public UnitDictionary<ulong, Entity> update1 = new UnitDictionary<ulong, Entity>();
@@ -30,6 +32,17 @@ namespace SDHK
                 update2.Add(firstKey, entity);
             }
             (update1, update2) = (update2, update1);
+            
         }
+
+        /*
+         public class AEvent:EntityEventSystem<Entity,>
+        {
+        
+        
+         }
+
+         */
+
     }
 }

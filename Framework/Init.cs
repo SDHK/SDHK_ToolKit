@@ -24,6 +24,7 @@ namespace SDHK
     public class MainEntity : Entity { }
 
 
+
     public class Init : MonoBehaviour
     {
         public EntityManager root;
@@ -41,9 +42,9 @@ namespace SDHK
             fixedUpdate = root.SetComponent<FixedUpdateManager>();
 
             root.SetComponent<MainEntity>();
-
+            
             Debug.Log(SoloistFramework.AllEntityString(root, "\t"));
-
+           
         }
 
         private void Update()
