@@ -21,16 +21,13 @@ namespace SDHK
     public class SoloistFramework : SingletonBase<SoloistFramework>
     {
 
-        public EntityManager root;
         public override void OnInstance()
         {
             Debug.Log("!!!!!!!!!!!!!!!!!!!!!!!!!");
-            root = new EntityManager();//实体管理器单例
         }
 
         public override void OnDispose()
         {
-            root.Dispose();
             instance = null;
         }
 

@@ -34,7 +34,7 @@ namespace SDHK
     {
         public void Instance(EntityManager domain)
         {
-            domain.GetComponent<T>();
+            domain.SetComponent<T>();
         }
     }
 }

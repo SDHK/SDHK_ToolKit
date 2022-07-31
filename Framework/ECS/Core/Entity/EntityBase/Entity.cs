@@ -16,23 +16,16 @@ using UnityEngine;
 
 namespace SDHK
 {
-
-    //或许需要一个Edit的根节点，Main应该是域的概念：组件
-    //需要一个bool激活标记
-    //可以设置任意组件为域
-
-
     /// <summary>
     /// 实体基类
     /// </summary>
     public abstract class Entity
     {
 
-
         /// <summary>
         /// 释放标记
         /// </summary>
-        public bool isDisposed;
+        public bool isDisposed { get; set; }
 
         /// <summary>
         /// 回收标记
@@ -220,8 +213,6 @@ namespace SDHK
             {
                 if (Children.TryAdd(entity.id, entity))
                 {
-                    //EntityDomain domain = this as EntityDomain ?? Domain;
-
                     entity.Parent = this;
                     entity.Domain = Domain;
                     Root.Add(entity);
@@ -231,11 +222,9 @@ namespace SDHK
         /// <summary>
         /// 添加新的子节点
         /// </summary>
-        public T GetChildren<T>()
+        public T SetChildren<T>()
             where T : Entity
         {
-            //EntityDomain domain = this as EntityDomain ?? Domain;
-
             T entity = Root.pool.Get<T>();
             if (Children.TryAdd(entity.id, entity))
             {
@@ -256,9 +245,6 @@ namespace SDHK
         {
             if (entity != null)
             {
-                //EntityDomain domain = this as EntityDomain ?? Domain;
-
-
                 Root.Remove(entity);
                 entity.RemoveAll();
 
@@ -283,7 +269,7 @@ namespace SDHK
         /// <summary>
         /// 添加组件
         /// </summary>
-        public T GetComponent<T>()
+        public T SetComponent<T>()
             where T : Entity
         {
             Type type = typeof(T);
@@ -291,8 +277,6 @@ namespace SDHK
             T component = null;
             if (!Components.TryGetValue(type, out Entity entity))
             {
-                //EntityDomain domain = this as EntityDomain ?? Domain;
-
                 component = Root.pool.Get<T>();
 
                 component.Parent = this;
@@ -318,8 +302,6 @@ namespace SDHK
             Type type = component.Type;
             if (!Components.ContainsKey(type))
             {
-                //EntityDomain domain = this as EntityDomain ?? Domain;
-
                 component.Parent = this;
                 component.Domain = Domain;
 
@@ -328,18 +310,15 @@ namespace SDHK
                 Root.Add(component);
             }
         }
-        // <summary>
+        /// <summary>
         /// 移除组件
         /// </summary>
-
         public void RemoveComponent<T>()
             where T : Entity
         {
             Type type = typeof(T);
             if (Components.ContainsKey(type))
             {
-                //EntityDomain domain = this as EntityDomain ?? Domain;
-
                 Entity component = components[type];
                 Root.Remove(component);
 
@@ -368,8 +347,6 @@ namespace SDHK
         {
             if (Components.ContainsValue(component))
             {
-                //EntityDomain domain = this as EntityDomain ?? Domain;
-
                 Root.Remove(component);
                 component.RemoveAll();
 

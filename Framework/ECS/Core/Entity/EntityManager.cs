@@ -26,7 +26,7 @@ using UnityEngine;
 namespace SDHK
 {
 
-    //规范命名，开始写pathAsset
+    //规范命名，开始写pathAsset,为了解耦需要事件递归。先考虑事件系统
 
     /// <summary>
     /// 实体管理器

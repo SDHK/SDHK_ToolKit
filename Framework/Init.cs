@@ -28,9 +28,6 @@ namespace SDHK
     {
         public EntityManager root;
 
-
-
-
         UpdateManager update;
         LateUpdateManager lateUpdate;
         FixedUpdateManager fixedUpdate;
@@ -39,11 +36,11 @@ namespace SDHK
         {
             root = new EntityManager();
 
-            update = root.GetComponent<UpdateManager>();
-            lateUpdate = root.GetComponent<LateUpdateManager>();
-            fixedUpdate = root.GetComponent<FixedUpdateManager>();
+            update = root.SetComponent<UpdateManager>();
+            lateUpdate = root.SetComponent<LateUpdateManager>();
+            fixedUpdate = root.SetComponent<FixedUpdateManager>();
 
-            root.GetComponent<MainEntity>();
+            root.SetComponent<MainEntity>();
 
             Debug.Log(SoloistFramework.AllEntityString(root, "\t"));
 

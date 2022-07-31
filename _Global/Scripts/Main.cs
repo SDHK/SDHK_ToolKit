@@ -13,7 +13,6 @@ namespace Scripts
         public override void OnAdd(MainEntity self)
         {
             Debug.Log("MainAdd!!!");
-            self.Domain.GetComponent<GameDomain>().GetChildren<Node>();
 
 
             //self.Domain.GetComponent<UiDomain>();
@@ -24,6 +23,14 @@ namespace Scripts
 
 
             //self.GetNode<GameDomain>();
+        }
+    }
+
+    class MainEntitySystem : UpdateSystem<MainEntity>
+    {
+        public override void Update(MainEntity self)
+        {
+            Debug.Log("MainEntityUpdate!!!");
         }
     }
 
