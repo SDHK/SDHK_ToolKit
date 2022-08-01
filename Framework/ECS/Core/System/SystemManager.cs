@@ -43,32 +43,42 @@ namespace SDHK
             id = IdManager.GetID;
             Type = GetType();
             InterfaceSystems = UnitDictionary<Type, SystemGroup>.GetObject();
+            Initialize();
+        }
+
+        private void Initialize()
+        {
+            var types = FindTypesIsInterface(typeof(ISystem));
+            foreach (var itemType in types)//遍历实现接口的类
+            {
+                //实例化系统类
+                ISystem system = Activator.CreateInstance(itemType, true) as ISystem;
+
+                Type SystemType = system.SystemType;
+                Type EntityType = system.EntityType;
+                if (!InterfaceSystems.TryGetValue(SystemType, out SystemGroup systemGroup))
+                {
+                    systemGroup = SystemGroup.GetObject();
+                    InterfaceSystems.Add(SystemType, systemGroup);
+                }
+
+                systemGroup.GetSystems(EntityType).Add(system);
+            }
         }
 
         /// <summary>
-        /// 注册系统
+        /// 获取系统组
         /// </summary>
-        public SystemGroup RegisterSystems<T>() where T : ISystem => RegisterSystems(typeof(T));
+        public SystemGroup GetSystemGroup<T>() where T : ISystem => GetSystemGroup(typeof(T));
 
         /// <summary>
-        /// 注册系统
+        /// 获取系统组
         /// </summary>
-        public SystemGroup RegisterSystems(Type Interface)
+        public SystemGroup GetSystemGroup(Type Interface)
         {
             if (!InterfaceSystems.TryGetValue(Interface, out SystemGroup systemGroup))
             {
                 systemGroup = SystemGroup.GetObject();
-                InterfaceSystems.Add(Interface, systemGroup);
-
-                //查找继承了接口的类
-                var types = FindTypesIsInterface(Interface);
-
-                foreach (var itemType in types)//遍历实现接口的类
-                {
-                    //实例化系统类
-                    ISystem system = Activator.CreateInstance(itemType, true) as ISystem;
-                    systemGroup.GetSystems(system.EntityType).Add(system);
-                }
             }
             return systemGroup;
         }

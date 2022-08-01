@@ -17,7 +17,7 @@ namespace SDHK
     /// <summary>
     /// LateUpdate系统基类
     /// </summary>
-    public abstract class LateUpdateSystem<T> : SystemBase<T>, ILateUpdateSystem
+    public abstract class LateUpdateSystem<T> : SystemBase<T, ILateUpdateSystem>, ILateUpdateSystem
         where T : Entity
     {
         public void Execute(Entity self) => LateUpdate(self as T);

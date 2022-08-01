@@ -62,9 +62,9 @@ namespace SDHK
             pool.Root = this;
 
             listeners = UnitDictionary<Type, Entity>.GetObject();
-            entitySystems = Root.systemManager.RegisterSystems<IEntitySystem>();
-            addSystems = Root.systemManager.RegisterSystems<IAddSystem>();
-            removeSystems = Root.systemManager.RegisterSystems<IRemoveSystem>();
+            entitySystems = Root.systemManager.GetSystemGroup<IEntitySystem>();
+            addSystems = Root.systemManager.GetSystemGroup<IAddSystem>();
+            removeSystems = Root.systemManager.GetSystemGroup<IRemoveSystem>();
 
 
             AddComponent(pool);

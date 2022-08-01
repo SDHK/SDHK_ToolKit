@@ -41,7 +41,7 @@ namespace SDHK
     /// <summary>
     /// 实体监听系统基类
     /// </summary>
-    public abstract class EntitySystem<T> : SystemBase<T>, IEntitySystem
+    public abstract class EntitySystem<T> : SystemBase<T,IEntitySystem>, IEntitySystem
         where T :  Entity
     {
         public void AddEntity(Entity self, Entity entity) => OnAddEntity(self as T, entity);

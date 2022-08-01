@@ -43,7 +43,7 @@ namespace SDHK
     {
         public override void OnNew(FixedUpdateManager self)
         {
-            self.systems = self.Root.systemManager.RegisterSystems<IFixedUpdateSystem>();
+            self.systems = self.Root.systemManager.GetSystemGroup<IFixedUpdateSystem>();
         }
     }
 

@@ -17,7 +17,7 @@ namespace SDHK
     /// <summary>
     /// FixedUpdate系统基类
     /// </summary>
-    public abstract class FixedUpdateSystem<T> : SystemBase<T>, IFixedUpdateSystem
+    public abstract class FixedUpdateSystem<T> : SystemBase<T, IFixedUpdateSystem>, IFixedUpdateSystem
        where T : Entity
     {
         public void Execute(Entity self) => FixedUpdate(self as T);

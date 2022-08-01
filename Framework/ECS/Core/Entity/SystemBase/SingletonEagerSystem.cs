@@ -29,7 +29,7 @@ namespace SDHK
     /// <summary>
     /// 实体饿汉单例系统：生成组件挂在根节点下
     /// </summary>
-    public abstract class SingletonEagerSystem<T> : SystemBase<T>, ISingletonEagerSystem
+    public abstract class SingletonEagerSystem<T> : SystemBase<T, ISingletonEagerSystem>, ISingletonEagerSystem
         where T :Entity
     {
         public void Instance(EntityManager domain)

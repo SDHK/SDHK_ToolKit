@@ -16,7 +16,7 @@ namespace SDHK
     /// <summary>
     /// 移除事件系统
     /// </summary>
-    public abstract class RemoveSystem<T> : SystemBase<T>, IRemoveSystem
+    public abstract class RemoveSystem<T> : SystemBase<T, IRemoveSystem>, IRemoveSystem
         where T :Entity
     {
         public void Remove(Entity self) => OnRemove(self as T);

@@ -17,7 +17,7 @@ namespace SDHK
     /// <summary>
     /// Update系统基类
     /// </summary>
-    public abstract class UpdateSystem<T> : SystemBase<T>, IUpdateSystem
+    public abstract class UpdateSystem<T> : SystemBase<T, IUpdateSystem>, IUpdateSystem
         where T : Entity
     {
         public void Execute(Entity self) => Update(self as T);

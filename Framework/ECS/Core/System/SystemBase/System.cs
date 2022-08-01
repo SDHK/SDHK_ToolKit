@@ -23,13 +23,15 @@ namespace SDHK
     public interface ISystem
     {
         Type EntityType { get; }
+        Type SystemType { get; }
     }
 
     /// <summary>
     /// 系统基类
     /// </summary>
-    public abstract class SystemBase<T> : ISystem
+    public abstract class SystemBase<T,S> : ISystem
     {
         public Type EntityType => typeof(T);
+        public Type SystemType => typeof(S);
     }
 }

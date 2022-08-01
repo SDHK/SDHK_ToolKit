@@ -45,7 +45,7 @@ namespace SDHK
     {
         public override void OnNew(UpdateManager self)
         {
-            self.systems = self.Root.systemManager.RegisterSystems<IUpdateSystem>();
+            self.systems = self.Root.systemManager.GetSystemGroup<IUpdateSystem>();
         }
     }
 

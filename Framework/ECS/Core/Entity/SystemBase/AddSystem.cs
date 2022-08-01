@@ -17,7 +17,7 @@ namespace SDHK
     /// <summary>
     /// 添加事件系统
     /// </summary>
-    public abstract class AddSystem<T> : SystemBase<T>, IAddSystem
+    public abstract class AddSystem<T> : SystemBase<T,IAddSystem>, IAddSystem
         where T : Entity
     {
         public void Add(Entity self) => OnAdd(self as T);
