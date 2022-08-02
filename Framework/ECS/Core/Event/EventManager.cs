@@ -45,7 +45,10 @@ namespace SDHK
 
             //self.Root.EventSystem.Get("测试").CallAction("参数",1,1.2f);
 
+            //self.EventGet("测试").CallAction("参数",1,1.2f);
+
             //"测试".CallAction("参数",1,1.2f);
+
         }
     }
 }
