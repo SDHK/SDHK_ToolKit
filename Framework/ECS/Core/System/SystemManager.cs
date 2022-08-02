@@ -20,14 +20,6 @@ using UnityEngine;
 namespace SDHK
 {
 
-    /// <summary>
-    /// 执行系统
-    /// </summary>
-    public interface ICallSystem : ISystem//或许可以成为单例组件
-    {
-        void Call(Entity self);
-    }
-
 
 
     /// <summary>
@@ -122,20 +114,6 @@ namespace SDHK
         {
             return AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes().Where(T => T.GetInterfaces().Contains(Interface) && !T.IsAbstract)).ToArray();
         }
-
-
-        public void CallSystems<T>(Entity entity)
-               where T : ISystem
-        {
-
-            if (InterfaceSystems.TryGetValue(typeof(T), out SystemGroup systemGroup))
-            {
-
-                foreach (ICallSystem system in systemGroup.GetSystems(entity.Type))
-                {
-                    system.Call(entity);
-                }
-            }
-        }
+       
     }
 }
