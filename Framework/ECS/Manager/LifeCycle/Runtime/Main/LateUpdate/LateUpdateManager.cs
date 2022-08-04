@@ -51,8 +51,7 @@ namespace SDHK
     {
         public override void OnDestroy(LateUpdateManager self)
         {
-            self.systems.Clear();
-            self.systems.Recycle();
+            self.systems = null;
         }
     }
 

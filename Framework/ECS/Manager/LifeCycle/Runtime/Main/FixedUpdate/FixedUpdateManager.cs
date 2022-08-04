@@ -51,8 +51,7 @@ namespace SDHK
     {
         public override void OnDestroy(FixedUpdateManager self)
         {
-            self.systems.Clear();
-            self.systems.Recycle();
+            self.systems = null;
         }
     }
 

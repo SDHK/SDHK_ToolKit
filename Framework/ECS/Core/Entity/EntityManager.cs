@@ -31,7 +31,7 @@ namespace SDHK
     /// <summary>
     /// 实体管理器
     /// </summary>
-    public  class EntityManager : Entity, IUnit
+    public class EntityManager : Entity, IUnit
     {
         public UnitDictionary<ulong, Entity> allEntities = new UnitDictionary<ulong, Entity>();
 
@@ -49,7 +49,7 @@ namespace SDHK
         /// <summary>
         /// 初始化：对象池的新建
         /// </summary>
-        public  EntityManager()
+        public EntityManager()
         {
 
             Type = GetType();
@@ -66,7 +66,7 @@ namespace SDHK
             addSystems = Root.systemManager.GetSystemGroup<IAddSystem>();
             removeSystems = Root.systemManager.GetSystemGroup<IRemoveSystem>();
 
-
+            SetComponent<EventManager>();
             AddComponent(pool);
             AddComponent(systemManager);
         }

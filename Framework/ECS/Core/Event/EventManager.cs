@@ -1,34 +1,85 @@
-﻿using System;
+﻿
+/****************************************
+
+* 作者： 闪电黑客
+* 日期： 2022/8/2 15:28
+
+* 描述： 事件管理器
+
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
-namespace SDHK 
+namespace SDHK
 {
 
+    public static class EventManagerExtension
+    {
+        public static EventDelegate EventGet(this Entity self, object key)
+        {
+            return self.Root.SetComponent<EventManager>().Get(key);
+        }
+
+        public static void EventRemove(this Entity self, object key)
+        {
+             self.Root.SetComponent<EventManager>().Remove(key);
+        }
+
+        public static EventDelegate EventGet(this Entity self)
+        {
+            return self.Root.SetComponent<EventManager>().Get("");
+        }
+
+        public static void EventRemove(this Entity self)
+        {
+             self.Root.SetComponent<EventManager>().Remove("");
+        }
+    }
+
     /// <summary>
-    /// 事件系统
+    /// 事件管理器
     /// </summary>
-    public interface ICallSystem : ISystem
+    public class EventManager : Entity
     {
-        Delegate GetDeleate();
-    }
+        public SystemGroup systemGroup;
 
+        public UnitDictionary<object, EventDelegate> eventDelegates;
 
-    public abstract class CallSystem<T> :SystemBase<Action<T>,ICallSystem>, ICallSystem
-    {
-        
-        public Delegate GetDeleate() =>(Action<T>)Event;
-        public abstract void Event(T self);
-    }
+        /// <summary>
+        /// 获取对象绑定的事件委托 
+        /// </summary>
+        /// <param name="key">绑定的对象</param>
+        public EventDelegate Get(object key)
+        {
+            if (eventDelegates.ContainsKey(key))
+            {
+                return eventDelegates[key];
+            }
+            else
+            {
+                EventDelegate eventDelegate = EventDelegate.GetObject();
+                eventDelegates.Add(key, eventDelegate);
+                return eventDelegate;
+            }
+        }
 
-    //需要将EventDelegate改为Entity版本
-    public class EventManager:Entity
-    {
-        public SystemGroup systems;
-
-        public UnitDictionary<object, EventDelegate> events;
+        /// <summary>
+        /// 移除对象绑定的事件委托
+        /// </summary>
+        /// <param name="key">绑定的对象</param>
+        public void Remove(object key)
+        {
+            if (eventDelegates.ContainsKey(key))
+            {
+                eventDelegates[key].Recycle();
+                eventDelegates.Remove(key);
+            }
+        }
 
     }
 
@@ -36,19 +87,36 @@ namespace SDHK
     {
         public override void OnAdd(EventManager self)
         {
-            //需要进行遍历
-            self.systems = self.Root.systemManager.GetSystemGroup<ICallSystem>();
+            //进行遍历分类
+            self.systemGroup = self.Root.systemManager.GetSystemGroup<IEventSystem>();
+            self.eventDelegates = UnitPoolManager.Instance.Get<UnitDictionary<object, EventDelegate>>();
 
-            //方法注册为事件，需要检测特性进行分类
-            self.events[0].Add( (self.systems[typeof(Type)][0] as ICallSystem).GetDeleate);
+            foreach (var systems in self.systemGroup.Values)
+            {
+                foreach (IEventSystem system in systems)
+                {
+                    //反射属性获取键值
+                    object key = "";
+                    object[] attributes = system.GetType().GetCustomAttributes(typeof(EventKeyAttribute), true);
+                    if (attributes.Length != 0)
+                    {
+                        key = (attributes[0] as EventKeyAttribute)?.key;
+                    }
+                    //分组注册事件
+                    self.Get(key).AddDelegate(system.GetDeleate());
+                }
+            }
+        }
+    }
 
 
-            //self.Root.EventSystem.Get("测试").CallAction("参数",1,1.2f);
-
-            //self.EventGet("测试").CallAction("参数",1,1.2f);
-
-            //"测试".CallAction("参数",1,1.2f);
-
+    class EventManagerRemoveSystem : RemoveSystem<EventManager>
+    {
+        public override void OnRemove(EventManager self)
+        {
+            self.systemGroup = null;
+            self.eventDelegates.Recycle();
+            self.eventDelegates = null;
         }
     }
 }

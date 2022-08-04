@@ -53,8 +53,7 @@ namespace SDHK
     {
         public override void OnDestroy(UpdateManager self)
         {
-            self.systems.Clear();
-            self.systems.Recycle();
+            self.systems = null;
         }
     }
 

@@ -19,6 +19,7 @@ using UnityEngine;
 namespace Scripts
 {
 
+
     public class Node : Entity
     {
 
@@ -72,7 +73,52 @@ namespace Scripts
     {
         public override void Update(Node self)
         {
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                //召唤默认组事件
+                self.EventGet().CallAction("事件召唤Q");
+            }
+            if (Input.GetKeyDown(KeyCode.W))
+            {
+                //召唤某个组的事件
+                self.EventGet("分组1").CallAction("事件召唤W");
+            }
+
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                //召唤某个组的事件
+                Debug.Log(self.EventGet().CallFunc<string>());
+            }
+
             Debug.Log("Update!!!");
         }
+    }
+}
+
+//分在默认组的事件
+class TestEvent : EventActionSystem<string>
+{
+    public  override void Event(string arg1)
+    {
+        Debug.Log(arg1);
+    }
+}
+
+//分在默认组的事件
+class TestEvent0 : EventFuncSystem<string>
+{
+    public override string Event()
+    {
+        return "事件返回";
+    }
+}
+
+//通过特性分组
+[EventKey("分组1")]
+class TestEvent1 : EventActionSystem<string>
+{
+    public override void Event(string arg1)
+    {
+        Debug.Log("分组1" + arg1);
     }
 }

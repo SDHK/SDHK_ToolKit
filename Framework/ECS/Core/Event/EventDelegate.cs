@@ -37,7 +37,7 @@ namespace SDHK
     /// </summary>
     public class EventDelegate : UnitPoolItem<EventDelegate>
     {
-        private Dictionary<Type, List<Delegate>> events;
+        private UnitDictionary<Type, UnitList<Delegate>> events;
 
         /// <summary>
         /// 添加一个委托
@@ -46,20 +46,20 @@ namespace SDHK
         {
             if (events == null)
             {
-                events = ObjectPoolManager.Instance.Get<Dictionary<Type, List<Delegate>>>();
+                events = UnitPoolManager.Instance.Get<UnitDictionary<Type, UnitList<Delegate>>>();
             }
 
             Type key = action.GetType();
 
             if (events.ContainsKey(key))
             {
-                List<Delegate> delegates = ObjectPoolManager.Instance.Get<List<Delegate>>();
-                delegates.Add(action);
-                events.Add(key, delegates);
+                events[key].Add(action);
             }
             else
             {
-                events[key].Add(action);
+                UnitList<Delegate> delegates = UnitPoolManager.Instance.Get<UnitList<Delegate>>();
+                delegates.Add(action);
+                events.Add(key, delegates);
             }
         }
 
@@ -75,11 +75,11 @@ namespace SDHK
                 delegates.Remove(action);
                 if (delegates.Count == 0)
                 {
-                    ObjectPoolManager.Instance.Recycle(delegates);
+                    delegates.Recycle();
                     events.Remove(key);
                     if (events.Count == 0)
                     {
-                        ObjectPoolManager.Instance.Recycle(events);
+                        events.Recycle();
                         events = null;
                     }
                 }
@@ -94,11 +94,11 @@ namespace SDHK
             if (events.ContainsKey(key))
             {
                 events[key].Clear();
-                ObjectPoolManager.Instance.Recycle(events[key]);
+                events[key].Recycle();
                 events.Remove(key);
                 if (events.Count == 0)
                 {
-                    ObjectPoolManager.Instance.Recycle(events);
+                    events.Recycle();
                     events = null;
                 }
             }
@@ -131,10 +131,10 @@ namespace SDHK
             {
                 var delegates = item.Value;
                 delegates.Clear();
-                ObjectPoolManager.Instance.Recycle(delegates);
+                delegates.Recycle();
             }
             events.Clear();
-            ObjectPoolManager.Instance.Recycle(events);
+            events.Recycle();
             events = null;
         }
 
