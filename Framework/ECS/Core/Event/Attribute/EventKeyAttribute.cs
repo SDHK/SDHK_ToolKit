@@ -4,7 +4,7 @@
 * 作者： 闪电黑客
 * 日期： 2022/8/4 11:30
 
-* 描述： 
+* 描述： 事件特性
 
 */
 
@@ -16,6 +16,10 @@ using System.Threading.Tasks;
 
 namespace  SDHK 
 {
+
+    /// <summary>
+    /// 事件分组（默认分组为 "" 空字符）
+    /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public class EventKeyAttribute : Attribute
     {

@@ -43,7 +43,7 @@ namespace SDHK
     {
         public override void OnNew(LateUpdateManager self)
         {
-            self.systems = self.Root.systemManager.GetSystemGroup<ILateUpdateSystem>();
+            self.systems = self.RootGetSystemGroup<ILateUpdateSystem>();
         }
     }
 

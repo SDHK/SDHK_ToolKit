@@ -29,10 +29,10 @@ namespace SDHK
         public override void OnAdd(EntityPool self)
         {
             //注册生命周期系统
-            self.newSystem = self.Root.systemManager.GetSystems<INewSystem>(self.ObjectType);
-            self.getSystem = self.Root.systemManager.GetSystems<IGetSystem>(self.ObjectType);
-            self.recycleSystem = self.Root.systemManager.GetSystems<IRecycleSystem>(self.ObjectType);
-            self.destroySystem = self.Root.systemManager.GetSystems<IDestroySystem>(self.ObjectType);
+            self.newSystem = self.RootGetSystems<INewSystem>(self.ObjectType);
+            self.getSystem = self.RootGetSystems<IGetSystem>(self.ObjectType);
+            self.recycleSystem = self.RootGetSystems<IRecycleSystem>(self.ObjectType);
+            self.destroySystem = self.RootGetSystems<IDestroySystem>(self.ObjectType);
         }
     }
 

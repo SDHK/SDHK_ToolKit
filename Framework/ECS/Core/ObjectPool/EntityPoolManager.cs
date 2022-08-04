@@ -39,18 +39,6 @@ using UnityEngine;
 namespace SDHK
 {
 
-    //public class EntityPoolManagerAddSystem : AddSystem<EntityPoolManager>
-    //{
-    //    public override void OnAdd(EntityPoolManager self)
-    //    {
-    //        //注册生命周期系统
-    //        self.Root.systemManager.RegisterSystems<INewSystem>();
-    //        self.Root.systemManager.RegisterSystems<IGetSystem>();
-    //        self.Root.systemManager.RegisterSystems<IRecycleSystem>();
-    //        self.Root.systemManager.RegisterSystems<IDestroySystem>();
-    //    }
-    //}
-
     /// <summary>
     /// 实体对象池管理器
     /// </summary>

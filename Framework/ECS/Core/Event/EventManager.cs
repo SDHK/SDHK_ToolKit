@@ -17,25 +17,40 @@ using UnityEngine;
 
 namespace SDHK
 {
-
+    /// <summary>
+    /// 根节点组件调用扩展
+    /// </summary>
     public static class EventManagerExtension
     {
-        public static EventDelegate EventGet(this Entity self, object key)
+
+        /// <summary>
+        /// 获取一组事件集合
+        /// </summary>
+        public static EventDelegate RootGetEvent(this Entity self, object key)
         {
             return self.Root.SetComponent<EventManager>().Get(key);
         }
 
-        public static void EventRemove(this Entity self, object key)
+        /// <summary>
+        /// 删除一组事件集合
+        /// </summary>
+        public static void RootRemoveEvent(this Entity self, object key)
         {
              self.Root.SetComponent<EventManager>().Remove(key);
         }
 
-        public static EventDelegate EventGet(this Entity self)
+        /// <summary>
+        /// 获取默认组事件集合
+        /// </summary>
+        public static EventDelegate RootGetEvent(this Entity self)
         {
             return self.Root.SetComponent<EventManager>().Get("");
         }
 
-        public static void EventRemove(this Entity self)
+        /// <summary>
+        /// 删除默认组事件集合
+        /// </summary>
+        public static void RootRemoveEvent(this Entity self)
         {
              self.Root.SetComponent<EventManager>().Remove("");
         }
@@ -88,7 +103,7 @@ namespace SDHK
         public override void OnAdd(EventManager self)
         {
             //进行遍历分类
-            self.systemGroup = self.Root.systemManager.GetSystemGroup<IEventSystem>();
+            self.systemGroup = self.RootGetSystemGroup<IEventSystem>();
             self.eventDelegates = UnitPoolManager.Instance.Get<UnitDictionary<object, EventDelegate>>();
 
             foreach (var systems in self.systemGroup.Values)

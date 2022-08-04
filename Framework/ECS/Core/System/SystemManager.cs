@@ -19,7 +19,34 @@ using UnityEngine;
 
 namespace SDHK
 {
+    public static class SystemManagerExtension
+    {
+        /// <summary>
+        /// 获取系统组
+        /// </summary>
+        public static SystemGroup RootGetSystemGroup<T>(this Entity self)
+        where T : ISystem
+        {
+            return self.Root.systemManager.GetSystemGroup<T>();
+        }
 
+        /// <summary>
+        /// 获取系统组
+        /// </summary>
+        public static SystemGroup RootGetSystemGroup(this Entity self,Type InterfaceType)
+        {
+            return self.Root.systemManager.GetSystemGroup(InterfaceType);
+        }
+
+        /// <summary>
+        /// 获取单类型系统列表
+        /// </summary>
+        public static UnitList<ISystem> RootGetSystems<T>(this Entity self, Type type)
+        {
+            return self.Root.systemManager.GetSystems<T>(type);
+        }
+
+    }
 
 
     /// <summary>
@@ -114,6 +141,6 @@ namespace SDHK
         {
             return AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes().Where(T => T.GetInterfaces().Contains(Interface) && !T.IsAbstract)).ToArray();
         }
-       
+
     }
 }

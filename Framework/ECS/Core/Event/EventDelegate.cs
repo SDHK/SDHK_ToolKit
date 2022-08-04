@@ -115,7 +115,11 @@ namespace SDHK
         /// <summary>
         /// 获取一个类型的全部委托
         /// </summary>
-        public List<Delegate> Get(Type key) { return events.ContainsKey(key) ? events[key] : null; }
+        public List<Delegate> Get(Type key)
+        {
+            events.TryGetValue(key, out UnitList<Delegate> delegates);
+            return delegates;
+        }
 
         /// <summary>
         /// 获取一个类型的全部委托

@@ -73,21 +73,19 @@ namespace Scripts
     {
         public override void Update(Node self)
         {
-            if (Input.GetKeyDown(KeyCode.Q))
-            {
-                //召唤默认组事件
-                self.EventGet().CallAction("事件召唤Q");
-            }
-            if (Input.GetKeyDown(KeyCode.W))
-            {
-                //召唤某个组的事件
-                self.EventGet("分组1").CallAction("事件召唤W");
-            }
+
+
 
             if (Input.GetKeyDown(KeyCode.E))
             {
                 //召唤某个组的事件
-                Debug.Log(self.EventGet().CallFunc<string>());
+                Debug.Log(self.RootGetEvent().CallFunc<string, string>(""));
+            }
+
+            if (Input.GetKeyDown(KeyCode.W))
+            {
+                //召唤某个组的事件
+                self.RootGetEvent("分组1").CallAction("事件召唤W", 1, 0.5f, Vector3.one, Color.red);
             }
 
             Debug.Log("Update!!!");
@@ -95,14 +93,17 @@ namespace Scripts
     }
 }
 
-//分在默认组的事件
-class TestEvent : EventActionSystem<string>
+//通过特性分组
+[EventKey("分组1")]
+class TestEvent1 : EventActionSystem<string, int, float, Vector3, Color>
 {
-    public  override void Event(string arg1)
+    public override void Event(string arg1, int index, float f, Vector3 vector, Color color)
     {
-        Debug.Log(arg1);
+        Debug.Log($"分组1: {arg1}|{index}|{f}|{vector}|{color}");
     }
 }
+
+
 
 //分在默认组的事件
 class TestEvent0 : EventFuncSystem<string>
@@ -113,12 +114,3 @@ class TestEvent0 : EventFuncSystem<string>
     }
 }
 
-//通过特性分组
-[EventKey("分组1")]
-class TestEvent1 : EventActionSystem<string>
-{
-    public override void Event(string arg1)
-    {
-        Debug.Log("分组1" + arg1);
-    }
-}
