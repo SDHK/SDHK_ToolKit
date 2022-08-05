@@ -26,8 +26,6 @@ using UnityEngine;
 namespace SDHK
 {
 
-    //规范命名，开始写pathAsset,为了解耦需要事件递归。先考虑事件系统
-
     /// <summary>
     /// 实体管理器
     /// </summary>
@@ -35,7 +33,7 @@ namespace SDHK
     {
         public UnitDictionary<ulong, Entity> allEntities = new UnitDictionary<ulong, Entity>();
 
-        public UnitDictionary<Type, Entity> listeners;//有监听器的实体//分域
+        public UnitDictionary<Type, Entity> listeners = new UnitDictionary<Type, Entity>();//有监听器的实体//分域
 
         public SystemGroup entitySystems;
 
@@ -58,40 +56,34 @@ namespace SDHK
 
             systemManager = new SystemManager();
             pool = new EntityPoolManager();
+
+
             systemManager.Root = this;
             pool.Root = this;
+            UnitPoolManager.Instance.Root = this;
 
-            listeners = UnitDictionary<Type, Entity>.GetObject();
             entitySystems = Root.systemManager.GetSystemGroup<IEntitySystem>();
             addSystems = Root.systemManager.GetSystemGroup<IAddSystem>();
             removeSystems = Root.systemManager.GetSystemGroup<IRemoveSystem>();
 
-            SetComponent<EventManager>();
-            AddComponent(pool);
             AddComponent(systemManager);
+            AddComponent(UnitPoolManager.Instance);
+            AddComponent(pool);
+            SetComponent<EventManager>();
         }
 
 
-        /// <summary>
-        /// 释放自己
-        /// </summary>
-        public void Dispose()
-        {
-            if (isDisposed) return;
-            OnDispose();
-            isDisposed = true;
-        }
+
 
         /// <summary>
         /// 回收时:对象池全部释放
         /// </summary>
-        public void OnDispose()
+        public override void OnDispose()
         {
 
             RemoveAll();
 
             listeners.Clear();
-            listeners.Recycle();
 
             pool.RemoveSelf();//移除所有组件
             pool.Dispose();//全部释放

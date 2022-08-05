@@ -29,6 +29,8 @@ namespace SDHK
         /// </summary>
         public UnitPool()
         {
+            id = IdManager.GetID;
+            Type = GetType();
             ObjectType = typeof(T);
 
             NewObject = ObjectNew;
@@ -42,10 +44,10 @@ namespace SDHK
 
         public override string ToString()
         {
-            return "[UnitPool<" + ObjectType.Name + ">] ";
+            return "[UnitPool<" + ObjectType + ">] ";
         }
 
-        private  T ObjectNew(IPool pool)
+        private T ObjectNew(IPool pool)
         {
             T obj = Activator.CreateInstance(ObjectType, true) as T;
             obj.thisPool = pool;
@@ -70,7 +72,7 @@ namespace SDHK
             obj.IsRecycle = true;
             obj.OnRecycle();
         }
-      
+
 
     }
 }

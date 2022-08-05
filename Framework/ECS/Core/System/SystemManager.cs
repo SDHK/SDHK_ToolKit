@@ -21,6 +21,7 @@ namespace SDHK
 {
     public static class SystemManagerExtension
     {
+
         /// <summary>
         /// 获取系统组
         /// </summary>
@@ -33,7 +34,7 @@ namespace SDHK
         /// <summary>
         /// 获取系统组
         /// </summary>
-        public static SystemGroup RootGetSystemGroup(this Entity self,Type InterfaceType)
+        public static SystemGroup RootGetSystemGroup(this Entity self, Type InterfaceType)
         {
             return self.Root.systemManager.GetSystemGroup(InterfaceType);
         }
@@ -55,13 +56,12 @@ namespace SDHK
     public class SystemManager : Entity, IUnit
     {
         //接口类型，（实例类型，实例方法）
-        private UnitDictionary<Type, SystemGroup> InterfaceSystems;
+        private UnitDictionary<Type, SystemGroup> InterfaceSystems = new UnitDictionary<Type, SystemGroup>();
 
         public SystemManager()
         {
             id = IdManager.GetID;
             Type = GetType();
-            InterfaceSystems = UnitDictionary<Type, SystemGroup>.GetObject();
             Initialize();
         }
 
@@ -77,7 +77,7 @@ namespace SDHK
                 Type EntityType = system.EntityType;
                 if (!InterfaceSystems.TryGetValue(SystemType, out SystemGroup systemGroup))
                 {
-                    systemGroup = SystemGroup.GetObject();
+                    systemGroup = new SystemGroup();
                     InterfaceSystems.Add(SystemType, systemGroup);
                 }
 
@@ -97,7 +97,7 @@ namespace SDHK
         {
             if (!InterfaceSystems.TryGetValue(Interface, out SystemGroup systemGroup))
             {
-                systemGroup = SystemGroup.GetObject();
+                systemGroup = new SystemGroup();
             }
             return systemGroup;
         }
@@ -118,20 +118,10 @@ namespace SDHK
             return null;
         }
 
-        /// <summary>
-        /// 释放自己
-        /// </summary>
-        public void Dispose()
-        {
-            if (isDisposed) return;
-            OnDispose();
-            isDisposed = true;
-        }
 
-        public void OnDispose()
+        public override void OnDispose()
         {
             InterfaceSystems.Clear();
-            InterfaceSystems.Recycle();
         }
 
         /// <summary>

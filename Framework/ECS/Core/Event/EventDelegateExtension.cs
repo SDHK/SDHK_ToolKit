@@ -27,6 +27,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace SDHK
@@ -56,6 +57,25 @@ namespace SDHK
         #endregion
 
         #region CallAction
+
+        public static async Task CallActionAsync(this EventDelegate e)
+        { 
+            var events = e.Get<Func<Task>>();
+            if (events != null)
+            {
+                for (int i = events.Count - 1; i >= 0; i--)
+                {
+                    if (events[i] == null)
+                    {
+                        events.RemoveAt(i);
+                    }
+                    else
+                    {
+                       await (events[i] as Func<Task>)();
+                    }
+                }
+            }
+        }
         public static void CallAction(this EventDelegate e)
         {
             var events = e.Get<Action>();

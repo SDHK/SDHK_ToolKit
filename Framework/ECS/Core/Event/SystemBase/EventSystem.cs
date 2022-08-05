@@ -24,11 +24,20 @@ namespace SDHK
 
     #region Action
 
+    public abstract class EventActionAsyncSystem : SystemBase<Func<Task>, IEventSystem>, IEventSystem
+    {
+        public Delegate GetDeleate() => (Func<Task>)Event;
+        public abstract Task Event();
+    }
+
+
     public abstract class EventActionSystem : SystemBase<Action, IEventSystem>, IEventSystem
     {
         public Delegate GetDeleate() => (Action)Event;
         public abstract void Event();
     }
+
+   
 
     public abstract class EventActionSystem<T1> : SystemBase<Action<T1>, IEventSystem>, IEventSystem
     {

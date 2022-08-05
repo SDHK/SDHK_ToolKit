@@ -79,7 +79,7 @@ namespace SDHK
 
         public override string ToString()
         {
-            return "[MonoObjectPool<" + ObjectType.Name + ">] : " + objName;
+            return "[MonoObjectPool<" + ObjectType + ">] : " + objName;
         }
 
         public override void OnDispose()

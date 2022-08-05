@@ -29,6 +29,18 @@
 
 */
 
+/****************************************
+
+* 作者： 闪电黑客
+* 日期： 2022/8/5 10:32
+
+* 描述： 对象池抽象基类 （第七次大修改）
+* 
+* 从oop改为ecs 并入Entity树 
+
+*/
+
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -83,7 +95,7 @@ namespace SDHK
     /// <summary>
     /// 对象池抽象基类
     /// </summary>
-    public abstract class PoolBase : Unit, IPool
+    public abstract class PoolBase : Entity, IPool
     {
 
         public Type ObjectType { get; set; }

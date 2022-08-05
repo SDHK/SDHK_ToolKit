@@ -22,7 +22,7 @@ namespace SDHK
     /// <summary>
     /// 单位字典：可由对象池管理回收
     /// </summary>
-    public class UnitDictionary<TKey,TValue>:Dictionary<TKey, TValue>,IUnitPoolItem
+    public class UnitDictionary<TKey, TValue> : Dictionary<TKey, TValue>, IUnitPoolItem
     {
         public IPool thisPool { get; set; }
         public bool IsRecycle { get; set; }
@@ -31,7 +31,7 @@ namespace SDHK
         /// <summary>
         /// 单位对象池：获取对象
         /// </summary>
-        public static  UnitDictionary<TKey, TValue> GetObject()
+        public static UnitDictionary<TKey, TValue> GetObject()
         {
             return UnitPoolManager.Instance.Get<UnitDictionary<TKey, TValue>>();
         }

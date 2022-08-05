@@ -29,7 +29,7 @@ namespace SDHK
             UnitList<ISystem> Isystems;
             if (!TryGetValue(type, out Isystems))
             {
-                Isystems = UnitList<ISystem>.GetObject();
+                Isystems = new UnitList<ISystem>();
                 Add(type, Isystems);
             }
 
@@ -42,7 +42,6 @@ namespace SDHK
             foreach (var systemList in this)
             {
                 systemList.Value.Clear();
-                systemList.Value.Recycle();
             }
             Clear();
         }

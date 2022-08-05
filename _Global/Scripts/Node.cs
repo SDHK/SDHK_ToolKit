@@ -34,9 +34,10 @@ namespace Scripts
     }
     class NodeAddSystem : AddSystem<Node>
     {
-        public override void OnAdd(Node self)
+        public async override void OnAdd(Node self)
         {
             Debug.Log("OnAdd!!!");
+            await self.RootGetEvent().CallActionAsync();
         }
     }
     class NodeGetSystem : GetSystem<Node>
@@ -79,7 +80,7 @@ namespace Scripts
             if (Input.GetKeyDown(KeyCode.E))
             {
                 //召唤某个组的事件
-                Debug.Log(self.RootGetEvent().CallFunc<string, string>(""));
+
             }
 
             if (Input.GetKeyDown(KeyCode.W))
@@ -97,20 +98,26 @@ namespace Scripts
 [EventKey("分组1")]
 class TestEvent1 : EventActionSystem<string, int, float, Vector3, Color>
 {
-    public override void Event(string arg1, int index, float f, Vector3 vector, Color color)
+    public async override void Event(string arg1, int index, float f, Vector3 vector, Color color)
     {
+
         Debug.Log($"分组1: {arg1}|{index}|{f}|{vector}|{color}");
+        await Task.Delay(1000);
+        Debug.Log($"分组延迟: {arg1}|{index}|{f}|{vector}|{color}");
+
     }
 }
 
 
 
 //分在默认组的事件
-class TestEvent0 : EventFuncSystem<string>
+class TestEvent0 : EventActionAsyncSystem
 {
-    public override string Event()
+    public override async Task Event()
     {
-        return "事件返回";
+        Debug.Log("异步1");
+        await Task.Delay(1000);
+        Debug.Log("异步2");
     }
 }
 

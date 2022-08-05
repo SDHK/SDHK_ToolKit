@@ -103,7 +103,7 @@ namespace SDHK
 
         public override string ToString()
         {
-            return "[GenericPool<" + ObjectType.Name + ">]";
+            return "[GenericPool<" + ObjectType + ">]";
         }
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace SDHK
         /// <summary>
         /// 获取对象
         /// </summary>
-        public T Get()
+        public virtual T Get()
         {
             T obj = DequeueOrNewObject();
             objectOnGet?.Invoke(obj);

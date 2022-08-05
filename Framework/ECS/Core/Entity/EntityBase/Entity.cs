@@ -19,14 +19,8 @@ namespace SDHK
     /// <summary>
     /// 实体基类
     /// </summary>
-    public abstract class Entity
+    public abstract class Entity : Unit
     {
-
-        /// <summary>
-        /// 释放标记
-        /// </summary>
-        public bool isDisposed { get; set; }
-
         /// <summary>
         /// 回收标记
         /// </summary>
@@ -164,6 +158,7 @@ namespace SDHK
                 }
                 return children;
             }
+            set { children = value; }
         }
         public UnitDictionary<Type, Entity> Components
         {
@@ -175,6 +170,8 @@ namespace SDHK
                 }
                 return components;
             }
+
+            set { components = value; }
         }
 
         /// <summary>
