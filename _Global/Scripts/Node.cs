@@ -20,59 +20,59 @@ namespace Scripts
 {
 
 
-    public class Node : Entity
+    public class Node<T> : Entity
     {
 
     }
 
-    class NodeNewSystem : AddSystem<Node>
+    class NodeNewSystem : AddSystem<Node<int>>
     {
-        public override void OnAdd(Node self)
+        public override void OnAdd(Node<int> self)
         {
             Debug.Log("OnNew!!!");
         }
     }
-    class NodeAddSystem : AddSystem<Node>
+    class NodeAddSystem : AddSystem<Node<int>>
     {
-        public async override void OnAdd(Node self)
+        public async override void OnAdd(Node<int> self)
         {
             Debug.Log("OnAdd!!!");
             await self.RootGetEvent().CallActionAsync();
         }
     }
-    class NodeGetSystem : GetSystem<Node>
+    class NodeGetSystem : GetSystem<Node<int>>
     {
-        public override void OnGet(Node self)
+        public override void OnGet(Node<int> self)
         {
             Debug.Log("OnGet!!!");
         }
     }
-    class NodeRemoveSystem : RemoveSystem<Node>
+    class NodeRemoveSystem : RemoveSystem<Node<int>>
     {
-        public override void OnRemove(Node self)
+        public override void OnRemove(Node<int> self)
         {
             Debug.Log("OnRemove!!!");
         }
     }
-    class NodeRecycleSystem : RecycleSystem<Node>
+    class NodeRecycleSystem : RecycleSystem<Node<int>>
     {
-        public override void OnRecycle(Node self)
+        public override void OnRecycle(Node<int> self)
         {
             Debug.Log("OnRecycle!!!");
         }
     }
-    class NodeDestroySystem : DestroySystem<Node>
+    class NodeDestroySystem : DestroySystem<Node<int>>
     {
-        public override void OnDestroy(Node self)
+        public override void OnDestroy(Node<int> self)
         {
             Debug.Log("OnDestroy!!!");
         }
     }
 
 
-    class NodeUpdateSystem : UpdateSystem<Node>
+    class NodeUpdateSystem : UpdateSystem<Node<int>>
     {
-        public override void Update(Node self)
+        public override void Update(Node<int> self)
         {
 
 
