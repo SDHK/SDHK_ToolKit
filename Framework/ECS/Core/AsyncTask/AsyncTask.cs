@@ -37,7 +37,7 @@ namespace SDHK
         T GetResult();
     }
 
-    public class AsyncTask : UnitPoolItem<AsyncTask>, IAsyncTask
+    public class AsyncTask : Entity, IAsyncTask
     {
         public AsyncTask GetAwaiter() => this; //await需要这个;
 
@@ -52,7 +52,6 @@ namespace SDHK
     
         public void UnsafeOnCompleted(Action continuation)
         {
-            //扔管理器里执行
         }
 
         public void GetResult()
@@ -63,17 +62,7 @@ namespace SDHK
         { 
             
         }
-
-        public override void OnGet()
-        {
-        }
-        public override void OnRecycle()
-        {
-        }
     }
 
-    public class AsyncTaskSystem
-    {
-
-    }
+  
 }

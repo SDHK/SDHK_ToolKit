@@ -18,8 +18,15 @@ namespace SDHK
 {
     public class AsyncTaskManager:Entity
     {
+        Dictionary<ulong ,AsyncTask> tasks = new Dictionary<ulong ,AsyncTask>();    
 
+    }
 
-
+    class AsyncTaskManagerUpdateSystem : UpdateSystem<AsyncTaskManager>
+    {
+        public override void Update(AsyncTaskManager self)
+        {
+            //await self.Task.Delyer();
+        }
     }
 }
