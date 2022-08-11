@@ -16,10 +16,9 @@ using System.Threading.Tasks;
 
 namespace SDHK
 {
-    public class AsyncTaskManager:Entity
+    public class AsyncTaskManager : Entity
     {
-        Dictionary<ulong ,AsyncTask> tasks = new Dictionary<ulong ,AsyncTask>();    
-
+        Dictionary<ulong,AsyncTask> tasks = new Dictionary<ulong, AsyncTask>();
     }
 
     class AsyncTaskManagerUpdateSystem : UpdateSystem<AsyncTaskManager>
@@ -27,6 +26,7 @@ namespace SDHK
         public override void Update(AsyncTaskManager self)
         {
             //await self.Task.Delyer();
+            //await 
         }
     }
 }
