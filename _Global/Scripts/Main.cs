@@ -15,7 +15,9 @@ namespace Scripts
             Debug.Log("MainAdd!!!");
 
 
-            self.SetChildren<Node<int>>();
+            self.AddChildren<Node<int>>().Send(10);
+            //self.TaskWait().Send(10);
+            //self.TaskWait(10);
 
             //root.GetComponent<PathAsset>().Get("A/B/C");
             //root.GetComponent<UIDomain>().GetComponent<UIManager>();

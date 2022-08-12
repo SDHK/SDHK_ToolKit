@@ -16,17 +16,69 @@ using System.Threading.Tasks;
 
 namespace SDHK
 {
+
+    /// <summary>
+    /// 异步任务Update 生命周期管理器实体 
+    /// </summary>
     public class AsyncTaskManager : Entity
     {
-        Dictionary<ulong,AsyncTask> tasks = new Dictionary<ulong, AsyncTask>();
+        public Dictionary<ulong, Entity> update1 = new Dictionary<ulong, Entity>();
+        public Dictionary<ulong, Entity> update2 = new Dictionary<ulong, Entity>();
+        public SystemGroup systems;
     }
 
     class AsyncTaskManagerUpdateSystem : UpdateSystem<AsyncTaskManager>
     {
         public override void Update(AsyncTaskManager self)
         {
-            //await self.Task.Delyer();
-            //await 
+            while (self.update1.Count != 0 && self.RealActive)
+            {
+                ulong firstKey = self.update1.Keys.First();
+                Entity entity = self.update1[firstKey];
+                if (entity.RealActive)
+                {
+                    if (self.systems.TryGetValue(entity.Type, out UnitList<ISystem> systemList))
+                    {
+                        foreach (ITaskUpdateSystem system in systemList)
+                        {
+                            system.Execute(entity);
+                        }
+                    }
+                }
+                self.update1.Remove(firstKey);
+                self.update2.Add(firstKey, entity);
+            }
+            (self.update1, self.update2) = (self.update2, self.update1);
         }
     }
+
+    class AsyncTaskManagerNewSystem : NewSystem<AsyncTaskManager>
+    {
+        public override void OnNew(AsyncTaskManager self)
+        {
+            self.systems = self.RootGetSystemGroup<ITaskUpdateSystem>();
+        }
+    }
+
+
+    class AsyncTaskManagerEntityListenerSystem : EntitySystem<AsyncTaskManager>
+    {
+        public override void OnAddEntity(AsyncTaskManager self, Entity entity)
+        {
+            if (self.systems.ContainsKey(entity.Type))
+            {
+                self.update2.Add(entity.id, entity);
+            }
+        }
+
+        public override void OnRemoveEntity(AsyncTaskManager self, Entity entity)
+        {
+            if (self.systems.ContainsKey(entity.Type))
+            {
+                self.update1.Remove(entity.id);
+                self.update2.Remove(entity.id);
+            }
+        }
+    }
+
 }

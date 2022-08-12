@@ -18,7 +18,7 @@ namespace  SDHK
 {
 
     /// <summary>
-    /// 事件分组（默认分组为 "" 空字符）
+    /// 事件分组
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public class EventKeyAttribute : Attribute
@@ -27,11 +27,6 @@ namespace  SDHK
         public EventKeyAttribute(object key)
         {
            this.key = key;
-        }
-
-        public EventKeyAttribute()
-        {
-            this.key = "";
         }
     }
 }

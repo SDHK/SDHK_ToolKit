@@ -31,8 +31,8 @@ namespace SDHK
         {
             root = new EntityManager();
 
-            update = root.SetComponent<UpdateManager>();
-            root.SetComponent<MainEntity>();
+            update = root.AddComponent<UpdateManager>();
+            root.AddComponent<MainEntity>();
 
             Debug.Log(SoloistFramework.AllEntityString(root, "\t"));
 

@@ -37,11 +37,11 @@ namespace SDHK
         {
             root = new EntityManager();
 
-            update = root.SetComponent<UpdateManager>();
-            lateUpdate = root.SetComponent<LateUpdateManager>();
-            fixedUpdate = root.SetComponent<FixedUpdateManager>();
+            update = root.AddComponent<UpdateManager>();
+            lateUpdate = root.AddComponent<LateUpdateManager>();
+            fixedUpdate = root.AddComponent<FixedUpdateManager>();
 
-            root.SetComponent<MainEntity>();
+            root.AddComponent<MainEntity>();
             
             Debug.Log(SoloistFramework.AllEntityString(root, "\t"));
            

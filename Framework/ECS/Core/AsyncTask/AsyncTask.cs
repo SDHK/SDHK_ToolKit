@@ -4,7 +4,7 @@
 * 作者： 闪电黑客
 * 日期： 2022/6/27 9:47
 
-* 描述： 
+* 描述： 继承实体是为了好扩展事件查看进度
 
 */
 
@@ -41,6 +41,8 @@ namespace SDHK
     {
         public AsyncTask GetAwaiter() => this; //await需要这个;
 
+        public Action continuation;
+
         public bool IsCompleted => true;
 
 
@@ -48,21 +50,23 @@ namespace SDHK
         {
             UnsafeOnCompleted(continuation);
         }
-    
-    
+
         public void UnsafeOnCompleted(Action continuation)
         {
+            this.continuation = continuation;
         }
 
         public void GetResult()
         {
 
         }
-        public void SetResult()
-        { 
-            
-        }
     }
 
-  
+    class AsyncTaskUpdateSystem : TaskUpdateSystem<AsyncTask>
+    {
+        public override void Update(AsyncTask self)
+        {
+
+        }
+    }
 }

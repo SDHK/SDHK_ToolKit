@@ -37,7 +37,6 @@ namespace Scripts
         public async override void OnAdd(Node<int> self)
         {
             Debug.Log("OnAdd!!!");
-            await self.RootGetEvent().CallActionAsync();
         }
     }
     class NodeGetSystem : GetSystem<Node<int>>
@@ -86,38 +85,26 @@ namespace Scripts
             if (Input.GetKeyDown(KeyCode.W))
             {
                 //召唤某个组的事件
-                self.RootGetEvent("分组1").CallAction("事件召唤W", 1, 0.5f, Vector3.one, Color.red);
+                self.RootGetEvent("分组1").Send("事件召唤W", 1, 0.5f, Vector3.one, Color.red);
             }
 
             Debug.Log("Update!!!");
         }
     }
-}
 
-//通过特性分组
-[EventKey("分组1")]
-class TestEvent1 : EventActionSystem<string, int, float, Vector3, Color>
-{
-    public async override void Event(string arg1, int index, float f, Vector3 vector, Color color)
+
+
+    //分在默认组的事件
+    class TestEvent0 : EventSendSystem<Node<int>, int>
     {
-
-        Debug.Log($"分组1: {arg1}|{index}|{f}|{vector}|{color}");
-        await Task.Delay(1000);
-        Debug.Log($"分组延迟: {arg1}|{index}|{f}|{vector}|{color}");
-
+        public override void Event(Node<int> arg1, int arg2)
+        {
+            Debug.Log("事件：" + arg2);
+        }
     }
+
 }
 
 
 
-//分在默认组的事件
-class TestEvent0 : EventActionAsyncSystem
-{
-    public override async Task Event()
-    {
-        Debug.Log("异步1");
-        await Task.Delay(1000);
-        Debug.Log("异步2");
-    }
-}
 

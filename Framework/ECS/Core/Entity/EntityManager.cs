@@ -69,7 +69,7 @@ namespace SDHK
             AddComponent(systemManager);
             AddComponent(UnitPoolManager.Instance);
             AddComponent(pool);
-            SetComponent<EventManager>();
+            AddComponent<EventManager>();
         }
 
 

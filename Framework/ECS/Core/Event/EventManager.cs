@@ -22,13 +22,18 @@ namespace SDHK
     /// </summary>
     public static class EventManagerExtension
     {
+        public static void Send<T0, T1>(this T0 self, T1 arg1)
+        where T0 : Entity
+        {
+            self.RootGetEvent().Send(self, arg1);
+        }
 
         /// <summary>
         /// 获取一组事件集合
         /// </summary>
         public static EventDelegate RootGetEvent(this Entity self, object key)
         {
-            return self.Root.SetComponent<EventManager>().Get(key);
+            return self.Root.AddComponent<EventManager>().Get(key);
         }
 
         /// <summary>
@@ -36,7 +41,7 @@ namespace SDHK
         /// </summary>
         public static void RootRemoveEvent(this Entity self, object key)
         {
-             self.Root.SetComponent<EventManager>().Remove(key);
+            self.Root.AddComponent<EventManager>().Remove(key);
         }
 
         /// <summary>
@@ -44,7 +49,8 @@ namespace SDHK
         /// </summary>
         public static EventDelegate RootGetEvent(this Entity self)
         {
-            return self.Root.SetComponent<EventManager>().Get("");
+            var key = self.Root.AddComponent<EventManager>();
+            return key.Get(key);
         }
 
         /// <summary>
@@ -52,7 +58,8 @@ namespace SDHK
         /// </summary>
         public static void RootRemoveEvent(this Entity self)
         {
-             self.Root.SetComponent<EventManager>().Remove("");
+            var key = self.Root.AddComponent<EventManager>();
+            key.Remove(key);
         }
     }
 
@@ -111,7 +118,7 @@ namespace SDHK
                 foreach (IEventSystem system in systems)
                 {
                     //反射属性获取键值
-                    object key = "";
+                    object key = self;
                     object[] attributes = system.GetType().GetCustomAttributes(typeof(EventKeyAttribute), true);
                     if (attributes.Length != 0)
                     {

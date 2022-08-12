@@ -219,7 +219,7 @@ namespace SDHK
         /// <summary>
         /// 添加新的子节点
         /// </summary>
-        public T SetChildren<T>()
+        public T AddChildren<T>()
             where T : Entity
         {
             T entity = Root.pool.Get<T>();
@@ -266,7 +266,7 @@ namespace SDHK
         /// <summary>
         /// 添加组件
         /// </summary>
-        public T SetComponent<T>()
+        public T AddComponent<T>()
             where T : Entity
         {
             Type type = typeof(T);

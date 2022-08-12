@@ -14,9 +14,9 @@
 
     通过Call调用
     
-    CallAction 调用同类型的多播委托
-    CallFuncs 调用同类型的多播委托，并返回获取到的全部返回值List
-    CallFunc 调用同类型的多播委托，并返回获取到的第一个返回值
+    Send 调用同类型的多播委托
+    Calls 调用同类型的多播委托，并返回获取到的全部返回值List
+    Call 调用同类型的多播委托，并返回获取到的第一个返回值
 
     当前参数最多为 5
     
@@ -56,9 +56,9 @@ namespace SDHK
         public static void Remove<T1, T2, T3, T4, T5>(this EventDelegate e, Action<T1, T2, T3, T4, T5> delegate_) { e.RemoveDelegate(delegate_); }
         #endregion
 
-        #region CallAction
+        #region Send
 
-        public static async Task CallActionAsync(this EventDelegate e)
+        public static async Task SendAsync(this EventDelegate e)
         { 
             var events = e.Get<Func<Task>>();
             if (events != null)
@@ -76,7 +76,9 @@ namespace SDHK
                 }
             }
         }
-        public static void CallAction(this EventDelegate e)
+
+
+        public static void Send(this EventDelegate e)
         {
             var events = e.Get<Action>();
 
@@ -95,7 +97,7 @@ namespace SDHK
                 }
             }
         }
-        public static void CallAction<T1>(this EventDelegate e, T1 arg1)
+        public static void Send<T1>(this EventDelegate e, T1 arg1)
         {
             var events = e.Get<Action<T1>>();
 
@@ -115,7 +117,7 @@ namespace SDHK
                 }
             }
         }
-        public static void CallAction<T1, T2>(this EventDelegate e, T1 arg1, T2 arg2)
+        public static void Send<T1, T2>(this EventDelegate e, T1 arg1, T2 arg2)
         {
             var events = e.Get<Action<T1, T2>>();
 
@@ -134,7 +136,7 @@ namespace SDHK
                 }
             }
         }
-        public static void CallAction<T1, T2, T3>(this EventDelegate e, T1 arg1, T2 arg2, T3 arg3)
+        public static void Send<T1, T2, T3>(this EventDelegate e, T1 arg1, T2 arg2, T3 arg3)
         {
             var events = e.Get<Action<T1, T2, T3>>();
 
@@ -153,7 +155,7 @@ namespace SDHK
                 }
             }
         }
-        public static void CallAction<T1, T2, T3, T4>(this EventDelegate e, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
+        public static void Send<T1, T2, T3, T4>(this EventDelegate e, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
         {
             var events = e.Get<Action<T1, T2, T3, T4>>();
 
@@ -172,7 +174,7 @@ namespace SDHK
                 }
             }
         }
-        public static void CallAction<T1, T2, T3, T4, T5>(this EventDelegate e, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
+        public static void Send<T1, T2, T3, T4, T5>(this EventDelegate e, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
         {
             var events = e.Get<Action<T1, T2, T3, T4, T5>>();
 
@@ -219,8 +221,8 @@ namespace SDHK
         public static void Remove<T1, T2, T3, T4, T5, OutT>(this EventDelegate e, Action<T1, T2, T3, T4, T5, OutT> delegate_) { e.RemoveDelegate(delegate_); }
         #endregion
 
-        #region CallFuncs
-        public static List<OutT> CallFuncs<OutT>(this EventDelegate e)
+        #region Calls
+        public static List<OutT> Calls<OutT>(this EventDelegate e)
         {
             var events = e.Get<Func<OutT>>();
             List<OutT> ts = new List<OutT>();
@@ -240,7 +242,7 @@ namespace SDHK
             }
             return ts;
         }
-        public static List<OutT> CallFuncs<T1, OutT>(this EventDelegate e, T1 arg1)
+        public static List<OutT> Calls<T1, OutT>(this EventDelegate e, T1 arg1)
         {
             var events = e.Get<Func<T1, OutT>>();
             List<OutT> ts = new List<OutT>();
@@ -260,7 +262,7 @@ namespace SDHK
             }
             return ts;
         }
-        public static List<OutT> CallFuncs<T1, T2, OutT>(this EventDelegate e, T1 arg1, T2 arg2)
+        public static List<OutT> Calls<T1, T2, OutT>(this EventDelegate e, T1 arg1, T2 arg2)
         {
             var events = e.Get<Func<T1, T2, OutT>>();
             List<OutT> ts = new List<OutT>();
@@ -280,7 +282,7 @@ namespace SDHK
             }
             return ts;
         }
-        public static List<OutT> CallFuncs<T1, T2, T3, OutT>(this EventDelegate e, T1 arg1, T2 arg2, T3 arg3)
+        public static List<OutT> Calls<T1, T2, T3, OutT>(this EventDelegate e, T1 arg1, T2 arg2, T3 arg3)
         {
             var events = e.Get<Func<T1, T2, T3, OutT>>();
             List<OutT> ts = new List<OutT>();
@@ -300,7 +302,7 @@ namespace SDHK
             }
             return ts;
         }
-        public static List<OutT> CallFuncs<T1, T2, T3, T4, OutT>(this EventDelegate e, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
+        public static List<OutT> Calls<T1, T2, T3, T4, OutT>(this EventDelegate e, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
         {
             var events = e.Get<Func<T1, T2, T3, T4, OutT>>();
             List<OutT> ts = new List<OutT>();
@@ -320,7 +322,7 @@ namespace SDHK
             }
             return ts;
         }
-        public static List<OutT> CallFuncs<T1, T2, T3, T4, T5, OutT>(this EventDelegate e, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
+        public static List<OutT> Calls<T1, T2, T3, T4, T5, OutT>(this EventDelegate e, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
         {
             var events = e.Get<Func<T1, T2, T3, T4, T5, OutT>>();
             List<OutT> ts = new List<OutT>();
@@ -342,34 +344,34 @@ namespace SDHK
         }
 
 
-        public static List<OutT> CallFuncs<OutT>(this EventDelegate e, out List<OutT> outT)
+        public static List<OutT> Calls<OutT>(this EventDelegate e, out List<OutT> outT)
         {
-            return outT = CallFuncs<OutT>(e);
+            return outT = Calls<OutT>(e);
         }
-        public static List<OutT> CallFuncs<T1, OutT>(this EventDelegate e, T1 arg1, out List<OutT> outT)
+        public static List<OutT> Calls<T1, OutT>(this EventDelegate e, T1 arg1, out List<OutT> outT)
         {
-            return outT = CallFuncs<T1, OutT>(e, arg1);
+            return outT = Calls<T1, OutT>(e, arg1);
         }
-        public static List<OutT> CallFuncs<T1, T2, OutT>(this EventDelegate e, T1 arg1, T2 arg2, out List<OutT> outT)
+        public static List<OutT> Calls<T1, T2, OutT>(this EventDelegate e, T1 arg1, T2 arg2, out List<OutT> outT)
         {
-            return outT = CallFuncs<T1, T2, OutT>(e, arg1, arg2);
+            return outT = Calls<T1, T2, OutT>(e, arg1, arg2);
         }
-        public static List<OutT> CallFuncs<T1, T2, T3, OutT>(this EventDelegate e, T1 arg1, T2 arg2, T3 arg3, out List<OutT> outT)
+        public static List<OutT> Calls<T1, T2, T3, OutT>(this EventDelegate e, T1 arg1, T2 arg2, T3 arg3, out List<OutT> outT)
         {
-            return outT = CallFuncs<T1, T2, T3, OutT>(e, arg1, arg2, arg3);
+            return outT = Calls<T1, T2, T3, OutT>(e, arg1, arg2, arg3);
         }
-        public static List<OutT> CallFuncs<T1, T2, T3, T4, OutT>(this EventDelegate e, T1 arg1, T2 arg2, T3 arg3, T4 arg4, out List<OutT> outT)
+        public static List<OutT> Calls<T1, T2, T3, T4, OutT>(this EventDelegate e, T1 arg1, T2 arg2, T3 arg3, T4 arg4, out List<OutT> outT)
         {
-            return outT = CallFuncs<T1, T2, T3, T4, OutT>(e, arg1, arg2, arg3, arg4);
+            return outT = Calls<T1, T2, T3, T4, OutT>(e, arg1, arg2, arg3, arg4);
         }
-        public static List<OutT> CallFuncs<T1, T2, T3, T4, T5, OutT>(this EventDelegate e, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, out List<OutT> outT)
+        public static List<OutT> Calls<T1, T2, T3, T4, T5, OutT>(this EventDelegate e, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, out List<OutT> outT)
         {
-            return outT = CallFuncs<T1, T2, T3, T4, T5, OutT>(e, arg1, arg2, arg3, arg4, arg5);
+            return outT = Calls<T1, T2, T3, T4, T5, OutT>(e, arg1, arg2, arg3, arg4, arg5);
         }
         #endregion
 
-        #region CallFunc
-        public static OutT CallFunc<OutT>(this EventDelegate e)
+        #region Call
+        public static OutT Call<OutT>(this EventDelegate e)
         {
             var events = e.Get<Func<OutT>>();
             OutT t = default(OutT);
@@ -389,7 +391,7 @@ namespace SDHK
             }
             return t;
         }
-        public static OutT CallFunc<T1, OutT>(this EventDelegate e, T1 arg1)
+        public static OutT Call<T1, OutT>(this EventDelegate e, T1 arg1)
         {
             var events = e.Get<Func<T1, OutT>>();
             OutT t = default(OutT);
@@ -409,7 +411,7 @@ namespace SDHK
             }
             return t;
         }
-        public static OutT CallFunc<T1, T2, OutT>(this EventDelegate e, T1 arg1, T2 arg2)
+        public static OutT Call<T1, T2, OutT>(this EventDelegate e, T1 arg1, T2 arg2)
         {
             var events = e.Get<Func<T1, T2, OutT>>();
             OutT t = default(OutT);
@@ -429,7 +431,7 @@ namespace SDHK
             }
             return t;
         }
-        public static OutT CallFunc<T1, T2, T3, OutT>(this EventDelegate e, T1 arg1, T2 arg2, T3 arg3)
+        public static OutT Call<T1, T2, T3, OutT>(this EventDelegate e, T1 arg1, T2 arg2, T3 arg3)
         {
             var events = e.Get<Func<T1, T2, T3, OutT>>();
             OutT t = default(OutT);
@@ -449,7 +451,7 @@ namespace SDHK
             }
             return t;
         }
-        public static OutT CallFunc<T1, T2, T3, T4, OutT>(this EventDelegate e, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
+        public static OutT Call<T1, T2, T3, T4, OutT>(this EventDelegate e, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
         {
             var events = e.Get<Func<T1, T2, T3, T4, OutT>>();
             OutT t = default(OutT);
@@ -469,7 +471,7 @@ namespace SDHK
             }
             return t;
         }
-        public static OutT CallFunc<T1, T2, T3, T4, T5, OutT>(this EventDelegate e, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
+        public static OutT Call<T1, T2, T3, T4, T5, OutT>(this EventDelegate e, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
         {
             var events = e.Get<Func<T1, T2, T3, T4, T5, OutT>>();
             OutT t = default(OutT);
@@ -491,29 +493,29 @@ namespace SDHK
         }
 
 
-        public static OutT CallFunc<OutT>(this EventDelegate e, out OutT outT)
+        public static OutT Call<OutT>(this EventDelegate e, out OutT outT)
         {
-            return outT = CallFunc<OutT>(e);
+            return outT = Call<OutT>(e);
         }
-        public static OutT CallFunc<T1, OutT>(this EventDelegate e, T1 arg1, out OutT outT)
+        public static OutT Call<T1, OutT>(this EventDelegate e, T1 arg1, out OutT outT)
         {
-            return outT = CallFunc<T1, OutT>(e, arg1);
+            return outT = Call<T1, OutT>(e, arg1);
         }
-        public static OutT CallFunc<T1, T2, OutT>(this EventDelegate e, T1 arg1, T2 arg2, out OutT outT)
+        public static OutT Call<T1, T2, OutT>(this EventDelegate e, T1 arg1, T2 arg2, out OutT outT)
         {
-            return outT = CallFunc<T1, T2, OutT>(e, arg1, arg2);
+            return outT = Call<T1, T2, OutT>(e, arg1, arg2);
         }
-        public static OutT CallFunc<T1, T2, T3, OutT>(this EventDelegate e, T1 arg1, T2 arg2, T3 arg3, out OutT outT)
+        public static OutT Call<T1, T2, T3, OutT>(this EventDelegate e, T1 arg1, T2 arg2, T3 arg3, out OutT outT)
         {
-            return outT = CallFunc<T1, T2, T3, OutT>(e, arg1, arg2, arg3);
+            return outT = Call<T1, T2, T3, OutT>(e, arg1, arg2, arg3);
         }
-        public static OutT CallFunc<T1, T2, T3, T4, OutT>(this EventDelegate e, T1 arg1, T2 arg2, T3 arg3, T4 arg4, out OutT outT)
+        public static OutT Call<T1, T2, T3, T4, OutT>(this EventDelegate e, T1 arg1, T2 arg2, T3 arg3, T4 arg4, out OutT outT)
         {
-            return outT = CallFunc<T1, T2, T3, T4, OutT>(e, arg1, arg2, arg3, arg4);
+            return outT = Call<T1, T2, T3, T4, OutT>(e, arg1, arg2, arg3, arg4);
         }
-        public static OutT CallFunc<T1, T2, T3, T4, T5, OutT>(this EventDelegate e, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, out OutT outT)
+        public static OutT Call<T1, T2, T3, T4, T5, OutT>(this EventDelegate e, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, out OutT outT)
         {
-            return outT = CallFunc<T1, T2, T3, T4, T5, OutT>(e, arg1, arg2, arg3, arg4, arg5);
+            return outT = Call<T1, T2, T3, T4, T5, OutT>(e, arg1, arg2, arg3, arg4, arg5);
         }
         #endregion
 
