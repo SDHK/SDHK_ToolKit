@@ -22,14 +22,35 @@ namespace Scripts
 
     public class Node<T> : Entity
     {
+        public async MyAwaitable<int> MyAwaitableMethod()
+        {
+            int result = 0;
+            int arg1 = await this.GetMyAwaitable(1);
+            Debug.Log(arg1);
+            result += arg1;
+            int arg2 = await this.GetMyAwaitable(2);
+            Debug.Log(arg2);
 
+            result += arg2;
+            int arg3 = await this.GetMyAwaitable(3);
+            Debug.Log(arg3);
+            result += arg3;
+            return result;
+        }
+
+        public async MyAwaitable<int> GetMyAwaitable(int arg)
+        {
+            return await new MyAwaitable<int>(arg);
+        }
     }
 
     class NodeNewSystem : NewSystem<Node<int>>
     {
-        public override  void OnNew(Node<int> self)
+        public override  async void OnNew(Node<int> self)
         {
             Debug.Log("OnNew1!!!");
+           await self.MyAwaitableMethod();
+
         }
     }
     class NodeAddSystem : AddSystem<Node<int>>
@@ -40,8 +61,8 @@ namespace Scripts
 
             do
             {
-                await self.AddChildren<AsyncTask>();
-                //await Task.Yield();
+                await new AsyncTask();
+                await Task.Yield();
             } while (!Input.GetKeyDown(KeyCode.A));
 
             Debug.Log("OnAdd2!!!");

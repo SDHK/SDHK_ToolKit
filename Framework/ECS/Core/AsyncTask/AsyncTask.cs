@@ -19,18 +19,14 @@ using UnityEngine;
 namespace SDHK
 {
 
-    /// <summary>
-    /// 接口：异步等待事件节点
-    /// </summary>
+
     public interface IAsyncTask : ICriticalNotifyCompletion
     {
         bool IsCompleted { get; set; }
         void GetResult();
     }
 
-    /// <summary>
-    /// 接口：异步等待事件节点
-    /// </summary>
+
     public interface IAsyncTask<T> : ICriticalNotifyCompletion
     {
         bool IsCompleted { get; set; }
@@ -78,4 +74,106 @@ namespace SDHK
     //        }
     //    }
     //}
+
+    [AsyncMethodBuilder(typeof(MyAwaitableTaskMethodBuilder<>))]
+    public class MyAwaitable<T> : INotifyCompletion
+    {
+        private Action _continuation;
+
+        public MyAwaitable()
+        { }
+
+        public MyAwaitable(T value)
+        {
+            this.Value = value;
+            this.IsCompleted = true;
+        }
+
+        public MyAwaitable<T> GetAwaiter() => this;
+
+        public bool IsCompleted { get; private set; }
+
+        public T Value { get; private set; }
+
+        public Exception Exception { get; private set; }
+
+        public T GetResult()
+        {
+            if (!this.IsCompleted) throw new Exception("Not completed");
+            //if (this.Exception != null)
+            //{
+            //    ExceptionDispatchInfo.Throw(this.Exception);
+            //}
+            return this.Value;
+        }
+
+        internal void SetResult(T value)
+        {
+            if (this.IsCompleted) throw new Exception("Already completed");
+            this.Value = value;
+            this.IsCompleted = true;
+            this._continuation?.Invoke();
+        }
+
+        internal void SetException(Exception exception)
+        {
+            this.IsCompleted = true;
+            this.Exception = exception;
+        }
+
+        void INotifyCompletion.OnCompleted(Action continuation)
+        {
+            this._continuation = continuation;
+            if (this.IsCompleted)
+            {
+                continuation();
+            }
+        }
+    }
+
+    public class MyAwaitableTaskMethodBuilder<T>
+    {
+        public MyAwaitableTaskMethodBuilder()
+            => this.Task = new MyAwaitable<T>();
+
+        public static MyAwaitableTaskMethodBuilder<T> Create()
+        => new MyAwaitableTaskMethodBuilder<T>();
+
+        public void Start<TStateMachine>(ref TStateMachine stateMachine)
+            where TStateMachine : IAsyncStateMachine
+            => stateMachine.MoveNext();
+
+        public void SetStateMachine(IAsyncStateMachine stateMachine) { }
+
+        public void SetException(Exception exception)
+            => this.Task.SetException(exception);
+
+        public void SetResult(T result)
+            => this.Task.SetResult(result);
+
+        public void AwaitOnCompleted<TAwaiter, TStateMachine>(
+            ref TAwaiter awaiter,
+            ref TStateMachine stateMachine)
+            where TAwaiter : INotifyCompletion
+            where TStateMachine : IAsyncStateMachine
+            => this.GenericAwaitOnCompleted(ref awaiter, ref stateMachine);
+
+        public void AwaitUnsafeOnCompleted<TAwaiter, TStateMachine>(
+            ref TAwaiter awaiter,
+            ref TStateMachine stateMachine)
+            where TAwaiter : ICriticalNotifyCompletion
+            where TStateMachine : IAsyncStateMachine
+            => this.GenericAwaitOnCompleted(ref awaiter, ref stateMachine);
+
+        public void GenericAwaitOnCompleted<TAwaiter, TStateMachine>(
+            ref TAwaiter awaiter,
+            ref TStateMachine stateMachine)
+            where TAwaiter : INotifyCompletion
+            where TStateMachine : IAsyncStateMachine
+            => awaiter.OnCompleted(stateMachine.MoveNext);
+
+        public MyAwaitable<T> Task { get; }
+    }
+
+
 }
