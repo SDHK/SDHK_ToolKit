@@ -14,7 +14,7 @@ namespace Scripts
         {
             Debug.Log("MainAdd!!!");
 
-
+            self.Root.AddComponent<AsyncTaskManager>();
             self.AddChildren<Node<int>>().Send(10);
             //self.TaskWait().Send(10);
             //self.TaskWait(10);

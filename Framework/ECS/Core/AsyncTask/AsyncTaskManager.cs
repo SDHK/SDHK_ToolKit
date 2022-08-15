@@ -46,7 +46,7 @@ namespace SDHK
                     }
                 }
                 self.update1.Remove(firstKey);
-                self.update2.Add(firstKey, entity);
+                self.update2.TryAdd(firstKey, entity);
             }
             (self.update1, self.update2) = (self.update2, self.update1);
         }

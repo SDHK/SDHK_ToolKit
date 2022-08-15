@@ -50,6 +50,10 @@ namespace SDHK
         private void Update()
         {
             update.Update();
+            if (Input.GetKeyDown(KeyCode.Return))
+            {
+                Debug.Log(SoloistFramework.AllEntityString(root, "\t"));
+            }
         }
 
         private void LateUpdate()

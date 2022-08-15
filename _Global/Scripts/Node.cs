@@ -25,23 +25,38 @@ namespace Scripts
 
     }
 
-    class NodeNewSystem : AddSystem<Node<int>>
+    class NodeNewSystem : NewSystem<Node<int>>
     {
-        public override void OnAdd(Node<int> self)
+        public override  void OnNew(Node<int> self)
         {
-            Debug.Log("OnNew!!!");
+            Debug.Log("OnNew1!!!");
         }
     }
     class NodeAddSystem : AddSystem<Node<int>>
     {
-        public async override void OnAdd(Node<int> self)
+        public  override async void OnAdd(Node<int> self)
         {
-            Debug.Log("OnAdd!!!");
+            Debug.Log("OnAdd1!!!");
+
+            do
+            {
+                await self.AddChildren<AsyncTask>();
+                //await Task.Yield();
+            } while (!Input.GetKeyDown(KeyCode.A));
+
+            Debug.Log("OnAdd2!!!");
+            //do
+            //{
+            //    await self.AddChildren<AsyncTask>();
+            //} while (!Input.GetKeyDown(KeyCode.S));
+
+            Debug.Log("OnAdd3!!!");
+
         }
     }
     class NodeGetSystem : GetSystem<Node<int>>
     {
-        public override void OnGet(Node<int> self)
+        public override  void OnGet(Node<int> self)
         {
             Debug.Log("OnGet!!!");
         }
