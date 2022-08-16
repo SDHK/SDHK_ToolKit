@@ -23,31 +23,30 @@ namespace Scripts
 
     public class Node<T> : Entity
     {
-        public async MyAwaitable<int> MyAwaitableMethod()
-        {
-            int result = 0;
-            int arg1 = await this.GetMyAwaitable(1);
-            Debug.Log(arg1);
-            result += arg1;
-            int arg2 = await this.GetMyAwaitable(2);
-            Debug.Log(arg2);
+       
 
-            result += arg2;
-            int arg3 = await this.GetMyAwaitable(3);
-            Debug.Log(arg3);
-            result += arg3;
-            return result;
+        public void Test(int arg)
+        {
+            TaskDelay();
         }
 
-        public async MyAwaitable<int> GetMyAwaitable(int arg)
+        public async void TaskDelay()
         {
-            return await new MyAwaitable<int>(arg);
+            do
+            {
+                Debug.Log("while1");
+                await Task.Yield();
+                Debug.Log("while2");
+
+            } while (!Input.GetKeyDown(KeyCode.A));
         }
+
+
     }
 
     class NodeNewSystem : NewSystem<Node<int>>
     {
-        public override async void OnNew(Node<int> self)
+        public override void OnNew(Node<int> self)
         {
             Debug.Log("OnNew1!!!");
             //await self.MyAwaitableMethod();
@@ -58,8 +57,6 @@ namespace Scripts
     {
         public override async void OnAdd(Node<int> self)
         {
-            Debug.Log("OnAdd1!!!");
-
             do
             {
                 Debug.Log("while1");
@@ -67,19 +64,6 @@ namespace Scripts
                 Debug.Log("while2");
 
             } while (!Input.GetKeyDown(KeyCode.A));
-
-            Debug.Log("OnAdd2!!!");
-
-            do
-            {
-                Debug.Log("while3");
-                await self.AddChildren<AsyncTask>();
-                Debug.Log("while4");
-
-            } while (!Input.GetKeyDown(KeyCode.B));
-
-            Debug.Log("OnAdd3!!!");
-
         }
 
     }
@@ -134,6 +118,8 @@ namespace Scripts
 
             Debug.Log("Update!!!");
         }
+
+     
     }
 
 
