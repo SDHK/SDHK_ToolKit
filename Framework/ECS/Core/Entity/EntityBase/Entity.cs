@@ -242,6 +242,7 @@ namespace SDHK
         {
             if (entity != null)
             {
+                Root.pool.Recycle(entity);
                 Root.Remove(entity);
                 entity.RemoveAll();
 
@@ -249,10 +250,6 @@ namespace SDHK
                 entity.Domain = null;
 
                 Children.Remove(entity.id);
-
-
-
-                Root.pool.Recycle(entity);
 
 
                 if (children.Count == 0)
@@ -317,6 +314,8 @@ namespace SDHK
             if (Components.ContainsKey(type))
             {
                 Entity component = components[type];
+                Root.pool.Recycle(component);
+
                 Root.Remove(component);
 
                 component.RemoveAll();
@@ -328,7 +327,6 @@ namespace SDHK
 
 
 
-                Root.pool.Recycle(component);
 
                 if (components.Count == 0)
                 {
@@ -344,6 +342,8 @@ namespace SDHK
         {
             if (Components.ContainsValue(component))
             {
+                Root.pool.Recycle(component);
+
                 Root.Remove(component);
                 component.RemoveAll();
 
@@ -351,7 +351,6 @@ namespace SDHK
                 component.Domain = null;
 
                 components.Remove(component.Type);
-                Root.pool.Recycle(component);
                 if (components.Count == 0)
                 {
                     components.Recycle();

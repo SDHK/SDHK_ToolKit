@@ -44,7 +44,7 @@ namespace SDHK
 
         public override string ToString()
         {
-            return "[UnitPool<" + ObjectType + ">] ";
+            return $"[UnitPool< {ObjectType} >] :{Count} ";
         }
 
         private T ObjectNew(IPool pool)

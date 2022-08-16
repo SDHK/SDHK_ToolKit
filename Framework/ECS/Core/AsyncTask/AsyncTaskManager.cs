@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace SDHK
 {
@@ -25,6 +26,11 @@ namespace SDHK
         public Dictionary<ulong, Entity> update1 = new Dictionary<ulong, Entity>();
         public Dictionary<ulong, Entity> update2 = new Dictionary<ulong, Entity>();
         public SystemGroup systems;
+
+        public override string ToString()
+        {
+            return $"AsyncTaskManager {update1.Count},{update2.Count}";
+        }
     }
 
     class AsyncTaskManagerUpdateSystem : UpdateSystem<AsyncTaskManager>
@@ -46,7 +52,10 @@ namespace SDHK
                     }
                 }
                 self.update1.Remove(firstKey);
-                self.update2.TryAdd(firstKey, entity);
+                if (!entity.isRecycle)
+                {
+                    self.update2.Add(firstKey, entity);
+                }
             }
             (self.update1, self.update2) = (self.update2, self.update1);
         }

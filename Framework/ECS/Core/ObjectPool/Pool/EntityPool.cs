@@ -73,7 +73,7 @@ namespace SDHK
 
         public override string ToString()
         {
-            return "[EntityPool<" + ObjectType + ">] ";
+            return $"[EntityPool<{ ObjectType }>] : {Count} ";
         }
 
         private Entity ObjectNew(IPool pool)
@@ -118,6 +118,7 @@ namespace SDHK
         private void ObjectOnRecycle(Entity obj)
         {
             obj.isRecycle = true;
+
             if (recycleSystem != null)
             {
                 foreach (IRecycleSystem item in recycleSystem)

@@ -32,7 +32,11 @@ namespace SDHK
                     }
                 }
                 update1.Remove(firstKey);
-                update2.Add(firstKey, entity);
+                if (!entity.isRecycle)
+                {
+                    update2.Add(firstKey, entity);
+                }
+                
             }
             (update1, update2) = (update2, update1);
         }

@@ -8,6 +8,7 @@
 
 */
 
+using AsyncAwaitEvent;
 using SDHK;
 using System;
 using System.Collections.Generic;
@@ -46,38 +47,45 @@ namespace Scripts
 
     class NodeNewSystem : NewSystem<Node<int>>
     {
-        public override  async void OnNew(Node<int> self)
+        public override async void OnNew(Node<int> self)
         {
             Debug.Log("OnNew1!!!");
-           await self.MyAwaitableMethod();
+            //await self.MyAwaitableMethod();
 
         }
     }
     class NodeAddSystem : AddSystem<Node<int>>
     {
-        public  override async void OnAdd(Node<int> self)
+        public override async void OnAdd(Node<int> self)
         {
             Debug.Log("OnAdd1!!!");
 
             do
             {
-                await new AsyncTask();
-                await Task.Yield();
+                Debug.Log("while1");
+                await self.AddChildren<AsyncTask>();
+                Debug.Log("while2");
+
             } while (!Input.GetKeyDown(KeyCode.A));
 
             Debug.Log("OnAdd2!!!");
-            //do
-            //{
-            //    await self.AddChildren<AsyncTask>();
-            //} while (!Input.GetKeyDown(KeyCode.S));
+
+            do
+            {
+                Debug.Log("while3");
+                await self.AddChildren<AsyncTask>();
+                Debug.Log("while4");
+
+            } while (!Input.GetKeyDown(KeyCode.B));
 
             Debug.Log("OnAdd3!!!");
 
         }
+
     }
     class NodeGetSystem : GetSystem<Node<int>>
     {
-        public override  void OnGet(Node<int> self)
+        public override void OnGet(Node<int> self)
         {
             Debug.Log("OnGet!!!");
         }
