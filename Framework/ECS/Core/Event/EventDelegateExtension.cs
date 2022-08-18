@@ -58,9 +58,9 @@ namespace SDHK
 
         #region Send
 
-        public static async Task SendAsync(this EventDelegate e)
+        public static async AsyncTask SendAsync<T1>(this EventDelegate e,T1 arg1)
         { 
-            var events = e.Get<Func<Task>>();
+            var events = e.Get<Func<T1, AsyncTask>>();
             if (events != null)
             {
                 for (int i = events.Count - 1; i >= 0; i--)
@@ -71,7 +71,7 @@ namespace SDHK
                     }
                     else
                     {
-                       await (events[i] as Func<Task>)();
+                       await (events[i] as Func<T1,AsyncTask>)(arg1);
                     }
                 }
             }

@@ -16,6 +16,7 @@ using UnityEngine;
 
 namespace SDHK
 {
+
     /// <summary>
     /// 实体基类
     /// </summary>
@@ -69,6 +70,12 @@ namespace SDHK
         /// <summary>
         /// 递归设置子节点活跃状态
         /// </summary>
+        /// 
+        public Entity()
+        {
+            Type = GetType();
+        }
+
         public void SetParentActive(bool value)
         {
             isParentActive = value;
@@ -145,7 +152,7 @@ namespace SDHK
 
         public override string ToString()
         {
-            return Type.Name;
+            return Type.ToString();
         }
 
         public UnitDictionary<ulong, Entity> Children
@@ -222,6 +229,7 @@ namespace SDHK
         public T AddChildren<T>()
             where T : Entity
         {
+
             T entity = Root.pool.Get<T>();
             if (Children.TryAdd(entity.id, entity))
             {
@@ -235,14 +243,30 @@ namespace SDHK
         }
 
         /// <summary>
+        /// 添加新的子节点
+        /// </summary>
+        public Entity AddChildren(Type type)
+        {
+            Entity entity = Root.pool.Get(type);
+            if (Children.TryAdd(entity.id, entity))
+            {
+                entity.Parent = this;
+                entity.Domain = Domain;
+
+                Root.Add(entity);
+            }
+
+            return entity;
+        }
+
+
+        /// <summary>
         /// 移除子节点
         /// </summary>
-
         public void RemoveChildren(Entity entity)
         {
             if (entity != null)
             {
-                Root.pool.Recycle(entity);
                 Root.Remove(entity);
                 entity.RemoveAll();
 
@@ -251,6 +275,7 @@ namespace SDHK
 
                 Children.Remove(entity.id);
 
+                Root.pool.Recycle(entity);
 
                 if (children.Count == 0)
                 {
@@ -288,6 +313,27 @@ namespace SDHK
 
             return component;
         }
+
+        /// <summary>
+        /// 添加组件
+        /// </summary>
+        public Entity AddComponent(Type type)
+        {
+            if (!Components.TryGetValue(type, out Entity component))
+            {
+                component = Root.pool.Get(type);
+
+                component.Parent = this;
+                component.Domain = Domain;
+
+                component.isComponent = true;
+
+                components.Add(type, component);
+                Root.Add(component);
+            }
+            return component;
+        }
+
         /// <summary>
         /// 添加组件
         /// </summary>
@@ -314,7 +360,6 @@ namespace SDHK
             if (Components.ContainsKey(type))
             {
                 Entity component = components[type];
-                Root.pool.Recycle(component);
 
                 Root.Remove(component);
 
@@ -325,7 +370,7 @@ namespace SDHK
 
                 components.Remove(type);
 
-
+                Root.pool.Recycle(component);
 
 
                 if (components.Count == 0)
@@ -342,7 +387,6 @@ namespace SDHK
         {
             if (Components.ContainsValue(component))
             {
-                Root.pool.Recycle(component);
 
                 Root.Remove(component);
                 component.RemoveAll();
@@ -351,6 +395,9 @@ namespace SDHK
                 component.Domain = null;
 
                 components.Remove(component.Type);
+
+                Root.pool.Recycle(component);
+
                 if (components.Count == 0)
                 {
                     components.Recycle();

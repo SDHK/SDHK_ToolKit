@@ -47,10 +47,9 @@ namespace SDHK
         public UnitList<ISystem> recycleSystem;
         public UnitList<ISystem> destroySystem;
 
-        public EntityPool(Type type)
+        public EntityPool(Type type):base()
         {
             id = IdManager.GetID;
-            Type = GetType();
             ObjectType = type;
 
             NewObject = ObjectNew;
@@ -80,7 +79,6 @@ namespace SDHK
         {
             Entity entity = Activator.CreateInstance(ObjectType, true) as Entity;
             entity.id = IdManager.GetID;
-            entity.Type = entity.GetType();
             entity.Root = Root;
 
             return entity;

@@ -21,85 +21,69 @@ namespace Scripts
 {
 
 
-    public class Node<T> : Entity
+    public class Node : Entity
     {
-       
-
-        public void Test(int arg)
-        {
-            TaskDelay();
-        }
-
-        public async void TaskDelay()
-        {
-            do
-            {
-                Debug.Log("while1");
-                await Task.Yield();
-                Debug.Log("while2");
-
-            } while (!Input.GetKeyDown(KeyCode.A));
-        }
 
 
     }
 
-    class NodeNewSystem : NewSystem<Node<int>>
+    class NodeNewSystem : NewSystem<Node>
     {
-        public override void OnNew(Node<int> self)
+        public override void OnNew(Node self)
         {
             Debug.Log("OnNew1!!!");
-            //await self.MyAwaitableMethod();
-
         }
     }
-    class NodeAddSystem : AddSystem<Node<int>>
+    class NodeAddSystem : AddSystem<Node>
     {
-        public override async void OnAdd(Node<int> self)
+        public override async void OnAdd(Node self)
         {
             do
             {
-                Debug.Log("while1");
-                await self.AddChildren<AsyncTask>();
-                Debug.Log("while2");
 
+                self.Send(1);
+                self.Call<Node, int>();
+
+                Debug.Log("while1");
+                await self.SendAsync();//延迟3秒
+                Debug.Log("while2");
             } while (!Input.GetKeyDown(KeyCode.A));
         }
 
     }
-    class NodeGetSystem : GetSystem<Node<int>>
+    class NodeGetSystem : GetSystem<Node>
     {
-        public override void OnGet(Node<int> self)
+        public override void OnGet(Node self)
         {
             Debug.Log("OnGet!!!");
         }
     }
-    class NodeRemoveSystem : RemoveSystem<Node<int>>
+    class NodeRemoveSystem : RemoveSystem<Node>
     {
-        public override void OnRemove(Node<int> self)
+        public override void OnRemove(Node self)
         {
             Debug.Log("OnRemove!!!");
         }
     }
-    class NodeRecycleSystem : RecycleSystem<Node<int>>
+    class NodeRecycleSystem : RecycleSystem<Node>
     {
-        public override void OnRecycle(Node<int> self)
+        public override void OnRecycle(Node self)
         {
             Debug.Log("OnRecycle!!!");
         }
     }
-    class NodeDestroySystem : DestroySystem<Node<int>>
+    class NodeDestroySystem : DestroySystem<Node>
     {
-        public override void OnDestroy(Node<int> self)
+        public override void OnDestroy(Node self)
         {
             Debug.Log("OnDestroy!!!");
         }
     }
 
 
-    class NodeUpdateSystem : UpdateSystem<Node<int>>
+    class NodeUpdateSystem : UpdateSystem<Node>
     {
-        public override void Update(Node<int> self)
+        public override void Update(Node self)
         {
 
 
@@ -113,23 +97,23 @@ namespace Scripts
             if (Input.GetKeyDown(KeyCode.W))
             {
                 //召唤某个组的事件
-                self.RootGetEvent("分组1").Send("事件召唤W", 1, 0.5f, Vector3.one, Color.red);
             }
 
             Debug.Log("Update!!!");
         }
 
-     
+
     }
 
 
 
     //分在默认组的事件
-    class TestEvent0 : EventSendSystem<Node<int>, int>
+    class TestEvent0 : EventCallSystem<Node, AsyncTask>
     {
-        public override void Event(Node<int> arg1, int arg2)
+        public override async AsyncTask Event(Node arg1)
         {
-            Debug.Log("事件：" + arg2);
+            Debug.Log("AsyncTask1");
+            await arg1.AsyncDelay(1);
         }
     }
 

@@ -42,15 +42,14 @@ namespace SDHK
     /// <summary>
     /// 实体对象池管理器
     /// </summary>
-    public class EntityPoolManager : Entity
+    public class EntityPoolManager : EntitySingletonBase<EntityPoolManager>
     {
 
         UnitDictionary<Type, EntityPool> pools= new  UnitDictionary<Type, EntityPool>();
 
-        public EntityPoolManager()//通过构造函数来打破自己单例的死循环
+        public EntityPoolManager():base()//通过构造函数来打破自己单例的死循环
         {
             id = IdManager.GetID;
-            Type = GetType();
         }
 
         public override void OnDispose()

@@ -27,10 +27,9 @@ namespace SDHK
         /// <summary>
         /// 对象池构造
         /// </summary>
-        public UnitPool()
+        public UnitPool():base()
         {
             id = IdManager.GetID;
-            Type = GetType();
             ObjectType = typeof(T);
 
             NewObject = ObjectNew;

@@ -17,51 +17,7 @@ using UnityEngine;
 
 namespace SDHK
 {
-    /// <summary>
-    /// 根节点组件调用扩展
-    /// </summary>
-    public static class EventManagerExtension
-    {
-        public static void Send<T0, T1>(this T0 self, T1 arg1)
-        where T0 : Entity
-        {
-            self.RootGetEvent().Send(self, arg1);
-        }
 
-        /// <summary>
-        /// 获取一组事件集合
-        /// </summary>
-        public static EventDelegate RootGetEvent(this Entity self, object key)
-        {
-            return self.Root.AddComponent<EventManager>().Get(key);
-        }
-
-        /// <summary>
-        /// 删除一组事件集合
-        /// </summary>
-        public static void RootRemoveEvent(this Entity self, object key)
-        {
-            self.Root.AddComponent<EventManager>().Remove(key);
-        }
-
-        /// <summary>
-        /// 获取默认组事件集合
-        /// </summary>
-        public static EventDelegate RootGetEvent(this Entity self)
-        {
-            var key = self.Root.AddComponent<EventManager>();
-            return key.Get(key);
-        }
-
-        /// <summary>
-        /// 删除默认组事件集合
-        /// </summary>
-        public static void RootRemoveEvent(this Entity self)
-        {
-            var key = self.Root.AddComponent<EventManager>();
-            key.Remove(key);
-        }
-    }
 
     /// <summary>
     /// 事件管理器
@@ -75,7 +31,14 @@ namespace SDHK
         /// <summary>
         /// 获取对象绑定的事件委托 
         /// </summary>
-        /// <param name="key">绑定的对象</param>
+        public EventDelegate Get()
+        {
+            return Get(this.Type);
+        }
+
+        /// <summary>
+        /// 获取对象绑定的事件委托 
+        /// </summary>
         public EventDelegate Get(object key)
         {
             if (eventDelegates.ContainsKey(key))
@@ -89,11 +52,17 @@ namespace SDHK
                 return eventDelegate;
             }
         }
+        /// <summary>
+        /// 移除对象绑定的事件委托
+        /// </summary>
+        public void Remove()
+        {
+            Remove(this.Type);
+        }
 
         /// <summary>
         /// 移除对象绑定的事件委托
         /// </summary>
-        /// <param name="key">绑定的对象</param>
         public void Remove(object key)
         {
             if (eventDelegates.ContainsKey(key))
@@ -118,7 +87,7 @@ namespace SDHK
                 foreach (IEventSystem system in systems)
                 {
                     //反射属性获取键值
-                    object key = self;
+                    object key = self.Type;
                     object[] attributes = system.GetType().GetCustomAttributes(typeof(EventKeyAttribute), true);
                     if (attributes.Length != 0)
                     {

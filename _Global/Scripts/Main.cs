@@ -15,7 +15,6 @@ namespace Scripts
             Debug.Log("MainAdd!!!");
 
             self.Root.AddComponent<TimerManager>();
-            self.Root.AddComponent<AsyncTaskManager>();
             //self.TaskWait().Send(10);
             //self.TaskWait(10);
 
@@ -34,7 +33,7 @@ namespace Scripts
         {
             if (Input.GetKeyDown(KeyCode.C))
             {
-                self.AddChildren<Node<int>>().Send(10);
+                self.AddChildren<Node>().Send(10);
             }
 
             if (Input.GetKeyDown(KeyCode.D))

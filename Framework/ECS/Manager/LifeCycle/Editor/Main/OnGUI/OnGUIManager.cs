@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace SDHK
 {
-
   
     public class OnGUIManager : Entity
     {

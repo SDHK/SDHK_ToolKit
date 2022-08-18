@@ -58,10 +58,9 @@ namespace SDHK
         //接口类型，（实例类型，实例方法）
         private UnitDictionary<Type, SystemGroup> InterfaceSystems = new UnitDictionary<Type, SystemGroup>();
 
-        public SystemManager()
+        public SystemManager():base()
         {
             id = IdManager.GetID;
-            Type = GetType();
             Initialize();
         }
 

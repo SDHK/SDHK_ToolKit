@@ -30,11 +30,10 @@ namespace SDHK
     {
         private Dictionary<Type, IPool> pools = new Dictionary<Type, IPool>();
 
-        public UnitPoolManager()//通过构造函数来打破自己单例的死循环
+        public UnitPoolManager():base()//通过构造函数来打破自己单例的死循环
         {
 
             id = IdManager.GetID;
-            Type = GetType();
 
             Components = new UnitDictionary<Type, Entity>();
             Children = new UnitDictionary<ulong, Entity>();
