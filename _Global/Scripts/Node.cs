@@ -39,17 +39,17 @@ namespace Scripts
         public override async void OnAdd(Node self)
         {
 
-            //await self.SendAsync();
+            await self.SendAsync();
             do
             {
                 Debug.Log("while1");
-
                 Debug.Log(await self.CallAsync<Node, int>());
-
                 Debug.Log("while2");
             } while (!Input.GetKeyDown(KeyCode.A));
         }
     }
+
+
     class NodeGetSystem : GetSystem<Node>
     {
         public override void OnGet(Node self)
