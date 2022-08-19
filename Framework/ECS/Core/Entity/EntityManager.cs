@@ -29,7 +29,7 @@ namespace SDHK
     /// <summary>
     /// 实体管理器
     /// </summary>
-    public class EntityManager : EntitySingletonBase<EntityManager>, IUnit
+    public class EntityManager : Entity, IUnit
     {
         public UnitDictionary<ulong, Entity> allEntities = new UnitDictionary<ulong, Entity>();
 
@@ -38,6 +38,7 @@ namespace SDHK
         public SystemGroup entitySystems;
 
         public SystemManager systemManager;
+        public UnitPoolManager unitPoolManager;
         public EntityPoolManager pool;
 
         private SystemGroup addSystems;
@@ -47,26 +48,29 @@ namespace SDHK
         /// <summary>
         /// 初始化：对象池的新建
         /// </summary>
-        public EntityManager():base()
+        public EntityManager() : base()
         {
             id = IdManager.GetID;
             Root = this;
             Domain = this;
 
+            Components = new UnitDictionary<Type, Entity>();
+            Children = new UnitDictionary<ulong, Entity>();
+
             systemManager = new SystemManager();
             pool = new EntityPoolManager();
-
+            unitPoolManager = new UnitPoolManager();
 
             systemManager.Root = this;
             pool.Root = this;
-            UnitPoolManager.Instance.Root = this;
+            unitPoolManager.Root = this;
 
             entitySystems = Root.systemManager.GetSystemGroup<IEntitySystem>();
             addSystems = Root.systemManager.GetSystemGroup<IAddSystem>();
             removeSystems = Root.systemManager.GetSystemGroup<IRemoveSystem>();
 
             AddComponent(systemManager);
-            AddComponent(UnitPoolManager.Instance);
+            AddComponent(unitPoolManager);
             AddComponent(pool);
             AddComponent<EventManager>();
         }
@@ -82,11 +86,17 @@ namespace SDHK
 
             RemoveAll();
 
-            listeners.Clear();
 
             pool.RemoveSelf();//移除所有组件
             pool.Dispose();//全部释放
+            unitPoolManager.RemoveSelf();//移除所有组件
+            unitPoolManager.Dispose();
+
+            systemManager.RemoveSelf();
             systemManager.Dispose();
+
+
+            listeners.Clear();
 
             listeners = null;
             entitySystems = null;
@@ -95,6 +105,7 @@ namespace SDHK
 
             pool = null;
             systemManager = null;
+            unitPoolManager = null;
 
         }
 

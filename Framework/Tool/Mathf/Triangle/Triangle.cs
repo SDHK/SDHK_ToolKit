@@ -15,7 +15,7 @@ namespace SDHK
     /// <summary>
     /// 全解三角形 :需要用静态扩展分成ECS模式
     /// </summary>
-    public class Triangle : UnitPoolItem<Triangle>
+    public class Triangle : Entity
     {
         private float angleA = 0;//角
         private float angleB = 0;

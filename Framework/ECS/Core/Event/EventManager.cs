@@ -47,7 +47,7 @@ namespace SDHK
             }
             else
             {
-                EventDelegate eventDelegate = EventDelegate.GetObject();
+                EventDelegate eventDelegate = AddChildren<EventDelegate>();
                 eventDelegates.Add(key, eventDelegate);
                 return eventDelegate;
             }
@@ -67,7 +67,7 @@ namespace SDHK
         {
             if (eventDelegates.ContainsKey(key))
             {
-                eventDelegates[key].Recycle();
+                RemoveChildren(eventDelegates[key]);
                 eventDelegates.Remove(key);
             }
         }
@@ -80,7 +80,7 @@ namespace SDHK
         {
             //进行遍历分类
             self.systemGroup = self.RootGetSystemGroup<IEventSystem>();
-            self.eventDelegates = UnitPoolManager.Instance.Get<UnitDictionary<object, EventDelegate>>();
+            self.eventDelegates = self.RootUnitPoolManager().Get<UnitDictionary<object, EventDelegate>>();
 
             foreach (var systems in self.systemGroup.Values)
             {

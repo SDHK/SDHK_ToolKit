@@ -20,13 +20,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace SDHK
 {
+    public static class UnitPoolManagerExtension
+    { 
+        public static UnitPoolManager RootUnitPoolManager(this Entity self)
+        {
+            return self.Root.GetComponent<UnitPoolManager>();
+        }
+    }
+
     /// <summary>
     /// 单位对象池管理器
     /// </summary>
-    public class UnitPoolManager : EntitySingletonBase<UnitPoolManager>
+    public class UnitPoolManager : Entity
     {
         private Dictionary<Type, IPool> pools = new Dictionary<Type, IPool>();
 
@@ -104,6 +113,7 @@ namespace SDHK
         }
 
     }
+
 }
 
 

@@ -143,12 +143,12 @@ namespace SDHK
         /// <summary>
         /// 子节点
         /// </summary>
-        private UnitDictionary<ulong, Entity> children;
+        public UnitDictionary<ulong, Entity> children;
 
         /// <summary>
         /// 组件节点
         /// </summary>
-        private UnitDictionary<Type, Entity> components;
+        public UnitDictionary<Type, Entity> components;
 
         public override string ToString()
         {
@@ -161,7 +161,7 @@ namespace SDHK
             {
                 if (children == null)
                 {
-                    children = UnitDictionary<ulong, Entity>.GetObject();
+                    children = this.RootUnitPoolManager().Get<UnitDictionary<ulong, Entity>>();
                 }
                 return children;
             }
@@ -173,7 +173,7 @@ namespace SDHK
             {
                 if (components == null)
                 {
-                    components = UnitDictionary<Type, Entity>.GetObject();
+                    components = this.RootUnitPoolManager().Get<UnitDictionary<Type, Entity>>();
                 }
                 return components;
             }
@@ -273,7 +273,7 @@ namespace SDHK
                 entity.Parent = null;
                 entity.Domain = null;
 
-                Children.Remove(entity.id);
+                children.Remove(entity.id);
 
                 Root.pool.Recycle(entity);
 
@@ -350,6 +350,31 @@ namespace SDHK
                 Root.Add(component);
             }
         }
+
+        /// <summary>
+        /// 获取组件
+        /// </summary>
+        public Entity GetComponent(Type type)
+        {
+            Components.TryGetValue(type, out Entity component);
+            return component;
+        }
+
+        /// <summary>
+        /// 获取组件
+        /// </summary>
+        public T GetComponent<T>()
+            where T : Entity
+        {
+            Type type = typeof(T);
+            Entity entity = null;
+            if (components != null)
+            {
+                components.TryGetValue(type, out entity);
+            }
+            return entity as T;
+        }
+
         /// <summary>
         /// 移除组件
         /// </summary>
@@ -357,7 +382,7 @@ namespace SDHK
             where T : Entity
         {
             Type type = typeof(T);
-            if (Components.ContainsKey(type))
+            if (components.ContainsKey(type))
             {
                 Entity component = components[type];
 
@@ -385,7 +410,7 @@ namespace SDHK
         /// </summary>
         public void RemoveComponent(Entity component)
         {
-            if (Components.ContainsValue(component))
+            if (components.ContainsValue(component))
             {
 
                 Root.Remove(component);
@@ -412,9 +437,16 @@ namespace SDHK
         /// </summary>
         public void RemoveAllChildren()
         {
-            while (Children.Count > 0)
+            while (children != null)
             {
-                RemoveChildren(Children.Last().Value);
+                if (children.Count != 0)
+                {
+                    RemoveChildren(children.Last().Value);
+                }
+                else
+                {
+                    break;
+                }
             }
         }
         /// <summary>
@@ -422,9 +454,16 @@ namespace SDHK
         /// </summary>
         public void RemoveAllComponent()
         {
-            while (Components.Count > 0)
+            while (components != null)
             {
-                RemoveComponent(Components.Last().Value);
+                if (components.Count != 0)
+                {
+                    RemoveComponent(components.Last().Value);
+                }
+                else
+                {
+                    break;
+                }
             }
         }
         /// <summary>

@@ -27,22 +27,22 @@ using System.Threading.Tasks;
 
 namespace SDHK
 {
-    /// <summary>
-    /// 池单位抽象泛型基类：提供获取和回收对象的方法
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public abstract class UnitPoolItem<T> : UnitPoolItem
-        where T : UnitPoolItem<T>
-    {
-        /// <summary>
-        /// 单位对象池：获取对象
-        /// </summary>
-        public static T GetObject()
-        {
-            return UnitPoolManager.Instance.Get<T>();
-        }
+    ///// <summary>
+    ///// 池单位抽象泛型基类：提供获取和回收对象的方法
+    ///// </summary>
+    ///// <typeparam name="T"></typeparam>
+    //public abstract class UnitPoolItem<T> : UnitPoolItem
+    //    where T : UnitPoolItem<T>
+    //{
+    //    /// <summary>
+    //    /// 单位对象池：获取对象
+    //    /// </summary>
+    //    public static T GetObject()
+    //    {
+    //        return UnitPoolManager.Instance.Get<T>();
+    //    }
 
-    }
+    //}
 
     /// <summary>
     /// 池单位抽象基类：提供回收方法

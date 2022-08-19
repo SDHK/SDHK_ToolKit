@@ -41,8 +41,6 @@ namespace Scripts
             do
             {
 
-                self.Send(1);
-                self.Call<Node, int>();
 
                 Debug.Log("while1");
                 await self.SendAsync();//延迟3秒
@@ -109,6 +107,18 @@ namespace Scripts
 
     //分在默认组的事件
     class TestEvent0 : EventCallSystem<Node, AsyncTask>
+    {
+        public override async AsyncTask Event(Node self)
+        {
+            await self.AsyncDelay(1);
+
+            //await self.RootEventManager().Get(1).SendAsync(self);
+            Debug.Log("AsyncTask0");
+        }
+    }
+
+    [EventKey(1)]
+    class TestEvent1 : EventCallSystem<Node, AsyncTask>
     {
         public override async AsyncTask Event(Node arg1)
         {

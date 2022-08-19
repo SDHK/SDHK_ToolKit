@@ -35,7 +35,7 @@ namespace SDHK
     /// <summary>
     /// 事件委托 
     /// </summary>
-    public class EventDelegate : UnitPoolItem<EventDelegate>
+    public class EventDelegate : Entity
     {
         private UnitDictionary<Type, UnitList<Delegate>> events;
 
@@ -46,7 +46,7 @@ namespace SDHK
         {
             if (events == null)
             {
-                events = UnitPoolManager.Instance.Get<UnitDictionary<Type, UnitList<Delegate>>>();
+                events = this.RootUnitPoolManager().Get<UnitDictionary<Type, UnitList<Delegate>>>();
             }
 
             Type key = action.GetType();
@@ -57,10 +57,11 @@ namespace SDHK
             }
             else
             {
-                UnitList<Delegate> delegates = UnitPoolManager.Instance.Get<UnitList<Delegate>>();
+                UnitList<Delegate> delegates = this.RootUnitPoolManager().Get<UnitList<Delegate>>();
                 delegates.Add(action);
                 events.Add(key, delegates);
             }
+
         }
 
         /// <summary>
@@ -142,8 +143,13 @@ namespace SDHK
             events = null;
         }
 
-        public override void OnRecycle() { Clear(); }
-
+        class EventDelegateRecycleSystem : RecycleSystem<EventDelegate>
+        {
+            public override void OnRecycle(EventDelegate self)
+            {
+                self.Clear();
+            }
+        }
 
     }
 }

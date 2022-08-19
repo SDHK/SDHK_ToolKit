@@ -28,13 +28,6 @@ namespace SDHK
         public bool IsRecycle { get; set; }
         public bool isDisposed { get; set; }
 
-        /// <summary>
-        /// 单位对象池：获取对象
-        /// </summary>
-        public static UnitDictionary<TKey, TValue> GetObject()
-        {
-            return UnitPoolManager.Instance.Get<UnitDictionary<TKey, TValue>>();
-        }
 
         /// <summary>
         /// 直接释放：释放后IsDisposed标记为true

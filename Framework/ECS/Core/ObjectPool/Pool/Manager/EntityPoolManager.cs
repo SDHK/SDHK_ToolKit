@@ -42,7 +42,7 @@ namespace SDHK
     /// <summary>
     /// 实体对象池管理器
     /// </summary>
-    public class EntityPoolManager : EntitySingletonBase<EntityPoolManager>
+    public class EntityPoolManager : Entity
     {
 
         UnitDictionary<Type, EntityPool> pools= new  UnitDictionary<Type, EntityPool>();

@@ -20,8 +20,8 @@ namespace SDHK
     /// <summary>
     /// 实体单例基类：懒汉式 (面向对象的单例，但挂在实体点上)
     /// </summary>
-    public class EntitySingletonBase<T> : Entity
-        where T : EntitySingletonBase<T>, new()
+    public class EntitySingletonBase1<T> : Entity
+        where T : EntitySingletonBase1<T>, new()
     {
         protected static T instance;//实例
         private static readonly object _lock = new object();//对象锁

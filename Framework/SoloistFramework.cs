@@ -38,22 +38,30 @@ namespace SDHK
 
             str += t1 + $"[{entity.id}] " + entity.ToString() + "\n";
 
-            if (entity.Children.Count > 0)
+            if (entity.children != null)
             {
-                str += t1 + "   Children:\n";
-                foreach (var item in entity.Children.Values)
+                if (entity.children.Count > 0)
                 {
-                    str += AllEntityString(item, t1);
+                    str += t1 + "   Children:\n";
+                    foreach (var item in entity.Children.Values)
+                    {
+                        str += AllEntityString(item, t1);
+                    }
                 }
             }
-            if (entity.Components.Count > 0)
+
+            if (entity.components != null)
             {
-                str += t1 + "   Components:\n";
-                foreach (var item in entity.Components.Values)
+                if (entity.components.Count > 0)
                 {
-                    str += AllEntityString(item, t1);
+                    str += t1 + "   Components:\n";
+                    foreach (var item in entity.Components.Values)
+                    {
+                        str += AllEntityString(item, t1);
+                    }
                 }
             }
+
             return str;
         }
 

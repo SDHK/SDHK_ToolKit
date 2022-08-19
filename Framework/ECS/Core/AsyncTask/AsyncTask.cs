@@ -19,6 +19,8 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
+
+
 namespace SDHK
 {
 
@@ -27,6 +29,7 @@ namespace SDHK
         bool IsCompleted { get; set; }
         IAsyncTask GetResult();
         void SetResult();
+        void SetException(Exception exception);
     }
 
 
@@ -59,6 +62,7 @@ namespace SDHK
             return asyncTask;
         }
     }
+
 
     [AsyncMethodBuilder(typeof(AsyncTaskMethodBuilder))]
     public class AsyncTask : Entity, IAsyncTask
@@ -93,6 +97,7 @@ namespace SDHK
             continuation?.Invoke();
             RemoveSelf();
         }
+
     }
 
     public struct AsyncTaskMethodBuilder
@@ -103,19 +108,25 @@ namespace SDHK
         [DebuggerHidden]
         public static AsyncTaskMethodBuilder Create()
         {
-            AsyncTaskMethodBuilder builder = new AsyncTaskMethodBuilder() { task = EntityManager.Instance.AddChildren<AsyncTask>() };
+            AsyncTaskMethodBuilder builder = new AsyncTaskMethodBuilder();
             return builder;
         }
 
         // 2. TaskLike Task property.
         [DebuggerHidden]
-        public AsyncTask Task => this.task;
+        public AsyncTask Task
+        {
+            get
+            {
+                return task;
+            }
+        }
 
         // 3. SetException
         [DebuggerHidden]
         public void SetException(Exception exception)
         {
-            this.task.SetException(exception);
+            task.SetException(exception);
         }
 
         // 4. SetResult
@@ -123,7 +134,7 @@ namespace SDHK
 
         public void SetResult()
         {
-            this.task.SetResult();
+            task.SetResult();
         }
 
         // 5. AwaitOnCompleted
@@ -136,8 +147,12 @@ namespace SDHK
 
         // 6. AwaitUnsafeOnCompleted
         [SecuritySafeCritical]
-        public void AwaitUnsafeOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter awaiter, ref TStateMachine stateMachine) where TAwaiter : ICriticalNotifyCompletion where TStateMachine : IAsyncStateMachine
+        public void AwaitUnsafeOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter awaiter, ref TStateMachine stateMachine) where TAwaiter : Entity, ICriticalNotifyCompletion where TStateMachine : IAsyncStateMachine
         {
+            if (task == null)
+            {
+                task = awaiter.Parent.AddChildren<AsyncTask>();
+            }
             awaiter.OnCompleted(stateMachine.MoveNext);
         }
 
@@ -145,6 +160,7 @@ namespace SDHK
         [DebuggerHidden]
         public void Start<TStateMachine>(ref TStateMachine stateMachine) where TStateMachine : IAsyncStateMachine
         {
+
             stateMachine.MoveNext();
         }
 
@@ -152,6 +168,7 @@ namespace SDHK
         [DebuggerHidden]
         public void SetStateMachine(IAsyncStateMachine stateMachine)
         {
+
         }
     }
 
