@@ -33,6 +33,13 @@ namespace SDHK
             await self.RootEventManager().Get().SendAsync(self);
         }
 
+        public static async AsyncTask<OutT> CallAsync<T0, OutT>(this T0 self)
+        where T0 : Entity
+        {
+            return await self.RootEventManager().Get().CallAsync<T0, OutT>(self);
+        }
+
+
         public static OutT Call<T0, OutT>(this T0 self)
         where T0 : Entity
         {

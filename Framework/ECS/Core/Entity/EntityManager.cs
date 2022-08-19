@@ -26,6 +26,10 @@ using UnityEngine;
 namespace SDHK
 {
 
+    //id外置获取
+    //时间外置获取
+
+
     /// <summary>
     /// 实体管理器
     /// </summary>

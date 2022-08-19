@@ -15,6 +15,7 @@ namespace Scripts
             Debug.Log("MainAdd!!!");
 
             self.Root.AddComponent<TimerManager>();
+            self.Root.AddComponent<Node>();
             //self.TaskWait().Send(10);
             //self.TaskWait(10);
 

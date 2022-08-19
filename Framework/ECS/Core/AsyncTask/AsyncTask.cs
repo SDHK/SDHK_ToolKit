@@ -36,10 +36,14 @@ namespace SDHK
     public interface IAsyncTask<T> : ICriticalNotifyCompletion
     {
         bool IsCompleted { get; set; }
-        T Result { get; }
         void SetResult(T result);
         T GetResult();
+        void SetException(Exception exception);
+
     }
+
+
+   
 
 
     public static class AsyncTaskExtension
@@ -74,6 +78,18 @@ namespace SDHK
 
         public bool IsCompleted { get; set; }
 
+        [DebuggerHidden]
+        private async AsyncTaskVoid InnerCoroutine()
+        {
+            await this;
+        }
+
+        [DebuggerHidden]
+        public void Coroutine()
+        {
+            InnerCoroutine().Coroutine();
+        }
+
         public void OnCompleted(Action continuation)
         {
             UnsafeOnCompleted(continuation);
@@ -100,77 +116,61 @@ namespace SDHK
 
     }
 
-    public struct AsyncTaskMethodBuilder
+
+    [AsyncMethodBuilder(typeof(AsyncTaskMethodBuilder<>))]
+    public class AsyncTask<T> : Entity, IAsyncTask<T>
     {
-        private AsyncTask task;
-        // 1. Static Create method.
+        public AsyncTask<T> GetAwaiter() => this;
+        public Action continuation;
+        public bool IsCompleted { get; set; }
+
+        public T Result;
+
 
         [DebuggerHidden]
-        public static AsyncTaskMethodBuilder Create()
+        private async AsyncTaskVoid InnerCoroutine()
         {
-            AsyncTaskMethodBuilder builder = new AsyncTaskMethodBuilder();
-            return builder;
+            await this;
         }
 
-        // 2. TaskLike Task property.
         [DebuggerHidden]
-        public AsyncTask Task
+        public void Coroutine()
         {
-            get
-            {
-                return task;
-            }
+            InnerCoroutine().Coroutine();
         }
 
-        // 3. SetException
-        [DebuggerHidden]
+
+        public T GetResult()
+        {
+            return Result;
+        }
+
+        public void OnCompleted(Action continuation)
+        {
+            UnsafeOnCompleted(continuation);
+
+        }
+        public void UnsafeOnCompleted(Action continuation)
+        {
+            this.continuation = continuation;
+        }
+        public void SetResult(T result)
+        {
+            Result = result;
+            continuation?.Invoke();
+            RemoveSelf();
+        }
+
         public void SetException(Exception exception)
         {
-            task.SetException(exception);
         }
 
-        // 4. SetResult
-        [DebuggerHidden]
 
-        public void SetResult()
-        {
-            task.SetResult();
-        }
-
-        // 5. AwaitOnCompleted
-        [DebuggerHidden]
-
-        public void AwaitOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter awaiter, ref TStateMachine stateMachine) where TAwaiter : INotifyCompletion where TStateMachine : IAsyncStateMachine
-        {
-            awaiter.OnCompleted(stateMachine.MoveNext);
-        }
-
-        // 6. AwaitUnsafeOnCompleted
-        [SecuritySafeCritical]
-        public void AwaitUnsafeOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter awaiter, ref TStateMachine stateMachine) where TAwaiter : Entity, ICriticalNotifyCompletion where TStateMachine : IAsyncStateMachine
-        {
-            if (task == null)
-            {
-                task = awaiter.Parent.AddChildren<AsyncTask>();
-            }
-            awaiter.OnCompleted(stateMachine.MoveNext);
-        }
-
-        // 7. Start
-        [DebuggerHidden]
-        public void Start<TStateMachine>(ref TStateMachine stateMachine) where TStateMachine : IAsyncStateMachine
-        {
-
-            stateMachine.MoveNext();
-        }
-
-        // 8. SetStateMachine
-        [DebuggerHidden]
-        public void SetStateMachine(IAsyncStateMachine stateMachine)
-        {
-
-        }
     }
+
+
+
+
 
 
 }

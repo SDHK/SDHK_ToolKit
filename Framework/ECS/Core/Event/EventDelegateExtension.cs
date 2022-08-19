@@ -58,8 +58,8 @@ namespace SDHK
 
         #region Send
 
-        public static async AsyncTask SendAsync<T1>(this EventDelegate e,T1 arg1)
-        { 
+        public static async AsyncTask SendAsync<T1>(this EventDelegate e, T1 arg1)
+        {
             var events = e.Get<Func<T1, AsyncTask>>();
             if (events != null)
             {
@@ -71,11 +71,55 @@ namespace SDHK
                     }
                     else
                     {
-                       await (events[i] as Func<T1,AsyncTask>)(arg1);
+                        await (events[i] as Func<T1, AsyncTask>)(arg1);
                     }
                 }
             }
         }
+
+        public static async AsyncTask<OutT> CallAsync<OutT>(this EventDelegate e)
+        {
+            var events = e.Get<Func<AsyncTask<OutT>>>();
+            OutT t = default(OutT);
+            if (events != null)
+            {
+                for (int i = events.Count - 1; i >= 0; i--)
+                {
+                    if (events[i] == null)
+                    {
+                        events.RemoveAt(i);
+                    }
+                    else
+                    {
+                        t = await (events[i] as Func<AsyncTask<OutT>>)();
+                    }
+                }
+            }
+            return t;
+        }
+
+
+        public static async AsyncTask<OutT> CallAsync<T1, OutT>(this EventDelegate e, T1 arg1)
+        {
+            var events = e.Get<Func<T1, AsyncTask<OutT>>>();
+            OutT t = default(OutT);
+            if (events != null)
+            {
+                for (int i = events.Count - 1; i >= 0; i--)
+                {
+                    if (events[i] == null)
+                    {
+                        events.RemoveAt(i);
+                    }
+                    else
+                    {
+                        t = await (events[i] as Func<T1, AsyncTask<OutT>>)(arg1);
+                    }
+                }
+            }
+            return t;
+        }
+
 
 
         public static void Send(this EventDelegate e)

@@ -38,16 +38,17 @@ namespace Scripts
     {
         public override async void OnAdd(Node self)
         {
+
+            //await self.SendAsync();
             do
             {
-
-
                 Debug.Log("while1");
-                await self.SendAsync();//延迟3秒
+
+                Debug.Log(await self.CallAsync<Node, int>());
+
                 Debug.Log("while2");
             } while (!Input.GetKeyDown(KeyCode.A));
         }
-
     }
     class NodeGetSystem : GetSystem<Node>
     {
@@ -104,26 +105,22 @@ namespace Scripts
     }
 
 
-
-    //分在默认组的事件
+    //异步事件测试
     class TestEvent0 : EventCallSystem<Node, AsyncTask>
     {
         public override async AsyncTask Event(Node self)
         {
             await self.AsyncDelay(1);
-
-            //await self.RootEventManager().Get(1).SendAsync(self);
-            Debug.Log("AsyncTask0");
+            Debug.Log("延迟1秒");
         }
     }
 
-    [EventKey(1)]
-    class TestEvent1 : EventCallSystem<Node, AsyncTask>
+    class TestEvent1 : EventCallSystem<Node, AsyncTask<int>>
     {
-        public override async AsyncTask Event(Node arg1)
+        public override async AsyncTask<int> Event(Node self)
         {
-            Debug.Log("AsyncTask1");
-            await arg1.AsyncDelay(1);
+            await self.AsyncDelay(3);//延迟3秒后返回
+            return 101;
         }
     }
 
