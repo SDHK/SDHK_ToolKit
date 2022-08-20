@@ -26,7 +26,7 @@ namespace SDHK
 {
     public static class UnitPoolManagerExtension
     { 
-        public static UnitPoolManager RootUnitPoolManager(this Entity self)
+        public static UnitPoolManager UnitPoolManager(this Entity self)
         {
             return self.Root.GetComponent<UnitPoolManager>();
         }

@@ -14,19 +14,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace  SDHK 
+namespace SDHK
 {
 
     /// <summary>
     /// 事件分组
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-    public class EventKeyAttribute : Attribute
+    public class EventKeyAttribute: Attribute
     {
-        public object key { get; private set; }
-        public EventKeyAttribute(object key)
+        public Type key { get; private set; }
+        public EventKeyAttribute(Type key)
         {
-           this.key = key;
+            this.key = key;
+        }
+
+        public EventKeyAttribute()
+        {
+            this.key = typeof(EventDelegate);
         }
     }
 }

@@ -161,7 +161,7 @@ namespace SDHK
             {
                 if (children == null)
                 {
-                    children = this.RootUnitPoolManager().Get<UnitDictionary<ulong, Entity>>();
+                    children = this.UnitPoolManager().Get<UnitDictionary<ulong, Entity>>();
                 }
                 return children;
             }
@@ -173,7 +173,7 @@ namespace SDHK
             {
                 if (components == null)
                 {
-                    components = this.RootUnitPoolManager().Get<UnitDictionary<Type, Entity>>();
+                    components = this.UnitPoolManager().Get<UnitDictionary<Type, Entity>>();
                 }
                 return components;
             }

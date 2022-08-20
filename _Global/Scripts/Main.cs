@@ -34,7 +34,7 @@ namespace Scripts
         {
             if (Input.GetKeyDown(KeyCode.C))
             {
-                self.AddChildren<Node>().Send(10);
+                self.AddChildren<Node>().Event().Send(self,10);
             }
 
             if (Input.GetKeyDown(KeyCode.D))

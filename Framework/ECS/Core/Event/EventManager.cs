@@ -24,53 +24,6 @@ namespace SDHK
     public class EventManager : Entity
     {
         public SystemGroup systemGroup;
-
-        public UnitDictionary<object, EventDelegate> eventDelegates;
-
-        /// <summary>
-        /// 获取对象绑定的事件委托 
-        /// </summary>
-        public EventDelegate Get()
-        {
-            return Get(this.Type);
-        }
-
-        /// <summary>
-        /// 获取对象绑定的事件委托 
-        /// </summary>
-        public EventDelegate Get(object key)
-        {
-            if (eventDelegates.ContainsKey(key))
-            {
-                return eventDelegates[key];
-            }
-            else
-            {
-                EventDelegate eventDelegate = AddChildren<EventDelegate>();
-                eventDelegates.Add(key, eventDelegate);
-                return eventDelegate;
-            }
-        }
-        /// <summary>
-        /// 移除对象绑定的事件委托
-        /// </summary>
-        public void Remove()
-        {
-            Remove(this.Type);
-        }
-
-        /// <summary>
-        /// 移除对象绑定的事件委托
-        /// </summary>
-        public void Remove(object key)
-        {
-            if (eventDelegates.ContainsKey(key))
-            {
-                RemoveChildren(eventDelegates[key]);
-                eventDelegates.Remove(key);
-            }
-        }
-
     }
 
     class EventManagerAddSystem : AddSystem<EventManager>
@@ -79,34 +32,22 @@ namespace SDHK
         {
             //进行遍历分类
             self.systemGroup = self.RootGetSystemGroup<IEventSystem>();
-            self.eventDelegates = self.RootUnitPoolManager().Get<UnitDictionary<object, EventDelegate>>();
 
             foreach (var systems in self.systemGroup.Values)
             {
                 foreach (IEventSystem system in systems)
                 {
                     //反射属性获取键值
-                    object key = self.Type;
+                    Type key = typeof(EventDelegate);
                     object[] attributes = system.GetType().GetCustomAttributes(typeof(EventKeyAttribute), true);
                     if (attributes.Length != 0)
                     {
                         key = (attributes[0] as EventKeyAttribute)?.key;
                     }
                     //分组注册事件
-                    self.Get(key).AddDelegate(system.GetDeleate());
+                    self.AddComponent(key).To<EventDelegate>().AddDelegate(system.GetDeleate());
                 }
             }
-        }
-    }
-
-
-    class EventManagerRemoveSystem : RemoveSystem<EventManager>
-    {
-        public override void OnRemove(EventManager self)
-        {
-            self.systemGroup = null;
-            self.eventDelegates.Recycle();
-            self.eventDelegates = null;
         }
     }
 }

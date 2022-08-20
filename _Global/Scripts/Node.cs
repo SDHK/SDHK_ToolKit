@@ -21,6 +21,7 @@ namespace Scripts
 {
 
 
+
     public class Node : Entity
     {
 
@@ -38,13 +39,16 @@ namespace Scripts
     {
         public override async void OnAdd(Node self)
         {
+            //await self.Event().SendAsync(self);
 
-            await self.SendAsync();
             do
             {
                 Debug.Log("while1");
-                Debug.Log(await self.CallAsync<Node, int>());
+
+                Debug.Log(await self.Event().CallAsync<Node, int>(self));
+
                 Debug.Log("while2");
+
             } while (!Input.GetKeyDown(KeyCode.A));
         }
     }
@@ -106,6 +110,8 @@ namespace Scripts
 
 
     //异步事件测试
+
+    [EventKey(typeof(EventCreate))]
     class TestEvent0 : EventCallSystem<Node, AsyncTask>
     {
         public override async AsyncTask Event(Node self)
@@ -114,6 +120,10 @@ namespace Scripts
             Debug.Log("延迟1秒");
         }
     }
+
+
+    class EventCreate : EventDelegate { }
+
 
     class TestEvent1 : EventCallSystem<Node, AsyncTask<int>>
     {

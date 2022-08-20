@@ -46,7 +46,7 @@ namespace SDHK
         {
             if (events == null)
             {
-                events = this.RootUnitPoolManager().Get<UnitDictionary<Type, UnitList<Delegate>>>();
+                events = this.UnitPoolManager().Get<UnitDictionary<Type, UnitList<Delegate>>>();
             }
 
             Type key = action.GetType();
@@ -57,7 +57,7 @@ namespace SDHK
             }
             else
             {
-                UnitList<Delegate> delegates = this.RootUnitPoolManager().Get<UnitList<Delegate>>();
+                UnitList<Delegate> delegates = this.UnitPoolManager().Get<UnitList<Delegate>>();
                 delegates.Add(action);
                 events.Add(key, delegates);
             }
@@ -116,7 +116,7 @@ namespace SDHK
         /// <summary>
         /// 获取一个类型的全部委托
         /// </summary>
-        public List<Delegate> Get(Type key)
+        public UnitList<Delegate> Get(Type key)
         {
             events.TryGetValue(key, out UnitList<Delegate> delegates);
             return delegates;
@@ -125,7 +125,7 @@ namespace SDHK
         /// <summary>
         /// 获取一个类型的全部委托
         /// </summary>
-        public List<Delegate> Get<T>() { return Get(typeof(T)); }
+        public UnitList<Delegate> Get<T>() { return Get(typeof(T)); }
 
         /// <summary>
         /// 清空
