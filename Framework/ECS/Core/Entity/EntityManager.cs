@@ -50,9 +50,6 @@ namespace SDHK
 
         public EntityManager() : base()
         {
-            Root = this;    //根节点指向自己
-            Domain = this;  //域节点指向自己
-
             //此时对象池没有，直接新建容器
             Components = new UnitDictionary<Type, Entity>();
             Children = new UnitDictionary<long, Entity>();
@@ -64,13 +61,17 @@ namespace SDHK
             EntityPool = new EntityPoolManager();
 
             //赋予根节点
+            Root = this;
             idManager.Root = this;
             systemManager.Root = this;
             UnitPool.Root = this;
             EntityPool.Root = this;
 
+            //域节点指向自己
+            Domain = this;
+
             //赋予id
-            this.id = idManager.GetId();
+            Root.id = idManager.GetId();
             idManager.id = idManager.GetId();
             systemManager.id = idManager.GetId();
             UnitPool.id = idManager.GetId();
