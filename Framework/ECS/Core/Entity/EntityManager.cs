@@ -17,17 +17,12 @@
 */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
 
 namespace SDHK
 {
-
-    //id外置获取
     //时间外置获取
+    //域的激活事件，交给update去遍历处理
+    //异常处理
 
 
     /// <summary>
@@ -35,48 +30,70 @@ namespace SDHK
     /// </summary>
     public class EntityManager : Entity, IUnit
     {
-        public UnitDictionary<ulong, Entity> allEntities = new UnitDictionary<ulong, Entity>();
+        public UnitDictionary<long, Entity> allEntities = new UnitDictionary<long, Entity>();
 
-        public UnitDictionary<Type, Entity> listeners = new UnitDictionary<Type, Entity>();//有监听器的实体//分域
+        public UnitDictionary<Type, Entity> listeners = new UnitDictionary<Type, Entity>();//有监听器的实体
 
-        public SystemGroup entitySystems;
-
-        public SystemManager systemManager;
-        public UnitPoolManager unitPoolManager;
-        public EntityPoolManager pool;
+        private SystemGroup entitySystems;
+        private SystemGroup singletonEagerSystems;
 
         private SystemGroup addSystems;
         private SystemGroup removeSystems;
 
 
-        /// <summary>
-        /// 初始化：对象池的新建
-        /// </summary>
+        public IdManager idManager;
+        public SystemManager systemManager;
+        public UnitPoolManager UnitPool;
+        public EntityPoolManager EntityPool;
+        public EventManager eventManager;
+
+
         public EntityManager() : base()
         {
-            id = IdManager.GetID;
-            Root = this;
-            Domain = this;
+            Root = this;    //根节点指向自己
+            Domain = this;  //域节点指向自己
 
+            //此时对象池没有，直接新建容器
             Components = new UnitDictionary<Type, Entity>();
-            Children = new UnitDictionary<ulong, Entity>();
+            Children = new UnitDictionary<long, Entity>();
 
+            //核心组件
+            idManager = new IdManager();
             systemManager = new SystemManager();
-            pool = new EntityPoolManager();
-            unitPoolManager = new UnitPoolManager();
+            UnitPool = new UnitPoolManager();
+            EntityPool = new EntityPoolManager();
 
+            //赋予根节点
+            idManager.Root = this;
             systemManager.Root = this;
-            pool.Root = this;
-            unitPoolManager.Root = this;
+            UnitPool.Root = this;
+            EntityPool.Root = this;
 
+            //赋予id
+            this.id = idManager.GetId();
+            idManager.id = idManager.GetId();
+            systemManager.id = idManager.GetId();
+            UnitPool.id = idManager.GetId();
+            EntityPool.id = idManager.GetId();
+
+            //实体管理器系统事件获取
             entitySystems = Root.systemManager.GetSystemGroup<IEntitySystem>();
             addSystems = Root.systemManager.GetSystemGroup<IAddSystem>();
             removeSystems = Root.systemManager.GetSystemGroup<IRemoveSystem>();
+            singletonEagerSystems = systemManager.GetSystemGroup<ISingletonEagerSystem>();
 
+            //核心组件添加
+            AddComponent(idManager);
             AddComponent(systemManager);
-            AddComponent(unitPoolManager);
-            AddComponent(pool);
-            AddComponent<EventManager>();
+            AddComponent(UnitPool);
+            AddComponent(EntityPool);
+            eventManager = AddComponent<EventManager>();
+
+            //饿汉单例启动
+            foreach (ISingletonEagerSystem singletonEager in singletonEagerSystems.Values)
+            {
+                singletonEager.Singleton(this);
+            }
         }
 
 
@@ -87,30 +104,8 @@ namespace SDHK
         /// </summary>
         public override void OnDispose()
         {
-
             RemoveAll();
-
-
-            pool.RemoveSelf();//移除所有组件
-            pool.Dispose();//全部释放
-            unitPoolManager.RemoveSelf();//移除所有组件
-            unitPoolManager.Dispose();
-
-            systemManager.RemoveSelf();
-            systemManager.Dispose();
-
-
             listeners.Clear();
-
-            listeners = null;
-            entitySystems = null;
-            addSystems = null;
-            removeSystems = null;
-
-            pool = null;
-            systemManager = null;
-            unitPoolManager = null;
-
         }
 
 

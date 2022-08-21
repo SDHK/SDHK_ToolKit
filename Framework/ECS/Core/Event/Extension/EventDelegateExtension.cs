@@ -7,12 +7,18 @@
 
  * 描述: 
  
-    EventDelegate事件委托 的静态扩展方法
+    EventDelegate 事件委托 
+
     可添加 Action 和 Func 委托
     
     Send 调用同类型的多播委托
+    TrySend 没有事件可调用则返回false
+
     Calls 调用同类型的多播委托，并返回获取到的全部返回值List
+    TryCalls 没有事件可调用则返回false
+
     Call 调用同类型的多播委托，并返回获取到的最后一个值
+    TryCall 没有事件可调用则返回false
 
     当前参数最多为 5
     
@@ -20,10 +26,6 @@
 
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using UnityEngine;
 
 namespace SDHK
 {
@@ -208,7 +210,6 @@ namespace SDHK
 
 
         #endregion
-
 
 
         #region Func
@@ -569,7 +570,6 @@ namespace SDHK
         #endregion
 
         #endregion
-
 
     }
 }

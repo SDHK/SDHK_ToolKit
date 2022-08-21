@@ -22,6 +22,11 @@ namespace SDHK
     public static class SystemManagerExtension
     {
 
+        public static SystemManager SystemManager(this Entity self)
+        {
+            return self.Root.systemManager;
+        }
+
         /// <summary>
         /// 获取系统组
         /// </summary>
@@ -50,6 +55,15 @@ namespace SDHK
     }
 
 
+    class SystemManagerRemove : RemoveSystem<SystemManager>
+    {
+        public override void OnRemove(SystemManager self)
+        {
+            self.Dispose();//全部释放
+        }
+    }
+
+
     /// <summary>
     /// 系统管理器
     /// </summary>
@@ -58,9 +72,8 @@ namespace SDHK
         //接口类型，（实例类型，实例方法）
         private UnitDictionary<Type, SystemGroup> InterfaceSystems = new UnitDictionary<Type, SystemGroup>();
 
-        public SystemManager():base()
+        public SystemManager() : base()
         {
-            id = IdManager.GetID;
             Initialize();
         }
 

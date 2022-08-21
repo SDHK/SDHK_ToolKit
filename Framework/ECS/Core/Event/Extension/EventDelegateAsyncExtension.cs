@@ -4,20 +4,20 @@
 * 日期： 2022/8/20 15:16
 
 * 描述： 
-    EventDelegate事件委托 的静态扩展方法
+    EventDelegate 异步事件委托 
+
     可添加 Action 和 Func 异步委托
     
     SendAsync 调用同类型的多播委托
+    TrySendAsync 没有事件可调用则返回false
+
     CallsAsync 调用同类型的多播委托，并返回获取到的全部返回值List
     CallAsync 调用同类型的多播委托，并返回获取到的最后一个值
 
     当前参数最多为 5
 */
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SDHK
 {

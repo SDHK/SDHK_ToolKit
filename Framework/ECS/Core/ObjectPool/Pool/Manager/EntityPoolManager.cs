@@ -3,30 +3,8 @@
 * 作者： 闪电黑客
 * 日期： 2022/7/17 17:23
 
-* 描述： 实体对象池管理器，偏向ECS实体。
+* 描述： 实体对象池管理器。
 * 为所有实体对象池的管理器。
-* 
-* 关于生成：
-* 
-* 实体设定是由对象池生成，
-* 但对象池自己并不能实例自己，所以是通过new来实例的。
-* 
-* 并且由于是在域之后第一个生成，
-* 其余生命周期管理器是通过对象池生成。
-* 
-* 对象池和管理器在生成时是没有任何生命周期事件可以触发的。
-* 所以设定他们为半实体，面向对象的同时可以挂为节点。
-*
-*
-* 关于回收：
-* 
-* 域在回收的时候会先回收全部节点，
-* 然后释放掉对象池管理器和全部对象池，
-* 
-* 与生成同理，回收时是忽略自己和对象池的，所以也触发不了生命周期事件。
-* 
-* 最后只有全部释放掉。
-* 
 
 */
 using System;
@@ -39,25 +17,32 @@ using UnityEngine;
 namespace SDHK
 {
 
+    public static class EntityPoolManagerExtension
+    {
+        public static EntityPoolManager EntityPoolManager(this Entity self)
+        {
+            return self.Root.EntityPool;
+        }
+    }
+
+    class EntityPoolManagerRemove : RemoveSystem<EntityPoolManager>
+    {
+        public override void OnRemove(EntityPoolManager self)
+        {
+            self.Dispose();//全部释放
+        }
+    }
+
     /// <summary>
     /// 实体对象池管理器
     /// </summary>
     public class EntityPoolManager : Entity
     {
 
-        UnitDictionary<Type, EntityPool> pools= new  UnitDictionary<Type, EntityPool>();
-
-        public EntityPoolManager():base()//通过构造函数来打破自己单例的死循环
-        {
-            id = IdManager.GetID;
-        }
+        UnitDictionary<Type, EntityPool> pools = new UnitDictionary<Type, EntityPool>();
 
         public override void OnDispose()
         {
-            foreach (var item in pools)
-            {
-                item.Value.Dispose();
-            }
             pools.Clear();
         }
 
@@ -108,6 +93,7 @@ namespace SDHK
             if (!pools.TryGetValue(type, out EntityPool pool))
             {
                 pool = new EntityPool(type);
+                pool.id = Root.idManager.GetId();
                 pool.Root = Root;
                 pools.Add(type, pool);
                 AddChildren(pool);
@@ -124,7 +110,6 @@ namespace SDHK
             Type type = typeof(T);
             if (pools.TryGetValue(type, out EntityPool pool))
             {
-                pool.Dispose();
                 pools.Remove(type);
             }
         }

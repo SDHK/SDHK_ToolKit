@@ -11,15 +11,15 @@ namespace SDHK
     /// </summary>
     public class FixedUpdateManager : Entity
     {
-        public UnitDictionary<ulong, Entity> update1 = new UnitDictionary<ulong, Entity>();
-        public UnitDictionary<ulong, Entity> update2 = new UnitDictionary<ulong, Entity>();
+        public UnitDictionary<long, Entity> update1 = new UnitDictionary<long, Entity>();
+        public UnitDictionary<long, Entity> update2 = new UnitDictionary<long, Entity>();
         public SystemGroup systems;
 
         public void Update()
         {
             while (update1.Count != 0 && RealActive)
             {
-                ulong firstKey = update1.Keys.First();
+                long firstKey = update1.Keys.First();
                 Entity entity = update1[firstKey];
                 if (entity.RealActive)
                 {

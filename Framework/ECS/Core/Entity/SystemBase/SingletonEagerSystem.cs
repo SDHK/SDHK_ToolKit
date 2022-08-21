@@ -23,7 +23,7 @@ namespace SDHK
     /// </summary>
     public interface ISingletonEagerSystem : ISystem
     {
-        void Instance(EntityManager domain);
+        void Singleton(EntityManager domain);
     }
 
     /// <summary>
@@ -32,9 +32,9 @@ namespace SDHK
     public abstract class SingletonEagerSystem<T> : SystemBase<T, ISingletonEagerSystem>, ISingletonEagerSystem
         where T :Entity
     {
-        public void Instance(EntityManager domain)
+        public void Singleton(EntityManager Root)
         {
-            domain.AddComponent<T>();
+            Root.AddComponent<T>();
         }
     }
 }

@@ -9,15 +9,8 @@
 */
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Security;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
 
 
 
@@ -41,32 +34,6 @@ namespace SDHK
         void SetException(Exception exception);
 
     }
-
-
-   
-
-
-    public static class AsyncTaskExtension
-    {
-        public static AsyncTask AsyncYield(this Entity self, int count = 0)
-        {
-            AsyncTask asyncTask = self.AddChildren<AsyncTask>();
-            var counter = asyncTask.AddComponent<CounterCall>();
-            counter.countOut = count;
-            counter.callback = asyncTask.SetResult;
-            return asyncTask;
-        }
-
-        public static AsyncTask AsyncDelay(this Entity self, float time)
-        {
-            AsyncTask asyncTask = self.AddChildren<AsyncTask>();
-            var timer = asyncTask.AddComponent<TimerCall>();
-            timer.timeOutTime = time;
-            timer.callback = asyncTask.SetResult;
-            return asyncTask;
-        }
-    }
-
 
     [AsyncMethodBuilder(typeof(AsyncTaskMethodBuilder))]
     public class AsyncTask : Entity, IAsyncTask

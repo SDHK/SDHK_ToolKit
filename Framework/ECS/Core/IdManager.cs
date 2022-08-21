@@ -8,6 +8,8 @@
 
 */
 
+
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,33 +18,33 @@ using System.Threading.Tasks;
 
 namespace SDHK
 {
+
+    public static class IdManagerExtension
+    {
+        public static IdManager IdManager(this Entity self)
+        {
+            return self.Root.idManager;
+        }
+    }
+
     /// <summary>
-    /// id管理器：单线程
+    /// id管理器
     /// </summary>
-    public class IdManager : SingletonBase<IdManager>
+    public class IdManager : Entity
     {
 
-        public override void OnInstance()
-        {
-            id = 0;
-        }
-
         /// <summary>
-        /// 当前id
+        /// 当前递增的id值
         /// </summary>
-        public ulong id = 0;
+        public long Id = 0;
 
         /// <summary>
         /// 获取id后递增
         /// </summary>
-        public static ulong GetID
+        public long GetId()
         {
-            get
-            {
-                return Instance.id++;
-            }
-
+            return Id++;
         }
-       
+
     }
 }

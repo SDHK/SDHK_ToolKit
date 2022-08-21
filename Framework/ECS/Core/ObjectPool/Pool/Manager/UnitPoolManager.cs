@@ -5,22 +5,12 @@
 * 日期： 2022/5/24 18:52
 
 * 描述： 单位对象池管理器
-* 
-* 由于单位对象池管理的是自定义的类而不是实体
-* 自定义类并不能拿到实体根节点，所以需要单例
-* 
-* 
-* 
-* 
 
 */
 
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
 
 namespace SDHK
 {
@@ -28,7 +18,15 @@ namespace SDHK
     { 
         public static UnitPoolManager UnitPoolManager(this Entity self)
         {
-            return self.Root.GetComponent<UnitPoolManager>();
+            return self.Root.UnitPool;
+        }
+    }
+
+    class UnitPoolManagerRemoveSystem : RemoveSystem<UnitPoolManager>
+    {
+        public override void OnRemove(UnitPoolManager self)
+        {
+            self.Dispose();//全部释放
         }
     }
 
@@ -37,24 +35,17 @@ namespace SDHK
     /// </summary>
     public class UnitPoolManager : Entity
     {
-        private Dictionary<Type, IPool> pools = new Dictionary<Type, IPool>();
+        private Dictionary<Type, UnitPool> pools = new Dictionary<Type, UnitPool>();
 
-        public UnitPoolManager():base()//通过构造函数来打破自己单例的死循环
+        public UnitPoolManager():base()
         {
-
-            id = IdManager.GetID;
-
             Components = new UnitDictionary<Type, Entity>();
-            Children = new UnitDictionary<ulong, Entity>();
+            Children = new UnitDictionary<long, Entity>();
         }
 
 
         public override void OnDispose()
         {
-            foreach (var pool in pools)
-            {
-                pool.Value.Dispose();
-            }
             pools.Clear();
         }
 
@@ -64,7 +55,16 @@ namespace SDHK
         public T Get<T>()
         where T : class, IUnitPoolItem
         {
-            return GetPool<T>().Get();
+            Type type = typeof(T);
+            return GetPool(type).Get<T>();
+        }
+
+        /// <summary>
+        /// 获取单位
+        /// </summary>
+        public IUnitPoolItem Get(Type type)
+        {
+            return GetPool(type).Get();
         }
 
         /// <summary>
@@ -83,20 +83,27 @@ namespace SDHK
         /// <summary>
         /// 获取池
         /// </summary>
-        public UnitPool<T> GetPool<T>()
+        public UnitPool GetPool<T>()
         where T : class, IUnitPoolItem
         {
             Type type = typeof(T);
+            return GetPool(type);
+        }
 
-            if (!pools.TryGetValue(type, out IPool pool))
+        /// <summary>
+        /// 获取池
+        /// </summary>
+        public UnitPool GetPool(Type type)
+        {
+            if (!pools.TryGetValue(type, out UnitPool pool))
             {
-                UnitPool<T> unitPool = new UnitPool<T>();
-                unitPool.Root = Root;
-                pools.Add(type, unitPool);
-                AddChildren(unitPool);
-                return unitPool;
+                pool = new UnitPool(type);
+                pool.id = this.IdManager().GetId();
+                pool.Root = Root;
+                pools.Add(type, pool);
+                AddChildren(pool);
             }
-            return pool as UnitPool<T>;
+            return pool;
         }
 
         /// <summary>
@@ -105,9 +112,8 @@ namespace SDHK
         public void DisposePool<T>()
         {
             Type type = typeof(T);
-            if (pools.TryGetValue(type, out IPool pool))
+            if (pools.TryGetValue(type, out UnitPool pool))
             {
-                pool.Dispose();
                 pools.Remove(type);
             }
         }

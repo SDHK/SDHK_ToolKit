@@ -7,9 +7,6 @@
 
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SDHK
@@ -24,20 +21,11 @@ namespace SDHK
 
     #region Action
 
-    public abstract class EventSendAsyncSystem : SystemBase<Func<Task>, IEventSystem>, IEventSystem
-    {
-        public Delegate GetDeleate() => (Func<Task>)Event;
-        public abstract Task Event();
-    }
-
-
     public abstract class EventSendSystem : SystemBase<Action, IEventSystem>, IEventSystem
     {
         public Delegate GetDeleate() => (Action)Event;
         public abstract void Event();
     }
-
-   
 
     public abstract class EventSendSystem<T1> : SystemBase<Action<T1>, IEventSystem>, IEventSystem
     {

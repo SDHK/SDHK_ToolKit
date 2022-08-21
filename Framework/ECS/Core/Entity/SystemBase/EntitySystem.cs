@@ -29,10 +29,11 @@ namespace SDHK
 {
 
 
+
     /// <summary>
     /// 监听系统
     /// </summary>
-    public interface IEntitySystem : ISystem//或许可以成为单例组件
+    public interface IEntitySystem : ISystem
     {
         void AddEntity(Entity self, Entity entity);
         void RemoveEntity(Entity self, Entity entity);

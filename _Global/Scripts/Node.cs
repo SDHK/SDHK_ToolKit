@@ -19,9 +19,6 @@ using UnityEngine;
 
 namespace Scripts
 {
-
-
-
     public class Node : Entity
     {
 
@@ -40,16 +37,16 @@ namespace Scripts
         public override async void OnAdd(Node self)
         {
             //await self.Event().SendAsync(self);
-
+            int i = 0;
             do
             {
                 Debug.Log("while1");
 
-                Debug.Log(await self.Event().CallAsync<Node, int>(self));
+                Debug.Log(await self.Event().CallAsync<Node, int, int>(self, i++));
 
                 Debug.Log("while2");
 
-            } while (!Input.GetKeyDown(KeyCode.A));
+            } while (!Input.GetKey(KeyCode.A));
         }
     }
 
@@ -109,7 +106,7 @@ namespace Scripts
     }
 
 
-    //异步事件测试
+    class EventCreate : EventDelegate { }
 
     [EventKey(typeof(EventCreate))]
     class TestEvent0 : EventCallSystem<Node, AsyncTask>
@@ -122,15 +119,14 @@ namespace Scripts
     }
 
 
-    class EventCreate : EventDelegate { }
 
 
-    class TestEvent1 : EventCallSystem<Node, AsyncTask<int>>
+    class TestEvent1 : EventCallSystem<Node, int, AsyncTask<int>>
     {
-        public override async AsyncTask<int> Event(Node self)
+        public override async AsyncTask<int> Event(Node self, int index)
         {
-            await self.AsyncDelay(3);//延迟3秒后返回
-            return 101;
+            await self.AsyncDelay(1);//延迟3秒后返回
+            return index + 100;
         }
     }
 

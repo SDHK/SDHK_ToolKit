@@ -18,19 +18,27 @@ using System.Threading.Tasks;
 
 namespace SDHK
 {
+
+
+    class UnitPoolRemoveSystem : RemoveSystem<UnitPool>
+    {
+        public override void OnRemove(UnitPool self)
+        {
+            self.Dispose();//全部释放
+        }
+    }
+
     /// <summary>
     /// 单位对象池
     /// </summary>
-    public class UnitPool<T> : GenericPool<T>
-      where T : class, IUnitPoolItem
+    public class UnitPool : GenericPool<IUnitPoolItem>
     {
         /// <summary>
         /// 对象池构造
         /// </summary>
-        public UnitPool():base()
+        public UnitPool(Type type) : base()
         {
-            id = IdManager.GetID;
-            ObjectType = typeof(T);
+            ObjectType = type;
 
             NewObject = ObjectNew;
             DestroyObject = ObjectDestroy;
@@ -41,32 +49,41 @@ namespace SDHK
             objectOnRecycle += ObjectOnRecycle;
         }
 
-        public override string ToString()
+        /// <summary>
+        /// 获取对象并转为指定类型
+        /// </summary>
+        public T Get<T>()
+            where T :class,IUnitPoolItem
         {
-            return $"[UnitPool< {ObjectType} >] :{Count} ";
+            return Get() as T;
         }
 
-        private T ObjectNew(IPool pool)
+        public override string ToString()
         {
-            T obj = Activator.CreateInstance(ObjectType, true) as T;
+            return $"[UnitPool<{ObjectType}>] :{Count} ";
+        }
+
+        private IUnitPoolItem ObjectNew(IPool pool)
+        {
+            IUnitPoolItem obj = Activator.CreateInstance(ObjectType, true) as IUnitPoolItem;
             obj.thisPool = pool;
             return obj;
         }
-        private static void ObjectDestroy(T obj)
+        private static void ObjectDestroy(IUnitPoolItem obj)
         {
             obj.Dispose();
         }
 
-        private static void ObjectOnNew(T obj)
+        private static void ObjectOnNew(IUnitPoolItem obj)
         {
             obj.OnNew();
         }
-        private static void ObjectOnGet(T obj)
+        private static void ObjectOnGet(IUnitPoolItem obj)
         {
             obj.IsRecycle = false;
             obj.OnGet();
         }
-        private static void ObjectOnRecycle(T obj)
+        private static void ObjectOnRecycle(IUnitPoolItem obj)
         {
             obj.IsRecycle = true;
             obj.OnRecycle();

@@ -4,6 +4,7 @@
 * 日期： 2022/6/25 15:07
 
 * 描述： 通用对象池管理器，需要自行添加对象池
+* 暂时无用
 
 */
 using System;
@@ -25,7 +26,7 @@ namespace SDHK
         /// 获取对象：通用对象池需要手动添加进来
         /// </summary>
         public T Get<T>()
-        where T : class, IUnitPoolItem
+        where T : class
         {
             Type type = typeof(T);
             if (pools.TryGetValue(type, out IPool pool))
@@ -68,12 +69,12 @@ namespace SDHK
         /// 获取通用对象池：不存在返回null
         /// </summary>
         public GenericPool<T> GetPool<T>()
-        where T : class, IUnitPoolItem
+            where T : class
         {
             Type type = typeof(T);
             if (pools.TryGetValue(type, out IPool pool))
             {
-                return pool as UnitPool<T>;
+                return pool as GenericPool<T>;
             }
             else
             {

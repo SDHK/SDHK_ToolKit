@@ -3,14 +3,8 @@
 * 作者： 闪电黑客
 * 日期： 2022/7/17 17:23
 
-* 描述： 实体对象池，半ECS实体。
+* 描述： 实体对象池。
 * 掌管实体的生命周期
-* 
-* 但实体设定由对象池生成，生成自己会导致死循环。
-* 所以这个组件由管理器通过New生成后挂为管理器子物体。
-*
-* 设定为实体的目的是为了可以挂组件添加功能，例如计时销毁，或生成后的计数回收
-*
 *
 
 */
@@ -24,7 +18,7 @@ using UnityEngine;
 namespace SDHK
 {
 
-    public class EntityPoolAddSystem : AddSystem<EntityPool>
+    class EntityPoolAddSystem : AddSystem<EntityPool>
     {
         public override void OnAdd(EntityPool self)
         {
@@ -36,6 +30,13 @@ namespace SDHK
         }
     }
 
+    class EntityPoolRemoveSystem : RemoveSystem<EntityPool>
+    {
+        public override void OnRemove(EntityPool self)
+        {
+            self.Dispose();//全部释放
+        }
+    }
 
     /// <summary>
     /// 实体类型对象池
@@ -47,9 +48,9 @@ namespace SDHK
         public UnitList<ISystem> recycleSystem;
         public UnitList<ISystem> destroySystem;
 
-        public EntityPool(Type type):base()
+        public EntityPool(Type type) : base()
         {
-            id = IdManager.GetID;
+
             ObjectType = type;
 
             NewObject = ObjectNew;
@@ -72,13 +73,13 @@ namespace SDHK
 
         public override string ToString()
         {
-            return $"[EntityPool<{ ObjectType }>] : {Count} ";
+            return $"[EntityPool<{ObjectType}>] : {Count} ";
         }
 
         private Entity ObjectNew(IPool pool)
         {
             Entity entity = Activator.CreateInstance(ObjectType, true) as Entity;
-            entity.id = IdManager.GetID;
+            entity.id = Root.idManager.GetId();
             entity.Root = Root;
 
             return entity;

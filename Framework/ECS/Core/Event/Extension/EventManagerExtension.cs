@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SDHK
+﻿namespace SDHK
 {
 
 
@@ -18,7 +12,7 @@ namespace SDHK
         /// </summary>
         public static EventManager EventManager(this Entity self)
         {
-            return self.Root.AddComponent<EventManager>();
+            return self.Root.eventManager;
         }
 
         /// <summary>
