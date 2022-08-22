@@ -66,6 +66,7 @@ namespace SDHK
         /// 自身是否活跃
         /// </summary>
         private bool isActive = true;
+        private bool Active = true;
 
         /// <summary>
         /// 递归设置子节点活跃状态
@@ -105,6 +106,7 @@ namespace SDHK
         public void SetActive(bool active)
         {
             isActive = active;
+
 
         }
 

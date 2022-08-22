@@ -20,8 +20,8 @@ using System;
 
 namespace SDHK
 {
-    //时间外置获取
     //域的激活事件
+    //时间外置获取
     //异常处理
 
 
