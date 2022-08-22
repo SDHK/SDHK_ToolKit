@@ -12,7 +12,7 @@
         /// </summary>
         public static EventManager EventManager(this Entity self)
         {
-            return self.Root.eventManager;
+            return self.Root.EventManager;
         }
 
         /// <summary>

@@ -3,19 +3,15 @@
 * 作者： 闪电黑客
 * 日期： 2022/6/26 16:29
 
-* 描述： 生命周期系统
+* 描述： 系统管理器
 * 
-* 通过反射获取全局继承了ISystem的接口的实现类
+* 通过反射获取全局继承了ISystem的接口的方法类
 * 
 
 */
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
 
 namespace SDHK
 {
@@ -24,7 +20,7 @@ namespace SDHK
 
         public static SystemManager SystemManager(this Entity self)
         {
-            return self.Root.systemManager;
+            return self.Root.SystemManager;
         }
 
         /// <summary>
@@ -33,7 +29,7 @@ namespace SDHK
         public static SystemGroup RootGetSystemGroup<T>(this Entity self)
         where T : ISystem
         {
-            return self.Root.systemManager.GetSystemGroup<T>();
+            return self.Root.SystemManager.GetSystemGroup<T>();
         }
 
         /// <summary>
@@ -41,7 +37,7 @@ namespace SDHK
         /// </summary>
         public static SystemGroup RootGetSystemGroup(this Entity self, Type InterfaceType)
         {
-            return self.Root.systemManager.GetSystemGroup(InterfaceType);
+            return self.Root.SystemManager.GetSystemGroup(InterfaceType);
         }
 
         /// <summary>
@@ -49,7 +45,7 @@ namespace SDHK
         /// </summary>
         public static UnitList<ISystem> RootGetSystems<T>(this Entity self, Type type)
         {
-            return self.Root.systemManager.GetSystems<T>(type);
+            return self.Root.SystemManager.GetSystems<T>(type);
         }
 
     }

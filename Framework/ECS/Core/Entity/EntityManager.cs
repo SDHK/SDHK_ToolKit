@@ -21,7 +21,7 @@ using System;
 namespace SDHK
 {
     //时间外置获取
-    //域的激活事件，交给update去遍历处理
+    //域的激活事件
     //异常处理
 
 
@@ -41,11 +41,11 @@ namespace SDHK
         private SystemGroup removeSystems;
 
 
-        public IdManager idManager;
-        public SystemManager systemManager;
-        public UnitPoolManager UnitPool;
-        public EntityPoolManager EntityPool;
-        public EventManager eventManager;
+        public IdManager IdManager;
+        public SystemManager SystemManager;
+        public UnitPoolManager UnitPoolManager;
+        public EntityPoolManager EntityPoolManager;
+        public EventManager EventManager;
 
 
         public EntityManager() : base()
@@ -54,41 +54,41 @@ namespace SDHK
             Components = new UnitDictionary<Type, Entity>();
             Children = new UnitDictionary<long, Entity>();
 
-            //核心组件
-            idManager = new IdManager();
-            systemManager = new SystemManager();
-            UnitPool = new UnitPoolManager();
-            EntityPool = new EntityPoolManager();
+            //框架运转的核心组件
+            IdManager = new IdManager();
+            SystemManager = new SystemManager();
+            UnitPoolManager = new UnitPoolManager();
+            EntityPoolManager = new EntityPoolManager();
 
             //赋予根节点
             Root = this;
-            idManager.Root = this;
-            systemManager.Root = this;
-            UnitPool.Root = this;
-            EntityPool.Root = this;
+            IdManager.Root = this;
+            SystemManager.Root = this;
+            UnitPoolManager.Root = this;
+            EntityPoolManager.Root = this;
 
             //域节点指向自己
             Domain = this;
 
             //赋予id
-            Root.id = idManager.GetId();
-            idManager.id = idManager.GetId();
-            systemManager.id = idManager.GetId();
-            UnitPool.id = idManager.GetId();
-            EntityPool.id = idManager.GetId();
+            Root.id = IdManager.GetId();
+            IdManager.id = IdManager.GetId();
+            SystemManager.id = IdManager.GetId();
+            UnitPoolManager.id = IdManager.GetId();
+            EntityPoolManager.id = IdManager.GetId();
 
             //实体管理器系统事件获取
-            entitySystems = Root.systemManager.GetSystemGroup<IEntitySystem>();
-            addSystems = Root.systemManager.GetSystemGroup<IAddSystem>();
-            removeSystems = Root.systemManager.GetSystemGroup<IRemoveSystem>();
-            singletonEagerSystems = systemManager.GetSystemGroup<ISingletonEagerSystem>();
+            entitySystems = Root.SystemManager.GetSystemGroup<IEntitySystem>();
+            addSystems = Root.SystemManager.GetSystemGroup<IAddSystem>();
+            removeSystems = Root.SystemManager.GetSystemGroup<IRemoveSystem>();
+            singletonEagerSystems = SystemManager.GetSystemGroup<ISingletonEagerSystem>();
 
             //核心组件添加
-            AddComponent(idManager);
-            AddComponent(systemManager);
-            AddComponent(UnitPool);
-            AddComponent(EntityPool);
-            eventManager = AddComponent<EventManager>();
+            AddComponent(IdManager);
+            AddComponent(SystemManager);
+            AddComponent(UnitPoolManager);
+            AddComponent(EntityPoolManager);
+            EventManager = AddComponent<EventManager>();
 
             //饿汉单例启动
             foreach (ISingletonEagerSystem singletonEager in singletonEagerSystems.Values)
@@ -97,12 +97,6 @@ namespace SDHK
             }
         }
 
-
-
-
-        /// <summary>
-        /// 回收时:对象池全部释放
-        /// </summary>
         public override void OnDispose()
         {
             RemoveAll();
@@ -162,7 +156,6 @@ namespace SDHK
 
             foreach (var manager in listeners)//广播给全部管理器
             {
-
                 if (entitySystems.TryGetValue(manager.Key, out UnitList<ISystem> systems))
                 {
                     foreach (IEntitySystem system in systems)

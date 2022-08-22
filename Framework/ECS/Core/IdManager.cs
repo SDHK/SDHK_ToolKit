@@ -23,7 +23,7 @@ namespace SDHK
     {
         public static IdManager IdManager(this Entity self)
         {
-            return self.Root.idManager;
+            return self.Root.IdManager;
         }
     }
 

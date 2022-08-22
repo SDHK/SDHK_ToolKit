@@ -9,11 +9,6 @@
 
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
 
 namespace SDHK
 {
@@ -79,7 +74,7 @@ namespace SDHK
         private Entity ObjectNew(IPool pool)
         {
             Entity entity = Activator.CreateInstance(ObjectType, true) as Entity;
-            entity.id = Root.idManager.GetId();
+            entity.id = Root.IdManager.GetId();
             entity.Root = Root;
 
             return entity;

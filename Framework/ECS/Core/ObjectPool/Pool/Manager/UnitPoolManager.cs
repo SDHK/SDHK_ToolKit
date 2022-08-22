@@ -18,7 +18,7 @@ namespace SDHK
     { 
         public static UnitPoolManager UnitPoolManager(this Entity self)
         {
-            return self.Root.UnitPool;
+            return self.Root.UnitPoolManager;
         }
     }
 
@@ -98,7 +98,7 @@ namespace SDHK
             if (!pools.TryGetValue(type, out UnitPool pool))
             {
                 pool = new UnitPool(type);
-                pool.id = this.IdManager().GetId();
+                pool.id = Root.IdManager.GetId();
                 pool.Root = Root;
                 pools.Add(type, pool);
                 AddChildren(pool);

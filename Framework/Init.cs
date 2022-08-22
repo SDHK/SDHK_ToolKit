@@ -43,7 +43,7 @@ namespace SDHK
 
             root.AddComponent<MainEntity>();
             
-            Debug.Log(SoloistFramework.AllEntityString(root, "\t"));
+            Debug.Log(AllEntityString(root, "\t"));
            
         }
 
@@ -52,7 +52,7 @@ namespace SDHK
             update.Update();
             if (Input.GetKeyDown(KeyCode.Return))
             {
-                Debug.Log(SoloistFramework.AllEntityString(root, "\t"));
+                Debug.Log(AllEntityString(root, "\t"));
             }
         }
 
@@ -71,7 +71,7 @@ namespace SDHK
             update = null;
             lateUpdate = null;
             fixedUpdate = null;
-            Debug.Log(SoloistFramework.AllEntityString(root, "\t"));
+            Debug.Log(AllEntityString(root, "\t"));
         }
         private void OnApplicationQuit()
         {
@@ -86,22 +86,30 @@ namespace SDHK
 
             str += t1 + $"[{entity.id}] " + entity.ToString() + "\n";
 
-            if (entity.Children.Count > 0)
+            if (entity.children != null)
             {
-                str += t1 + "   Children:\n";
-                foreach (var item in entity.Children.Values)
+                if (entity.children.Count > 0)
                 {
-                    str += AllEntityString(item, t1);
+                    str += t1 + "   Children:\n";
+                    foreach (var item in entity.Children.Values)
+                    {
+                        str += AllEntityString(item, t1);
+                    }
                 }
             }
-            if (entity.Components.Count > 0)
+
+            if (entity.components != null)
             {
-                str += t1 + "   Components:\n";
-                foreach (var item in entity.Components.Values)
+                if (entity.components.Count > 0)
                 {
-                    str += AllEntityString(item, t1);
+                    str += t1 + "   Components:\n";
+                    foreach (var item in entity.Components.Values)
+                    {
+                        str += AllEntityString(item, t1);
+                    }
                 }
             }
+
             return str;
         }
 

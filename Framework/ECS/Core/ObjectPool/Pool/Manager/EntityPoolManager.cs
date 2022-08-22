@@ -8,11 +8,6 @@
 
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
 
 namespace SDHK
 {
@@ -21,7 +16,7 @@ namespace SDHK
     {
         public static EntityPoolManager EntityPoolManager(this Entity self)
         {
-            return self.Root.EntityPool;
+            return self.Root.EntityPoolManager;
         }
     }
 
@@ -93,7 +88,7 @@ namespace SDHK
             if (!pools.TryGetValue(type, out EntityPool pool))
             {
                 pool = new EntityPool(type);
-                pool.id = Root.idManager.GetId();
+                pool.id = Root.IdManager.GetId();
                 pool.Root = Root;
                 pools.Add(type, pool);
                 AddChildren(pool);

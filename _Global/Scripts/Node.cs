@@ -42,7 +42,7 @@ namespace Scripts
             {
                 Debug.Log("while1");
 
-                Debug.Log(await self.Event().CallAsync<Node, int, int>(self, i++));
+                Debug.Log(await self.Event().CallAsync<Node, int, int>(self, i));
 
                 Debug.Log("while2");
 

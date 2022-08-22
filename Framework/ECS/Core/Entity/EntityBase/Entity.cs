@@ -102,6 +102,17 @@ namespace SDHK
             }
         }
 
+        public void SetActive(bool active)
+        {
+            isActive = active;
+
+        }
+
+        public void GetActive()
+        {
+
+        }
+
         /// <summary>
         /// 自身是否活跃
         /// </summary>
@@ -230,7 +241,7 @@ namespace SDHK
             where T : Entity
         {
 
-            T entity = Root.EntityPool.Get<T>();
+            T entity = Root.EntityPoolManager.Get<T>();
             if (Children.TryAdd(entity.id, entity))
             {
                 entity.Parent = this;
@@ -247,7 +258,7 @@ namespace SDHK
         /// </summary>
         public Entity AddChildren(Type type)
         {
-            Entity entity = Root.EntityPool.Get(type);
+            Entity entity = Root.EntityPoolManager.Get(type);
             if (Children.TryAdd(entity.id, entity))
             {
                 entity.Parent = this;
@@ -275,7 +286,7 @@ namespace SDHK
 
                 children.Remove(entity.id);
 
-                Root.EntityPool.Recycle(entity);
+                Root.EntityPoolManager.Recycle(entity);
 
                 if (children.Count == 0)
                 {
@@ -296,7 +307,7 @@ namespace SDHK
             T component = null;
             if (!Components.TryGetValue(type, out Entity entity))
             {
-                component = Root.EntityPool.Get<T>();
+                component = Root.EntityPoolManager.Get<T>();
 
                 component.Parent = this;
                 component.Domain = Domain;
@@ -321,7 +332,7 @@ namespace SDHK
         {
             if (!Components.TryGetValue(type, out Entity component))
             {
-                component = Root.EntityPool.Get(type);
+                component = Root.EntityPoolManager.Get(type);
 
                 component.Parent = this;
                 component.Domain = Domain;
@@ -395,7 +406,7 @@ namespace SDHK
 
                 components.Remove(type);
 
-                Root.EntityPool.Recycle(component);
+                Root.EntityPoolManager.Recycle(component);
 
 
                 if (components.Count == 0)
@@ -421,7 +432,7 @@ namespace SDHK
 
                 components.Remove(component.Type);
 
-                Root.EntityPool.Recycle(component);
+                Root.EntityPoolManager.Recycle(component);
 
                 if (components.Count == 0)
                 {
