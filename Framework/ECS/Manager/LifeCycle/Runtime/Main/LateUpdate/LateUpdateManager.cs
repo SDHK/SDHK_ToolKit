@@ -58,7 +58,7 @@ namespace SDHK
         }
     }
 
-    class LateUpdateManagerEntityListenerSystem : EntitySystem<LateUpdateManager>
+    class LateUpdateManagerEntitySystem : EntitySystem<LateUpdateManager>
     {
         public override void OnAddEntity(LateUpdateManager self, Entity entity)
         {

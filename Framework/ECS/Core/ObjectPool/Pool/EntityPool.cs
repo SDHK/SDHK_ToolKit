@@ -99,6 +99,7 @@ namespace SDHK
         private void ObjectOnGet(Entity obj)
         {
             obj.isRecycle = false;
+            obj.SetActive(true);
             if (getSystem != null)
             {
                 foreach (IGetSystem item in getSystem)
@@ -112,7 +113,6 @@ namespace SDHK
         private void ObjectOnRecycle(Entity obj)
         {
             obj.isRecycle = true;
-
             if (recycleSystem != null)
             {
                 foreach (IRecycleSystem item in recycleSystem)

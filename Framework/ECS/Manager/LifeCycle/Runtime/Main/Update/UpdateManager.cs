@@ -60,7 +60,7 @@ namespace SDHK
         }
     }
 
-    class UpdateManagerEntityListenerSystem : EntitySystem<UpdateManager>
+    class UpdateManagerEntitySystem : EntitySystem<UpdateManager>
     {
         public override void OnAddEntity(UpdateManager self, Entity entity)
         {

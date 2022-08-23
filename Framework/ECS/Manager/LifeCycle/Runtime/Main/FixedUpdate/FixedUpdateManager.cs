@@ -59,7 +59,7 @@ namespace SDHK
         }
     }
 
-    class FixedUpdateManagerEntityListenerSystem : EntitySystem<FixedUpdateManager>
+    class FixedUpdateManagerEntitySystem : EntitySystem<FixedUpdateManager>
     {
         public override void OnAddEntity(FixedUpdateManager self, Entity entity)
         {

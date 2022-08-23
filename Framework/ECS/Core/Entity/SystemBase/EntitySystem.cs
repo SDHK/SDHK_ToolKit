@@ -40,7 +40,7 @@ namespace SDHK
     }
 
     /// <summary>
-    /// 实体监听系统基类
+    /// 实体监听系统
     /// </summary>
     public abstract class EntitySystem<T> : SystemBase<T,IEntitySystem>, IEntitySystem
         where T :  Entity
