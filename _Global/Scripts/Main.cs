@@ -15,7 +15,7 @@ namespace Scripts
             Debug.Log("MainAdd!!!");
 
             self.Root.AddComponent<TimerManager>();
-            self.Root.AddComponent<Node>();
+            self.AddComponent<Node>();
             //self.TaskWait().Send(10);
             //self.TaskWait(10);
 
@@ -32,14 +32,14 @@ namespace Scripts
     {
         public override void Update(MainEntity self)
         {
-            if (Input.GetKeyDown(KeyCode.C))
+            if (Input.GetKeyDown(KeyCode.A))
             {
-                self.AddChildren<Node>().Event().Send(self,10);
+                self.GetComponent<Node>().SetActive(!self.GetComponent<Node>().ActiveMark);
             }
 
-            if (Input.GetKeyDown(KeyCode.D))
+            if (Input.GetKeyDown(KeyCode.B))
             {
-                self.RemoveChildren(self.Children.Values.First());
+                self.GetComponent<Node>().GetComponent<Node1>().SetActive(!self.GetComponent<Node>().GetComponent<Node1>().ActiveMark);
             }
         }
     }

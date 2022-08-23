@@ -18,11 +18,11 @@ namespace SDHK
         public SystemGroup systems;
         public void Update()
         {
-            while (update1.Count != 0 && RealActive)
+            while (update1.Count != 0 && IsActice)
             {
                 long firstKey = update1.Keys.First();
                 Entity entity = update1[firstKey];
-                if (entity.RealActive)
+                if (entity.IsActice)
                 {
                     if (systems.TryGetValue(entity.Type, out UnitList<ISystem> systemList))
                     {

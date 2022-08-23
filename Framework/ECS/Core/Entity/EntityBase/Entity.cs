@@ -47,10 +47,46 @@ namespace SDHK
         /// </summary>
         public EntityManager Root;
 
+        private Entity domain;
         /// <summary>
-        /// 域节点
+        /// 域节点：递归设置子节点
         /// </summary>
-        public Entity Domain { get; set; }//节点换域需要递归子节点
+        public Entity Domain
+        {
+            get { return domain; }
+            set
+            {
+                domain = value;
+                if (children != null)
+                {
+                    if (children.Count > 0)
+                    {
+                        foreach (var item in children.Values)
+                        {
+                            if (item.domain != item)
+                            {
+                                item.Domain = value;    //递归属性
+                            }
+                        }
+                    }
+                }
+
+                if (components != null)
+                {
+                    if (components.Count > 0)
+                    {
+                        foreach (var item in components.Values)
+                        {
+                            if (item.domain != item)
+                            {
+                                item.Domain = value;   //递归属性
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
 
         /// <summary>
         /// 父节点
@@ -58,100 +94,78 @@ namespace SDHK
         public Entity Parent;
 
         /// <summary>
-        /// 父级是否活跃
+        /// 活跃标记
         /// </summary>
-        private bool isParentActive = true;
+        private bool activeMark = true;
 
         /// <summary>
-        /// 自身是否活跃
+        /// 活跃状态
         /// </summary>
-        private bool isActive = true;
-        private bool Active = true;
+        private bool active = true;
 
         /// <summary>
-        /// 递归设置子节点活跃状态
+        /// 活跃状态
         /// </summary>
-        /// 
+        public bool IsActice => active;
+
+        /// <summary>
+        /// 活跃标记
+        /// </summary>
+        public bool ActiveMark => activeMark;
+
+        /// <summary>
+        /// 设置激活状态
+        /// </summary>
+        public void SetActive(bool value)
+        {
+            if (activeMark != value)
+            {
+                activeMark = value;
+                RefreshActive();
+            }
+        }
+
+        /// <summary>
+        /// 刷新激活状态：递归设置子节点
+        /// </summary>
+        private void RefreshActive()
+        {
+            active = (Parent == null) ? activeMark : Parent.active && activeMark;
+            if (children != null)
+            {
+                if (children.Count > 0)
+                {
+                    foreach (var item in children.Values)
+                    {
+                        if (item.activeMark == true)
+                        {
+                            item.RefreshActive();    //递归属性
+                        }
+                    }
+                }
+            }
+            if (components != null)
+            {
+                if (components.Count > 0)
+                {
+                    foreach (var item in components.Values)
+                    {
+                        if (item.activeMark == true)
+                        {
+                            item.RefreshActive();   //递归属性
+                        }
+                    }
+                }
+
+            }
+
+        }
+
+
         public Entity()
         {
             Type = GetType();
         }
-
-        public void SetParentActive(bool value)
-        {
-            isParentActive = value;
-
-            if (Children.Count > 0)
-            {
-                foreach (var item in Children.Values)
-                {
-                    if (item.isParentActive != value)
-                    {
-                        item.SetParentActive(value);    //递归属性
-                    }
-                }
-            }
-            if (Components.Count > 0)
-            {
-                foreach (var item in Components.Values)
-                {
-                    if (item.isParentActive != value)
-                    {
-                        item.SetParentActive(value);    //递归属性
-                    }
-                }
-            }
-        }
-
-        public void SetActive(bool active)
-        {
-            isActive = active;
-
-
-        }
-
-        public void GetActive()
-        {
-
-        }
-
-        /// <summary>
-        /// 自身是否活跃
-        /// </summary>
-        public bool IsActive
-        {
-            get
-            {
-                return isActive;
-            }
-            set
-            {
-                isActive = value;
-
-                if (Children.Count > 0)
-                {
-                    foreach (var item in Children.Values)
-                    {
-                        item.SetParentActive(value);    //递归属性
-
-                    }
-                }
-                if (Components.Count > 0)
-                {
-                    foreach (var item in Components.Values)
-                    {
-                        item.SetParentActive(value);    //递归属性
-                    }
-                }
-
-            }
-        }
-
-        /// <summary>
-        /// 真正活跃状态
-        /// </summary>
-        public bool RealActive => isParentActive && isActive;
-
 
         /// <summary>
         /// 子节点
@@ -232,6 +246,7 @@ namespace SDHK
                 {
                     entity.Parent = this;
                     entity.Domain = Domain;
+                    entity.RefreshActive();//刷新激活
                     Root.Add(entity);
                 }
             }
@@ -248,7 +263,6 @@ namespace SDHK
             {
                 entity.Parent = this;
                 entity.Domain = Domain;
-
                 Root.Add(entity);
             }
 
@@ -265,6 +279,7 @@ namespace SDHK
             {
                 entity.Parent = this;
                 entity.Domain = Domain;
+
 
                 Root.Add(entity);
             }
@@ -352,16 +367,21 @@ namespace SDHK
         /// </summary>
         public void AddComponent(Entity component)
         {
-            Type type = component.Type;
-            if (!Components.ContainsKey(type))
+            if (component != null)
             {
-                component.Parent = this;
-                component.Domain = Domain;
+                Type type = component.Type;
+                if (Components.TryAdd(type, component))
+                {
+                    component.Parent = this;
+                    component.Domain = Domain;
+                    component.isComponent = true;
 
-                component.isComponent = true;
-                components.Add(type, component);
-                Root.Add(component);
+                    component.RefreshActive();//刷新激活
+
+                    Root.Add(component);
+                }
             }
+
         }
 
         /// <summary>

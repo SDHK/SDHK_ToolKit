@@ -20,7 +20,7 @@ using System;
 
 namespace SDHK
 {
-    //域的激活事件
+    //激活事件？
     //时间外置获取
     //异常处理
 
@@ -132,8 +132,6 @@ namespace SDHK
             {
                 listeners.TryAdd(typeKey, entity);
             }
-
-
         }
 
         public void Remove(Entity entity)

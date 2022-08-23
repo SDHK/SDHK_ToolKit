@@ -30,6 +30,7 @@ namespace Scripts
         public override void OnNew(Node self)
         {
             Debug.Log("OnNew1!!!");
+            self.AddComponent<Node1>();
         }
     }
     class NodeAddSystem : AddSystem<Node>
@@ -85,19 +86,9 @@ namespace Scripts
     {
         public override void Update(Node self)
         {
+          
 
-
-
-            if (Input.GetKeyDown(KeyCode.E))
-            {
-                //召唤某个组的事件
-
-            }
-
-            if (Input.GetKeyDown(KeyCode.W))
-            {
-                //召唤某个组的事件
-            }
+         
 
             Debug.Log("Update!!!");
         }
