@@ -96,16 +96,36 @@ namespace SDHK
             AddComponent(EntityPoolManager);
             EventManager = AddComponent<EventManager>();
 
+
             //饿汉单例启动
             foreach (ISingletonEagerSystem singletonEager in singletonEagerSystems.Values)
             {
                 singletonEager.Singleton(this);
+            }
+
+            //自身的添加事件通知
+            if (addSystems.TryGetValue(this.Type, out UnitList<ISystem> addsystem))
+            {
+                foreach (IAddSystem system in addsystem)
+                {
+                    system.Add(this);
+                }
             }
         }
 
         public override void OnDispose()
         {
             RemoveAll();
+
+            //自身的移除事件通知
+            if (removeSystems.TryGetValue(this.Type, out UnitList<ISystem> removesystem))
+            {
+                foreach (IRemoveSystem system in removesystem)
+                {
+                    system.Remove(this);
+                }
+            }
+
             listeners.Clear();
         }
 

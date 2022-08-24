@@ -44,6 +44,13 @@ namespace SDHK
             (update1, update2) = (update2, update1);
         }
     }
+    class UpdateManagerUpdateSystem : UpdateSystem<UpdateManager>
+    {
+        public override void Update(UpdateManager self)
+        {
+            self.Update();
+        }
+    }
 
 
 
@@ -52,12 +59,31 @@ namespace SDHK
         public override void OnNew(UpdateManager self)
         {
             self.systems = self.RootGetSystemGroup<IUpdateSystem>();
+        }
+    }
 
+    class UpdateManagerAddSystem : AddSystem<UpdateManager>
+    {
+        public override void OnAdd(UpdateManager self)
+        {
             if (self.Root.Parent != null)
             {
-                self.Root.Parent.Root.GetComponent<UpdateManager>().Update();//父节点
+                var ParentUpdate = self.Root.Parent.Root.GetComponent<UpdateManager>();//父节点
+                ParentUpdate.update2.Add(self.id, self);
             }
+        }
+    }
 
+    class UpdateManagerRemoveSystem : RemoveSystem<UpdateManager>
+    {
+        public override void OnRemove(UpdateManager self)
+        {
+            if (self.Root.Parent != null)
+            {
+                var ParentUpdate = self.Root.Parent.Root.GetComponent<UpdateManager>();//父节点
+                ParentUpdate.update1.Remove(self.id);
+                ParentUpdate.update2.Remove(self.id);
+            }
         }
     }
 

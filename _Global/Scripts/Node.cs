@@ -30,8 +30,10 @@ namespace Scripts
         public override void OnNew(Node self)
         {
             Debug.Log("OnNew1!!!");
-            self.AddComponent<Node1>();
+            //self.AddComponent<Node1>();
             //self.AddComponent<EntityManager>();
+            //self.AddComponent<EntityManager>().AddComponent<UpdateManager>();
+            //self.AddComponent<EntityManager>().AddComponent<Node1>();
         }
     }
     class NodeAddSystem : AddSystem<Node>
