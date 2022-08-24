@@ -42,7 +42,8 @@ namespace SDHK
             fixedUpdate = root.AddComponent<FixedUpdateManager>();
 
             root.AddComponent<MainEntity>();
-            
+            //root.AddComponent<EntityManager>();
+
             Debug.Log(AllEntityString(root, "\t"));
            
         }

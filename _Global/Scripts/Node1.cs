@@ -25,4 +25,21 @@ namespace Scripts
             Debug.Log("Node1Update!!!");
         }
     }
+
+    class Node1EnableSystem : EnableSystem<Node1>
+    {
+        public override void OnEnable(Node1 self)
+        {
+            Debug.Log("Node1OnEnable!!!");
+        }
+    }
+
+    class Node1DisbleSystem : DisableSystem<Node1>
+    {
+        public override void OnDisable(Node1 self)
+        {
+            Debug.Log("Node1OnDisble!!!");
+
+        }
+    }
 }

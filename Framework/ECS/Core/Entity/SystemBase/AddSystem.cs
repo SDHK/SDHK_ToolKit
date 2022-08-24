@@ -24,4 +24,5 @@ namespace SDHK
         public abstract void OnAdd(T self);
 
     }
+
 }

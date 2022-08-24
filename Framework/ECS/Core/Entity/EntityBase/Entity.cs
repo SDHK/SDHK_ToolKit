@@ -46,6 +46,7 @@ namespace SDHK
         /// 根节点
         /// </summary>
         public EntityManager Root;
+ 
 
         private Entity domain;
         /// <summary>
@@ -96,12 +97,12 @@ namespace SDHK
         /// <summary>
         /// 活跃标记
         /// </summary>
-        private bool activeMark = true;
+        private bool activeMark = false;
 
         /// <summary>
         /// 活跃状态
         /// </summary>
-        private bool active = true;
+        private bool active = false;
 
         /// <summary>
         /// 活跃状态
@@ -130,7 +131,21 @@ namespace SDHK
         /// </summary>
         private void RefreshActive()
         {
+            var activeTag = active;
             active = (Parent == null) ? activeMark : Parent.active && activeMark;
+
+            if (activeTag != active)
+            {
+                if (active)
+                {
+                    Root.Enable(this);
+                }
+                else
+                {
+                    Root.Disable(this);
+                }
+            }
+
             if (children != null)
             {
                 if (children.Count > 0)
@@ -246,7 +261,6 @@ namespace SDHK
                 {
                     entity.Parent = this;
                     entity.Domain = Domain;
-                    entity.RefreshActive();//刷新激活
                     Root.Add(entity);
                 }
             }
@@ -279,7 +293,6 @@ namespace SDHK
             {
                 entity.Parent = this;
                 entity.Domain = Domain;
-
 
                 Root.Add(entity);
             }
@@ -375,9 +388,6 @@ namespace SDHK
                     component.Parent = this;
                     component.Domain = Domain;
                     component.isComponent = true;
-
-                    component.RefreshActive();//刷新激活
-
                     Root.Add(component);
                 }
             }

@@ -31,6 +31,7 @@ namespace Scripts
         {
             Debug.Log("OnNew1!!!");
             self.AddComponent<Node1>();
+            //self.AddComponent<EntityManager>();
         }
     }
     class NodeAddSystem : AddSystem<Node>

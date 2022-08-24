@@ -16,6 +16,9 @@ namespace SDHK
         public UnitDictionary<long, Entity> update1 = new UnitDictionary<long, Entity>();
         public UnitDictionary<long, Entity> update2 = new UnitDictionary<long, Entity>();
         public SystemGroup systems;
+
+        public UnitDictionary<long, Entity> childrenUpdate = new UnitDictionary<long, Entity>();
+
         public void Update()
         {
             while (update1.Count != 0 && IsActice)
@@ -49,6 +52,12 @@ namespace SDHK
         public override void OnNew(UpdateManager self)
         {
             self.systems = self.RootGetSystemGroup<IUpdateSystem>();
+
+            if (self.Root.Parent != null)
+            {
+                self.Root.Parent.Root.GetComponent<UpdateManager>().Update();//父节点
+            }
+
         }
     }
 

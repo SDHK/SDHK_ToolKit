@@ -22,7 +22,6 @@ namespace SDHK
 {
     //剩余
 
-    //实体激活的事件通知？
     //时间通过委托外置获取？
     //异常处理？
     //Log日志？
@@ -34,13 +33,16 @@ namespace SDHK
     {
         public UnitDictionary<long, Entity> allEntities = new UnitDictionary<long, Entity>();
 
-        public UnitDictionary<Type, Entity> listeners = new UnitDictionary<Type, Entity>();//有监听器的实体
+        //有监听器的实体
+        public UnitDictionary<Type, Entity> listeners = new UnitDictionary<Type, Entity>();
 
         private SystemGroup entitySystems;
         private SystemGroup singletonEagerSystems;
 
         private SystemGroup addSystems;
         private SystemGroup removeSystems;
+        private SystemGroup enableSystems;
+        private SystemGroup disableSystems;
 
 
         public IdManager IdManager;
@@ -83,6 +85,8 @@ namespace SDHK
             entitySystems = Root.SystemManager.GetSystemGroup<IEntitySystem>();
             addSystems = Root.SystemManager.GetSystemGroup<IAddSystem>();
             removeSystems = Root.SystemManager.GetSystemGroup<IRemoveSystem>();
+            enableSystems = Root.SystemManager.GetSystemGroup<IEnableSystem>();
+            disableSystems = Root.SystemManager.GetSystemGroup<IDisableSystem>();
             singletonEagerSystems = SystemManager.GetSystemGroup<ISingletonEagerSystem>();
 
             //核心组件添加
@@ -104,6 +108,7 @@ namespace SDHK
             RemoveAll();
             listeners.Clear();
         }
+
 
 
         public void Add(Entity entity)
@@ -134,12 +139,14 @@ namespace SDHK
             {
                 listeners.TryAdd(typeKey, entity);
             }
+            entity.SetActive(true);
         }
 
         public void Remove(Entity entity)
         {
             Type typeKey = entity.Type;
 
+            entity.SetActive(false);
             if (entitySystems.ContainsKey(typeKey))//检测到系统存在，则说明这是个管理器
             {
                 listeners.Remove(typeKey);
@@ -165,5 +172,28 @@ namespace SDHK
                 }
             }
         }
+
+        public void Enable(Entity entity)
+        {
+            if (enableSystems.TryGetValue(entity.Type, out UnitList<ISystem> enableSystem))
+            {
+                foreach (IEnableSystem system in enableSystem)
+                {
+                    system.Enable(entity);
+                }
+            }
+        }
+
+        public void Disable(Entity entity)
+        {
+            if (disableSystems.TryGetValue(entity.Type, out UnitList<ISystem> disableSystem))
+            {
+                foreach (IDisableSystem system in disableSystem)
+                {
+                    system.Disable(entity);
+                }
+            }
+        }
+
     }
 }
