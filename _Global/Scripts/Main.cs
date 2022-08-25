@@ -1,36 +1,22 @@
-﻿using SDHK;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
+﻿using UnityEngine;
+using WorldTree;
 
 namespace Scripts
 {
-    class MainEntityNewSystem : AddSystem<MainEntity>
+
+    class MainAddSystem : AddSystem<Main>
     {
-        public override void OnAdd(MainEntity self)
+        public override void OnAdd(Main self)
         {
-            Debug.Log("MainAdd!!!");
+            World.Log("MainAdd!!!");
 
-            self.Root.AddComponent<TimerManager>();
             self.AddComponent<Node>();
-            //self.TaskWait().Send(10);
-            //self.TaskWait(10);
-
-            //root.GetComponent<PathAsset>().Get("A/B/C");
-            //root.GetComponent<UIDomain>().GetComponent<UIManager>();
-            //root.GetComponent<UIManager>();
-
-
-            //self.GetNode<GameDomain>();
         }
     }
 
-    class MainEntitySystem : UpdateSystem<MainEntity>
+    class MainUpdateSystem : UpdateSystem<Main>
     {
-        public override void Update(MainEntity self)
+        public override void Update(Main self, float deltaTime)
         {
             if (Input.GetKeyDown(KeyCode.A))
             {
@@ -45,11 +31,11 @@ namespace Scripts
     }
 
 
-    class MainEntityRemoveSystem : RemoveSystem<MainEntity>
+    class MainRemoveSystem : RemoveSystem<Main>
     {
-        public override void OnRemove(MainEntity self)
+        public override void OnRemove(Main self)
         {
-            Debug.Log("MainRemove");
+            World.Log("MainRemove");
         }
     }
 

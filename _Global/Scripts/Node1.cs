@@ -1,10 +1,4 @@
-﻿using SDHK;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
+﻿using WorldTree;
 
 namespace Scripts
 {
@@ -13,16 +7,16 @@ namespace Scripts
     }
     class Node1AddSystem : AddSystem<Node1>
     {
-        public override async void OnAdd(Node1 self)
+        public override  void OnAdd(Node1 self)
         {
           
         }
     }
     class Node1UpdateSystem : UpdateSystem<Node1>
     {
-        public override void Update(Node1 self)
+        public override void Update(Node1 self, float deltaTime)
         {
-            Debug.Log("Node1Update!!!");
+            World.Log("Node1Update!!!");
         }
     }
 
@@ -30,7 +24,7 @@ namespace Scripts
     {
         public override void OnEnable(Node1 self)
         {
-            Debug.Log("Node1OnEnable!!!");
+            World.Log("Node1OnEnable!!!");
         }
     }
 
@@ -38,7 +32,7 @@ namespace Scripts
     {
         public override void OnDisable(Node1 self)
         {
-            Debug.Log("Node1OnDisble!!!");
+            World.Log("Node1OnDisble!!!");
 
         }
     }

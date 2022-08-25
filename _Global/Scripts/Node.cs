@@ -9,7 +9,7 @@
 */
 
 using AsyncAwaitEvent;
-using SDHK;
+using WorldTree;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,26 +29,24 @@ namespace Scripts
     {
         public override void OnNew(Node self)
         {
-            Debug.Log("OnNew1!!!");
-            //self.AddComponent<Node1>();
-            //self.AddComponent<EntityManager>();
-            //self.AddComponent<EntityManager>().AddComponent<UpdateManager>();
-            //self.AddComponent<EntityManager>().AddComponent<Node1>();
+            World.Log("OnNew1!!!");
         }
     }
     class NodeAddSystem : AddSystem<Node>
     {
         public override async void OnAdd(Node self)
         {
-            //await self.Event().SendAsync(self);
+            //await self.Event<EventCreate>().SendAsync(self);
+            //await self.SendAsync();
+
             int i = 0;
             do
             {
-                Debug.Log("while1");
+                World.Log("while1");
 
-                Debug.Log(await self.Event().CallAsync<Node, int, int>(self, i));
+                World.Log(await self.Event().CallAsync<Node, int, int>(self, i));
 
-                Debug.Log("while2");
+                World.Log("while2");
 
             } while (!Input.GetKey(KeyCode.A));
         }
@@ -59,41 +57,37 @@ namespace Scripts
     {
         public override void OnGet(Node self)
         {
-            Debug.Log("OnGet!!!");
+            World.Log("OnGet!!!");
         }
     }
     class NodeRemoveSystem : RemoveSystem<Node>
     {
         public override void OnRemove(Node self)
         {
-            Debug.Log("OnRemove!!!");
+            World.Log("OnRemove!!!");
         }
     }
     class NodeRecycleSystem : RecycleSystem<Node>
     {
         public override void OnRecycle(Node self)
         {
-            Debug.Log("OnRecycle!!!");
+            World.Log("OnRecycle!!!");
         }
     }
     class NodeDestroySystem : DestroySystem<Node>
     {
         public override void OnDestroy(Node self)
         {
-            Debug.Log("OnDestroy!!!");
+            World.Log("OnDestroy!!!");
         }
     }
 
 
     class NodeUpdateSystem : UpdateSystem<Node>
     {
-        public override void Update(Node self)
+        public override void Update(Node self, float deltaTime)
         {
-          
-
-         
-
-            Debug.Log("Update!!!");
+            World.Log("Update!!!");
         }
 
 
@@ -108,7 +102,7 @@ namespace Scripts
         public override async AsyncTask Event(Node self)
         {
             await self.AsyncDelay(1);
-            Debug.Log("延迟1秒");
+            World.Log("延迟1秒");
         }
     }
 
