@@ -4,7 +4,7 @@
 * 作者： 闪电黑客
 * 日期： 2022/7/18 9:35
 
-* 描述：Unity环境下的启动端，一切从这里开始
+* 描述：Unity环境下的运行时启动端，一切从这里开始
 
 */
 
@@ -13,10 +13,7 @@ using UnityEngine;
 namespace WorldTree
 {
 
-    public class Main : Entity { }
-
-
-    public class Init : MonoBehaviour
+    public class UnityRunTime : MonoBehaviour
     {
         public EntityManager root;
 
@@ -35,8 +32,8 @@ namespace WorldTree
             update = root.AddComponent<UpdateManager>();
             lateUpdate = root.AddComponent<LateUpdateManager>();
             fixedUpdate = root.AddComponent<FixedUpdateManager>();
-            root.AddComponent<Main>();
-            Debug.Log(root.ToStringDrawTree());
+            root.AddComponent<MainDomain>();
+            World.Log(root.ToStringDrawTree());
            
         }
 
@@ -66,7 +63,7 @@ namespace WorldTree
             fixedUpdate = null;
             root.Dispose();
 
-            Debug.Log(root.ToStringDrawTree());
+            World.Log(root.ToStringDrawTree());
         }
         private void OnApplicationQuit()
         {

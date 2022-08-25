@@ -3,10 +3,9 @@ using WorldTree;
 
 namespace Scripts
 {
-
-    class MainAddSystem : AddSystem<Main>
+    class MainDomainAddSystem : AddSystem<MainDomain>
     {
-        public override void OnAdd(Main self)
+        public override void OnAdd(MainDomain self)
         {
             World.Log("MainAdd!!!");
 
@@ -14,9 +13,10 @@ namespace Scripts
         }
     }
 
-    class MainUpdateSystem : UpdateSystem<Main>
+
+    class MainUpdateSystem : UpdateSystem<MainDomain>
     {
-        public override void Update(Main self, float deltaTime)
+        public override void Update(MainDomain self, float deltaTime)
         {
             if (Input.GetKeyDown(KeyCode.A))
             {
@@ -31,9 +31,9 @@ namespace Scripts
     }
 
 
-    class MainRemoveSystem : RemoveSystem<Main>
+    class MainRemoveSystem : RemoveSystem<MainDomain>
     {
-        public override void OnRemove(Main self)
+        public override void OnRemove(MainDomain self)
         {
             World.Log("MainRemove");
         }

@@ -10,6 +10,7 @@
 
 */
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
@@ -76,6 +77,8 @@ namespace WorldTree
         private void Initialize()
         {
             var types = FindTypesIsInterface(typeof(ISystem));
+            //将名字进行排序，规范触发顺序
+            types.Sort((item1, item2) =>item1.Name.CompareTo(item2.Name));
             foreach (var itemType in types)//遍历实现接口的类
             {
                 //实例化系统类
@@ -135,9 +138,9 @@ namespace WorldTree
         /// <summary>
         /// 查找继承了接口的类型
         /// </summary>
-        private static Type[] FindTypesIsInterface(Type Interface)
+        private static List<Type> FindTypesIsInterface(Type Interface)
         {
-            return AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes().Where(T => T.GetInterfaces().Contains(Interface) && !T.IsAbstract)).ToArray();
+            return AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes().Where(T => T.GetInterfaces().Contains(Interface) && !T.IsAbstract)).ToList();
         }
 
     }

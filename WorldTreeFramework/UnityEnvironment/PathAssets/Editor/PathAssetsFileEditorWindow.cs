@@ -32,7 +32,7 @@ namespace WorldTree
             root = new EntityManager();
 
             update = root.AddComponent<UpdateManager>();
-            //root.AddComponent<Main>();
+            //root.AddComponent<MainDomain>();
 
             Debug.Log(root.ToStringDrawTree());
 
