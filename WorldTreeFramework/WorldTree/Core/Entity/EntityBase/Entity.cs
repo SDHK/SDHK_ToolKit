@@ -41,7 +41,7 @@ namespace WorldTree
         /// 根节点
         /// </summary>
         public EntityManager Root;
- 
+
 
         private Entity domain;
         /// <summary>
@@ -295,6 +295,44 @@ namespace WorldTree
             return entity;
         }
 
+        /// <summary>
+        /// 通过id获取子节点
+        /// </summary>
+        public Entity GetChildren(long id)
+        {
+            if (children == null)
+            {
+                return null;
+            }
+            else
+            {
+                if (children.TryGetValue(id, out Entity entity))
+                {
+                    return entity;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+        /// <summary>
+        /// 通过id获取子节点
+        /// </summary>
+        public bool TryGetChildren(long id, out Entity entity)
+        {
+            if (children == null)
+            {
+                entity = null;
+                return false;
+            }
+            else
+            {
+                return children.TryGetValue(id, out entity);
+            }
+        }
+
+
 
         /// <summary>
         /// 移除子节点
@@ -394,8 +432,31 @@ namespace WorldTree
         /// </summary>
         public Entity GetComponent(Type type)
         {
-            Components.TryGetValue(type, out Entity component);
-            return component;
+            if (components == null)
+            {
+                return null;
+            }
+            else
+            {
+                components.TryGetValue(type, out Entity component);
+                return component;
+            }
+        }
+
+        /// <summary>
+        /// 获取组件
+        /// </summary>
+        public bool TryGetComponent(Type type, out Entity component)
+        {
+            if (components == null)
+            {
+                component = null;
+                return false;
+            }
+            else
+            {
+                return components.TryGetValue(type, out component);
+            }
         }
 
         /// <summary>
@@ -404,13 +465,45 @@ namespace WorldTree
         public T GetComponent<T>()
             where T : Entity
         {
-            Type type = typeof(T);
-            Entity entity = null;
-            if (components != null)
+            if (components == null)
             {
-                components.TryGetValue(type, out entity);
+                return null;
             }
-            return entity as T;
+            else
+            {
+                Type type = typeof(T);
+                Entity entity = null;
+                components.TryGetValue(type, out entity);
+                return entity as T;
+            }
+        }
+
+        /// <summary>
+        /// 获取组件
+        /// </summary>
+        public bool TryGetComponent<T>(out T component)
+            where T : Entity
+        {
+            if (components == null)
+            {
+                component = null;
+                return false;
+            }
+            else
+            {
+                Type type = typeof(T);
+                Entity entity = null;
+                if (components.TryGetValue(type, out entity))
+                {
+                    component = entity as T;
+                    return true;
+                }
+                else
+                {
+                    component = null;
+                    return false;
+                }
+            }
         }
 
         /// <summary>

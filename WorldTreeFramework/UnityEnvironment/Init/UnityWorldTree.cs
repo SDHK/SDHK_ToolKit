@@ -4,7 +4,7 @@
 * 作者： 闪电黑客
 * 日期： 2022/7/18 9:35
 
-* 描述：Unity环境下的运行时启动端，一切从这里开始
+* 描述：世界树框架驱动器，一切从这里开始
 
 */
 
@@ -13,13 +13,14 @@ using UnityEngine;
 namespace WorldTree
 {
 
-    public class UnityRunTime : MonoBehaviour
+    public class UnityWorldTree : MonoBehaviour
     {
         public EntityManager root;
 
         UpdateManager update;
         LateUpdateManager lateUpdate;
         FixedUpdateManager fixedUpdate;
+        OnGUIManager onGUI;
 
         private void Start()
         {
@@ -32,8 +33,8 @@ namespace WorldTree
             update = root.AddComponent<UpdateManager>();
             lateUpdate = root.AddComponent<LateUpdateManager>();
             fixedUpdate = root.AddComponent<FixedUpdateManager>();
-            root.AddComponent<MainDomain>();
-            World.Log(root.ToStringDrawTree());
+            onGUI = root.AddComponent<OnGUIManager>();
+            root.AddComponent<InitialDomain>();
            
         }
 
@@ -56,20 +57,18 @@ namespace WorldTree
             fixedUpdate.Update();
         }
 
+        private void OnGUI()
+        {
+            onGUI.Update();
+        }
+
         private void OnDestroy()
         {
             update = null;
             lateUpdate = null;
             fixedUpdate = null;
             root.Dispose();
-
-            World.Log(root.ToStringDrawTree());
         }
-        private void OnApplicationQuit()
-        {
-
-        }
-
 
     }
 }

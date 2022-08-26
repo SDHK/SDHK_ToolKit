@@ -3,20 +3,20 @@ using WorldTree;
 
 namespace Scripts
 {
-    class MainDomainAddSystem : AddSystem<MainDomain>
+    class InitialDomainAddSystem : AddSystem<InitialDomain>
     {
-        public override void OnAdd(MainDomain self)
+        public override void OnAdd(InitialDomain self)
         {
             World.Log("MainAdd!!!");
-
+            // singularity
             self.AddComponent<Node>();
         }
     }
 
 
-    class MainUpdateSystem : UpdateSystem<MainDomain>
+    class InitialDomainUpdateSystem : UpdateSystem<InitialDomain>
     {
-        public override void Update(MainDomain self, float deltaTime)
+        public override void Update(InitialDomain self, float deltaTime)
         {
             if (Input.GetKeyDown(KeyCode.A))
             {
@@ -31,9 +31,9 @@ namespace Scripts
     }
 
 
-    class MainRemoveSystem : RemoveSystem<MainDomain>
+    class InitialDomainRemoveSystem : RemoveSystem<InitialDomain>
     {
-        public override void OnRemove(MainDomain self)
+        public override void OnRemove(InitialDomain self)
         {
             World.Log("MainRemove");
         }

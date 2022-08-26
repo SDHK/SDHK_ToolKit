@@ -98,10 +98,15 @@ namespace WorldTree
             EventManager = AddComponent<EventManager>();
 
 
+
+
             //饿汉单例启动
-            foreach (ISingletonEagerSystem singletonEager in singletonEagerSystems.Values)
+            foreach (UnitList<ISystem> singletonEagers in singletonEagerSystems.Values)
             {
-                singletonEager.Singleton(this);
+                foreach (ISingletonEagerSystem singletonEager in singletonEagers)
+                {
+                    singletonEager.Singleton(this);
+                }
             }
         }
 

@@ -13,7 +13,6 @@ namespace WorldTree
         public static PathAssetsFileEditorWindow windows;
 
         public EntityManager root;
-
         public UpdateManager update;
 
 
@@ -29,12 +28,17 @@ namespace WorldTree
 
         public PathAssetsFileEditorWindow()
         {
+            World.Log = Debug.Log;
+            World.LogWarning = Debug.LogWarning;
+            World.LogError = Debug.LogError;
+
             root = new EntityManager();
 
             update = root.AddComponent<UpdateManager>();
-            //root.AddComponent<MainDomain>();
+            update.deltaTime = 0.2f;
+            root.AddComponent<InitialDomain>();
 
-            Debug.Log(root.ToStringDrawTree());
+            World.Log(root.ToStringDrawTree());
 
         }
 
@@ -58,7 +62,7 @@ namespace WorldTree
         {
             root.Dispose();
             update = null;
-            Debug.Log(root.ToStringDrawTree());
+            World.Log(root.ToStringDrawTree());
 
         }
 
