@@ -18,6 +18,7 @@
 */
 
 using System;
+using System.Collections.Generic;
 
 namespace WorldTree
 {
@@ -28,7 +29,7 @@ namespace WorldTree
     /// <summary>
     /// 实体管理器
     /// </summary>
-    public class EntityManager : Entity, IUnit
+    public class EntityManager : Entity
     {
         public UnitDictionary<long, Entity> allEntities = new UnitDictionary<long, Entity>();
 
@@ -46,8 +47,7 @@ namespace WorldTree
 
         public IdManager IdManager;
         public SystemManager SystemManager;
-        public UnitPoolManager UnitPoolManager;
-        public EntityPoolManager EntityPoolManager;
+        public ObjectPoolManager ObjectPoolManager;
         public EventManager EventManager;
 
 
@@ -62,15 +62,13 @@ namespace WorldTree
             //框架运转的核心组件
             IdManager = new IdManager();
             SystemManager = new SystemManager();
-            UnitPoolManager = new UnitPoolManager();
-            EntityPoolManager = new EntityPoolManager();
+            ObjectPoolManager = new ObjectPoolManager();
 
             //赋予根节点
             Root = this;
             IdManager.Root = this;
             SystemManager.Root = this;
-            UnitPoolManager.Root = this;
-            EntityPoolManager.Root = this;
+            ObjectPoolManager.Root = this;
 
             //域节点指向自己
             Domain = this;
@@ -79,8 +77,7 @@ namespace WorldTree
             Root.id = IdManager.GetId();
             IdManager.id = IdManager.GetId();
             SystemManager.id = IdManager.GetId();
-            UnitPoolManager.id = IdManager.GetId();
-            EntityPoolManager.id = IdManager.GetId();
+            ObjectPoolManager.id = IdManager.GetId();
 
             //实体管理器系统事件获取
             entitySystems = Root.SystemManager.GetSystemGroup<IEntitySystem>();
@@ -93,11 +90,8 @@ namespace WorldTree
             //核心组件添加
             AddComponent(IdManager);
             AddComponent(SystemManager);
-            AddComponent(UnitPoolManager);
-            AddComponent(EntityPoolManager);
+            AddComponent(ObjectPoolManager);
             EventManager = AddComponent<EventManager>();
-
-
 
 
             //饿汉单例启动
@@ -122,9 +116,9 @@ namespace WorldTree
         {
             Type typeKey = entity.Type;
 
-            foreach (var manager in listeners)//广播给全部管理器
+            foreach (var manager in listeners)//广播给全部监听器
             {
-                if (entitySystems.TryGetValue(manager.Key, out UnitList<ISystem> systems))
+                if (entitySystems.TryGetValue(manager.Key, out List<ISystem> systems))
                 {
                     foreach (IEntitySystem system in systems)
                     {
@@ -132,9 +126,9 @@ namespace WorldTree
                     }
                 }
             }
-
+            allEntities.TryAdd(entity.id, entity);
             //这个实体的添加事件
-            if (addSystems.TryGetValue(entity.Type, out UnitList<ISystem> addsystem))
+            if (addSystems.TryGetValue(entity.Type, out List<ISystem> addsystem))
             {
                 foreach (IAddSystem system in addsystem)
                 {
@@ -142,7 +136,7 @@ namespace WorldTree
                 }
             }
 
-            if (entitySystems.ContainsKey(typeKey))//检测到系统存在，则说明这是个管理器
+            if (entitySystems.ContainsKey(typeKey))//检测到系统存在，则说明这是个监听器
             {
                 listeners.TryAdd(typeKey, entity);
             }
@@ -154,23 +148,24 @@ namespace WorldTree
             Type typeKey = entity.Type;
 
             entity.SetActive(false);
-            if (entitySystems.ContainsKey(typeKey))//检测到系统存在，则说明这是个管理器
+            if (entitySystems.ContainsKey(typeKey))//检测到系统存在，则说明这是个监听器
             {
                 listeners.Remove(typeKey);
             }
 
             //这个实体的移除事件
-            if (removeSystems.TryGetValue(entity.Type, out UnitList<ISystem> removesystem))
+            if (removeSystems.TryGetValue(entity.Type, out List<ISystem> removesystem))
             {
                 foreach (IRemoveSystem system in removesystem)
                 {
                     system.Remove(entity);
                 }
             }
+            allEntities.Remove(entity.id);
 
-            foreach (var manager in listeners)//广播给全部管理器
+            foreach (var manager in listeners)//广播给全部监听器
             {
-                if (entitySystems.TryGetValue(manager.Key, out UnitList<ISystem> systems))
+                if (entitySystems.TryGetValue(manager.Key, out List<ISystem> systems))
                 {
                     foreach (IEntitySystem system in systems)
                     {
@@ -182,7 +177,7 @@ namespace WorldTree
 
         public void Enable(Entity entity)
         {
-            if (enableSystems.TryGetValue(entity.Type, out UnitList<ISystem> enableSystem))
+            if (enableSystems.TryGetValue(entity.Type, out List<ISystem> enableSystem))
             {
                 foreach (IEnableSystem system in enableSystem)
                 {
@@ -193,7 +188,7 @@ namespace WorldTree
 
         public void Disable(Entity entity)
         {
-            if (disableSystems.TryGetValue(entity.Type, out UnitList<ISystem> disableSystem))
+            if (disableSystems.TryGetValue(entity.Type, out List<ISystem> disableSystem))
             {
                 foreach (IDisableSystem system in disableSystem)
                 {

@@ -21,7 +21,7 @@ namespace WorldTree
     /// <summary>
     /// 单位池对象接口
     /// </summary>
-    public interface IUnitPoolItem: IUnit
+    public interface IUnitPoolItem : IUnit
     {
         /// <summary>
         /// 产生此类的对象池：由对象池自动赋值，用于实例的自我回收
@@ -33,11 +33,16 @@ namespace WorldTree
         /// </summary>
         bool IsRecycle { get; set; }
 
-
         /// <summary>
         /// 对象回收
         /// </summary>
         void Recycle();
+
+    }
+
+    public interface IUnitPoolItemEvent
+    {
+       
 
         /// <summary>
         /// 对象新建时
@@ -53,6 +58,5 @@ namespace WorldTree
         /// 对象回收时
         /// </summary>
         void OnRecycle();
-
     }
 }

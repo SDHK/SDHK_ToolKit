@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace WorldTree
 {
@@ -20,7 +21,7 @@ namespace WorldTree
                 Entity entity = update1[firstKey];
                 if (entity.IsActice)
                 {
-                    if (systems.TryGetValue(entity.Type, out UnitList<ISystem> systemList))
+                    if (systems.TryGetValue(entity.Type, out List<ISystem> systemList))
                     {
                         foreach (IFixedUpdateSystem system in systemList)
                         {
@@ -29,7 +30,7 @@ namespace WorldTree
                     }
                 }
                 update1.Remove(firstKey);
-                if (!entity.isRecycle)
+                if (!entity.IsRecycle)
                 {
                     update2.Add(firstKey, entity);
                 }

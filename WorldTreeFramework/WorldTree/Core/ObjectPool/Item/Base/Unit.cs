@@ -16,7 +16,7 @@ namespace WorldTree
     /// </summary>
     public abstract class Unit : IUnit
     {
-        public bool isDisposed { get; set; }
+        public bool IsDisposed { get; set; }
 
 
         /// <summary>
@@ -24,9 +24,9 @@ namespace WorldTree
         /// </summary>
         public void Dispose()
         {
-            if (isDisposed) return;
+            if (IsDisposed) return;
             OnDispose();
-            isDisposed = true;
+            IsDisposed = true;
         }
 
         public virtual void OnDispose() { }

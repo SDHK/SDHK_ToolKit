@@ -1,106 +1,99 @@
-﻿
-
-/******************************
-
- * 作者: 闪电黑客
- * 日期: 2021/12/14 05:23:50
-
- * 描述:  
-    
-    泛型对象池管理器
-
-*/
-/****************************************
+﻿/****************************************
 
 * 作者： 闪电黑客
-* 日期： 2022/6/21 20:55
+* 日期： 2022/7/17 17:23
 
-* 描述： 对象池结构大改。
-* 暂时无用
-* 
+* 描述： 实体对象池管理器。
+* 为所有实体对象池的管理器。
+
 */
-
 using System;
-using System.Collections.Generic;
 
 namespace WorldTree
 {
 
-    /// <summary>
-    /// 泛型对象池管理器
-    /// </summary>
-    public class ObjectPoolManager : SingletonBase<ObjectPoolManager>
+    public static class ObjectPoolManagerExtension
     {
-        private Dictionary<Type, IPool> pools = new Dictionary<Type, IPool>();
+        public static ObjectPoolManager EntityPoolManager(this Entity self)
+        {
+            return self.Root.ObjectPoolManager;
+        }
+    }
+
+    class ObjectPoolManagerRemove : RemoveSystem<ObjectPoolManager>
+    {
+        public override void OnRemove(ObjectPoolManager self)
+        {
+            self.Dispose();//全部释放
+        }
+    }
+
+    /// <summary>
+    /// 实体对象池管理器
+    /// </summary>
+    public class ObjectPoolManager : Entity
+    {
+
+        UnitDictionary<Type, ObjectPool> pools = new UnitDictionary<Type, ObjectPool>();
+
+        public override void OnDispose()
+        {
+            pools.Clear();
+        }
 
         /// <summary>
-        /// 获取对象
+        /// 获取实体
         /// </summary>
         public T Get<T>()
         where T : class
         {
             Type type = typeof(T);
-            if (pools.TryGetValue(type, out IPool pool))
-            {
-                return pool.GetObject() as T;
-            }
-            else//不存在则新建
-            {
-                ObjectPool<T> newPool = new ObjectPool<T>();
-                pools.Add(type, newPool);
-                return newPool.Get();
-            }
+            return GetPool(type).Get<T>();
         }
+
+        /// <summary>
+        /// 获取实体
+        /// </summary>
+        public object Get(Type type)
+        {
+            return GetPool(type).Get();
+        }
+
 
         /// <summary>
         /// 回收对象
         /// </summary>
-        public void Recycle<T>(T obj)
-        where T : class
+        public void Recycle(object obj)
         {
-            Type type = typeof(T);
-            if (pools.TryGetValue(type, out IPool pool))
+            if (obj != this && !(obj is ObjectPool))//禁止回收自己和对象池
             {
-                pool.Recycle(obj);
-            }
-            else//不存在则新建
-            {
-                ObjectPool<T> newPool = new ObjectPool<T>();
-                pools.Add(type, newPool);
-                newPool.Recycle(obj);
-            }
-        }
-
-        /// <summary>
-        /// 添加泛型对象池：假如池已存在，则替换并释放掉原来的。
-        /// </summary>
-        public void AddPool<T>(ObjectPool<T> pool)
-        where T : class
-        {
-            if (pools.TryAdd(pool.ObjectType, pool))
-            {
-                pools[pool.ObjectType]?.Dispose();
-                pools[pool.ObjectType] = pool;
+                GetPool( obj.GetType()).Recycle(obj);
             }
         }
 
         /// <summary>
         /// 获取池
         /// </summary>
-        public ObjectPool<T> GetPool<T>()
-        where T : class
+        public ObjectPool GetPool<T>()
         {
             Type type = typeof(T);
-            if (pools.TryGetValue(type, out IPool pool))
+            return GetPool(type);
+        }
+        /// <summary>
+        /// 获取池
+        /// </summary>
+        public ObjectPool GetPool(Type type)
+        {
+            if (!pools.TryGetValue(type, out ObjectPool pool))
             {
-                return pool as ObjectPool<T>;
+                pool = new ObjectPool(type);
+                pool.id = Root.IdManager.GetId();
+                pool.Root = Root;
+                pools.Add(type, pool);
+                AddChildren(pool);
             }
-            else
-            {
-                ObjectPool<T> unitPool = new ObjectPool<T>();
-                pools.Add(type, unitPool);
-                return unitPool;
-            }
+
+            return pool;
         }
 
         /// <summary>
@@ -109,19 +102,10 @@ namespace WorldTree
         public void DisposePool<T>()
         {
             Type type = typeof(T);
-            if (pools.TryGetValue(type, out IPool pool))
+            if (pools.TryGetValue(type, out ObjectPool pool))
             {
-                pool.Dispose();
                 pools.Remove(type);
             }
-        }
-        public override void OnDispose()
-        {
-            foreach (var pool in pools)
-            {
-                pool.Value.Dispose();
-            }
-            pools.Clear();
         }
     }
 }

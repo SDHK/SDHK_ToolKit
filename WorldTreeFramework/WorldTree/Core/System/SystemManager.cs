@@ -44,7 +44,7 @@ namespace WorldTree
         /// <summary>
         /// 获取单类型系统列表
         /// </summary>
-        public static UnitList<ISystem> RootGetSystems<T>(this Entity self, Type type)
+        public static List<ISystem> RootGetSystems<T>(this Entity self, Type type)
         {
             return self.Root.SystemManager.GetSystems<T>(type);
         }
@@ -117,7 +117,7 @@ namespace WorldTree
         /// <summary>
         /// 获取单类型系统列表
         /// </summary>
-        public UnitList<ISystem> GetSystems<T>(Type type)
+        public List<ISystem> GetSystems<T>(Type type)
         {
             if (InterfaceSystems.TryGetValue(typeof(T), out SystemGroup systemGroup))
             {

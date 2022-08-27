@@ -14,15 +14,15 @@ using System.Collections.Generic;
 
 namespace WorldTree
 {
-
+    //UnitStack
     /// <summary>
     /// 单位字典：可由对象池管理回收
     /// </summary>
-    public class UnitDictionary<TKey, TValue> : Dictionary<TKey, TValue>, IUnitPoolItem
+    public class UnitDictionary<TKey, TValue> : Dictionary<TKey, TValue>, IUnitPoolItem, IUnitPoolItemEvent
     {
         public IPool thisPool { get; set; }
         public bool IsRecycle { get; set; }
-        public bool isDisposed { get; set; }
+        public bool IsDisposed { get; set; }
 
 
         /// <summary>
@@ -30,9 +30,9 @@ namespace WorldTree
         /// </summary>
         public void Dispose()
         {
-            if (isDisposed) return;
+            if (IsDisposed) return;
             OnDispose();
-            isDisposed = true;
+            IsDisposed = true;
         }
 
         public virtual void OnDispose()
@@ -57,7 +57,7 @@ namespace WorldTree
         {
             if (thisPool != null)
             {
-                if (!thisPool.isDisposed)
+                if (!thisPool.IsDisposed)
                 {
                     if (!IsRecycle)
                     {

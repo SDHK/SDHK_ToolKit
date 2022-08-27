@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace WorldTree
 {
@@ -13,13 +15,15 @@ namespace WorldTree
         public SystemGroup systems;
         public void Update()
         {
+            (update1, update2) = (update2, update1);
+
             while (update1.Count != 0 && IsActice)
             {
                 long firstKey = update1.Keys.First();
                 Entity entity = update1[firstKey];
                 if (entity.IsActice)
                 {
-                    if (systems.TryGetValue(entity.Type, out UnitList<ISystem> systemList))
+                    if (systems.TryGetValue(entity.Type, out List<ISystem> systemList))
                     {
                         foreach (IOnGUISystem system in systemList)
                         {
@@ -28,13 +32,12 @@ namespace WorldTree
                     }
                 }
                 update1.Remove(firstKey);
-                if (!entity.isRecycle)
+                if (!entity.IsRecycle)
                 {
                     update2.Add(firstKey, entity);
                 }
 
             }
-            (update1, update2) = (update2, update1);
         }
 
 

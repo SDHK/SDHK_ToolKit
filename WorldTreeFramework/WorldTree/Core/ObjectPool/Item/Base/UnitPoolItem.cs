@@ -17,7 +17,7 @@ namespace WorldTree
     /// <summary>
     /// 池单位抽象基类：提供回收方法
     /// </summary>
-    public abstract class UnitPoolItem : Unit, IUnitPoolItem
+    public abstract class UnitPoolItem : Unit, IUnitPoolItem,IUnitPoolItemEvent
     {
         public IPool thisPool { get; set; }
 
@@ -28,7 +28,7 @@ namespace WorldTree
         {
             if (thisPool!=null)
             {
-                if (!thisPool.isDisposed)
+                if (!thisPool.IsDisposed)
                 {
                     if (!IsRecycle)
                     {

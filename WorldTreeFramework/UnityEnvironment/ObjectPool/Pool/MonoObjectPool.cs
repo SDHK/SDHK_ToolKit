@@ -131,12 +131,12 @@ namespace WorldTree
                 obj.transform.SetParent(poolTransform);
             }
 
-            obj.OnNew();
+            //obj.OnNew();
         }
         private void ObjectOnGet(T obj)
         {
             obj.gameObject.SetActive(true);
-            obj.OnGet();
+            //obj.OnGet();
         }
         private void ObjectOnRecycle(T obj)
         {
@@ -149,7 +149,7 @@ namespace WorldTree
             {
                 obj.transform.SetParent(poolTransform);
             }
-            obj.OnRecycle();
+            //obj.OnRecycle();
         }
 
         private void ObjectOnDestroy(T obj)

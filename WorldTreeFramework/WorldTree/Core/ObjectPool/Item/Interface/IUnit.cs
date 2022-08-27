@@ -20,7 +20,7 @@ namespace WorldTree
         /// <summary>
         /// 释放标记
         /// </summary>
-        bool isDisposed { get; set; }
+        bool IsDisposed { get; set; }
 
         /// <summary>
         /// 对象释放时

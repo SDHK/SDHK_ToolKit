@@ -7,6 +7,7 @@
 ****************************************/
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace WorldTree
@@ -15,12 +16,14 @@ namespace WorldTree
     /// <summary>
     /// 实体基类
     /// </summary>
-    public abstract class Entity : Unit
+    public abstract partial class Entity : IUnitPoolItem
     {
-        /// <summary>
-        /// 回收标记
-        /// </summary>
-        public bool isRecycle;
+        public IPool thisPool { get; set; }
+
+        public bool IsRecycle { get; set; }
+
+        public bool IsDisposed { get; set; }
+
 
         /// <summary>
         /// 组件标记
@@ -122,7 +125,7 @@ namespace WorldTree
         }
 
         /// <summary>
-        /// 刷新激活状态：递归设置子节点
+        /// 刷新激活状态：递归设置子节点并触发事件
         /// </summary>
         private void RefreshActive()
         {
@@ -177,6 +180,36 @@ namespace WorldTree
             Type = GetType();
         }
 
+
+        /// <summary>
+        /// 面向对象的直接释放方法：释放后IsDisposed标记为true
+        /// </summary>
+        public void Dispose()
+        {
+            if (IsDisposed) return;
+            OnDispose();
+            IsDisposed = true;
+        }
+
+        public void Recycle()
+        {
+            if (thisPool != null)
+            {
+                if (!thisPool.IsDisposed)
+                {
+                    if (!IsRecycle)
+                    {
+                        thisPool.Recycle(this);
+                    }
+                }
+            }
+        }
+
+
+        public virtual void OnDispose() { }
+
+
+
         /// <summary>
         /// 子节点
         /// </summary>
@@ -198,7 +231,7 @@ namespace WorldTree
             {
                 if (children == null)
                 {
-                    children = this.UnitPoolManager().Get<UnitDictionary<long, Entity>>();
+                    children = Root.ObjectPoolManager.Get<UnitDictionary<long, Entity>>();
                 }
                 return children;
             }
@@ -210,7 +243,7 @@ namespace WorldTree
             {
                 if (components == null)
                 {
-                    components = this.UnitPoolManager().Get<UnitDictionary<Type, Entity>>();
+                    components = Root.ObjectPoolManager.Get<UnitDictionary<Type, Entity>>();
                 }
                 return components;
             }
@@ -267,7 +300,7 @@ namespace WorldTree
             where T : Entity
         {
 
-            T entity = Root.EntityPoolManager.Get<T>();
+            T entity = Root.ObjectPoolManager.Get<T>();
             if (Children.TryAdd(entity.id, entity))
             {
                 entity.Parent = this;
@@ -283,16 +316,24 @@ namespace WorldTree
         /// </summary>
         public Entity AddChildren(Type type)
         {
-            Entity entity = Root.EntityPoolManager.Get(type);
-            if (Children.TryAdd(entity.id, entity))
+            object obj = Root.ObjectPoolManager.Get(type);
+            if (obj is Entity)
             {
-                entity.Parent = this;
-                entity.Domain = Domain;
+                Entity entity = obj as Entity;
+                if (Children.TryAdd(entity.id, entity))
+                {
+                    entity.Parent = this;
+                    entity.Domain = Domain;
 
-                Root.Add(entity);
+                    Root.Add(entity);
+                }
+                return entity;
             }
-
-            return entity;
+            else
+            {
+                Root.ObjectPoolManager.Recycle(obj);
+                return null;
+            }
         }
 
         /// <summary>
@@ -349,7 +390,7 @@ namespace WorldTree
 
                 children.Remove(entity.id);
 
-                Root.EntityPoolManager.Recycle(entity);
+                Root.ObjectPoolManager.Recycle(entity);
 
                 if (children.Count == 0)
                 {
@@ -370,7 +411,7 @@ namespace WorldTree
             T component = null;
             if (!Components.TryGetValue(type, out Entity entity))
             {
-                component = Root.EntityPoolManager.Get<T>();
+                component = Root.ObjectPoolManager.Get<T>();
 
                 component.Parent = this;
                 component.Domain = Domain;
@@ -395,15 +436,24 @@ namespace WorldTree
         {
             if (!Components.TryGetValue(type, out Entity component))
             {
-                component = Root.EntityPoolManager.Get(type);
+                object obj = Root.ObjectPoolManager.Get(type);
+                if (obj is Entity)
+                {
+                    component = obj as Entity;
 
-                component.Parent = this;
-                component.Domain = Domain;
+                    component.Parent = this;
+                    component.Domain = Domain;
 
-                component.isComponent = true;
+                    component.isComponent = true;
 
-                components.Add(type, component);
-                Root.Add(component);
+                    components.Add(type, component);
+                    Root.Add(component);
+                }
+                else
+                {
+                    Root.ObjectPoolManager.Recycle(obj);
+                    return null;
+                }
             }
             return component;
         }
@@ -526,7 +576,7 @@ namespace WorldTree
 
                 components.Remove(type);
 
-                Root.EntityPoolManager.Recycle(component);
+                Root.ObjectPoolManager.Recycle(component);
 
 
                 if (components.Count == 0)
@@ -552,7 +602,7 @@ namespace WorldTree
 
                 components.Remove(component.Type);
 
-                Root.EntityPoolManager.Recycle(component);
+                Root.ObjectPoolManager.Recycle(component);
 
                 if (components.Count == 0)
                 {
@@ -627,6 +677,7 @@ namespace WorldTree
                 RemoveAll();
             }
         }
+
     }
 
 }

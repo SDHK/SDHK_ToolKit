@@ -4,7 +4,7 @@
 * 作者： 闪电黑客
 * 日期： 2022/8/1 9:47
 
-* 描述： 实体对象池的事件系统
+* 描述： 对象池的事件系统
 
 */
 
@@ -16,16 +16,16 @@ namespace WorldTree
     /// </summary>
     public interface INewSystem : ISystem
     {
-        public void New(Entity self);
+        public void New(object self);
     }
 
     /// <summary>
     /// 新建事件系统
     /// </summary>
     public abstract class NewSystem<T> : SystemBase<T, INewSystem>, INewSystem
-        where T :  Entity
+        where T : class
     {
-        public void New(Entity self) => OnNew(self as T);
+        public void New(object self) => OnNew(self as T);
 
         public abstract void OnNew(T self);
     }
@@ -35,18 +35,17 @@ namespace WorldTree
     /// </summary>
     public interface IGetSystem : ISystem
     {
-        public void Get(Entity self);
+        public void Get(object self);
 
     }
 
     /// <summary>
     /// 获取事件系统
     /// </summary>
-    /// <typeparam name="T"></typeparam>
     public abstract class GetSystem<T> : SystemBase<T, IGetSystem>, IGetSystem
-        where T : Entity
+        where T : class
     {
-        public void Get(Entity self) => OnGet(self as T);
+        public void Get(object self) => OnGet(self as T);
 
         public abstract void OnGet(T self);
     }
@@ -56,17 +55,16 @@ namespace WorldTree
     /// </summary>
     public interface IRecycleSystem : ISystem
     {
-        public void Recycle(Entity self);
+        public void Recycle(object self);
     }
 
     /// <summary>
     /// 回收事件系统
     /// </summary>
-    /// <typeparam name="T"></typeparam>
     public abstract class RecycleSystem<T> : SystemBase<T, IRecycleSystem>, IRecycleSystem
-        where T :  Entity
+        where T : class
     {
-        public void Recycle(Entity self) => OnRecycle(self as T);
+        public void Recycle(object self) => OnRecycle(self as T);
 
         public abstract void OnRecycle(T self);
     }
@@ -76,16 +74,15 @@ namespace WorldTree
     /// </summary>
     public interface IDestroySystem : ISystem
     {
-        public void Destroy(Entity self);
+        public void Destroy(object self);
     }
     /// <summary>
     /// 释放事件系统
     /// </summary>
-    /// <typeparam name="T"></typeparam>
     public abstract class DestroySystem<T> : SystemBase<T, IDestroySystem>, IDestroySystem
-        where T : Entity
+        where T : class
     {
-        public void Destroy(Entity self) => OnDestroy(self as T);
+        public void Destroy(object self) => OnDestroy(self as T);
 
         public abstract void OnDestroy(T self);
 
