@@ -382,8 +382,9 @@ namespace WorldTree
         {
             if (entity != null)
             {
-                Root.Remove(entity);
                 entity.RemoveAll();
+
+                Root.Remove(entity);
 
                 entity.Parent = null;
                 entity.Domain = null;
@@ -567,9 +568,10 @@ namespace WorldTree
             {
                 Entity component = components[type];
 
+                component.RemoveAll();
+
                 Root.Remove(component);
 
-                component.RemoveAll();
 
                 component.Parent = null;
                 component.Domain = null;
@@ -593,9 +595,9 @@ namespace WorldTree
         {
             if (components.ContainsValue(component))
             {
+                component.RemoveAll();
 
                 Root.Remove(component);
-                component.RemoveAll();
 
                 component.Parent = null;
                 component.Domain = null;

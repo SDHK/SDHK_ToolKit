@@ -35,14 +35,14 @@ namespace WorldTree
             fixedUpdate = root.AddComponent<FixedUpdateManager>();
             onGUI = root.AddComponent<OnGUIManager>();
             root.AddComponent<InitialDomain>();
-           
+
         }
 
         private void Update()
         {
-            update.deltaTime = Time.deltaTime;  
+            update.deltaTime = Time.deltaTime;
             update.Update();
-          
+
             if (Input.GetKeyDown(KeyCode.Return)) Debug.Log(root.ToStringDrawTree());
         }
 

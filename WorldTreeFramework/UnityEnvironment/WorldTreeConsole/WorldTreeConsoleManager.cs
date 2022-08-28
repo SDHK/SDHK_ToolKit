@@ -21,17 +21,47 @@ namespace WorldTree
         {
             self.systems = self.RootGetSystemGroup<IConsoleTreeViewItemSystem>();
 
-            self.ViewShows = self.Root.ObjectPoolManager.Get<UnitDictionary<long, bool>>();
-            self.ViewShows.TryAdd(self.Root.id, true);
+            self.componentShowSwitchs = self.Root.ObjectPoolManager.Get<UnitDictionary<long, bool>>();
+            self.childrenShowSwitchs = self.Root.ObjectPoolManager.Get<UnitDictionary<long, bool>>();
+
+            self.componentShowSwitchs.TryAdd(self.Root.id, true);
+            self.childrenShowSwitchs.TryAdd(self.Root.id, true);
             foreach (var item in self.Root.allEntities)
             {
-                self.ViewShows.TryAdd(item.Value.id, true);
+                self.componentShowSwitchs.TryAdd(item.Value.id, true);
+                self.childrenShowSwitchs.TryAdd(item.Value.id, true);
             }
-            self.currentNode = self.Root.id;
+            self.currentNode = self.Root;
 
-            self.BtnStyle = new GUIStyle("Box");
-            //self.BtnStyle.normal.background = Texture2D.blackTexture;
+            self.black3 = new GUIStyle("Label");
+            self.black3.normal.background = new Texture2D(1, 1, Texture2D.grayTexture.format, true);
+            self.black3.normal.background.SetPixel(0, 0, new Color(0.3f, 0.3f, 0.3f));
+            self.black3.normal.background.Apply();
 
+            self.black2 = new GUIStyle("Label");
+            self.black2.normal.background = new Texture2D(1, 1, Texture2D.grayTexture.format, true);
+            self.black2.normal.background.SetPixel(0, 0, new Color(0.2f, 0.2f, 0.2f));
+            self.black2.normal.background.Apply();
+
+            self.black1 = new GUIStyle("Label");
+            self.black1.normal.background = new Texture2D(1, 1, Texture2D.grayTexture.format, true);
+            self.black1.normal.background.SetPixel(0, 0, new Color(0.1f, 0.1f, 0.1f));
+            self.black1.normal.background.Apply();
+
+
+            self.blue = new GUIStyle("Label");
+            self.blue.normal.background = new Texture2D(1, 1, Texture2D.grayTexture.format, true);
+            self.blue.normal.background.SetPixel(0, 0, new Color(0.2f, 0.3f, 0.5f));
+            self.blue.normal.background.Apply();
+
+            self.Transparent = new GUIStyle("Label");
+            self.Transparent.normal.background = new Texture2D(1, 1, Texture2D.grayTexture.format, true);
+            self.Transparent.normal.background.SetPixel(0, 0, new Color(0, 0, 0, 0));
+            self.Transparent.normal.background.Apply();
+
+
+            self.BtnStyle = new GUIStyle("Label");
+            self.BtnStyle.alignment = TextAnchor.MiddleLeft;
         }
     }
 
@@ -39,19 +69,26 @@ namespace WorldTree
     {
         public override void OnRemove(ConsoleTreeView self)
         {
-            self.ViewShows.Recycle();
+            self.componentShowSwitchs.Recycle();
+            self.childrenShowSwitchs.Recycle();
         }
     }
     class ConsoleTreeViewEntitySystem : EntitySystem<ConsoleTreeView>
     {
         public override void OnAddEntity(ConsoleTreeView self, Entity entity)
         {
-            self.ViewShows.TryAdd(entity.id, true);
+            self.componentShowSwitchs.TryAdd(entity.id, true);
+            self.childrenShowSwitchs.TryAdd(entity.id, true);
         }
 
         public override void OnRemoveEntity(ConsoleTreeView self, Entity entity)
         {
-            self.ViewShows.Remove(entity.id);
+            if (self.currentNode == entity)
+            {
+                self.currentNode = entity.Parent;
+            }
+            self.componentShowSwitchs.Remove(entity.id);
+            self.componentShowSwitchs.Remove(entity.id);
         }
     }
 
@@ -59,48 +96,115 @@ namespace WorldTree
     {
         public override void OnGUI(ConsoleTreeView self, float deltaTime)
         {
-            self.rect = GUI.Window(self.GetHashCode(), self.rect, self.GUIWindowMax, "世界树控制台");
+            self.rect = GUI.Window(self.GetHashCode(), self.rect, self.GUIWindowMax, default(string), GUIDefault.StyleBlack2);
         }
 
     }
     public class ConsoleTreeView : Entity
     {
-        public UnitDictionary<long, bool> ViewShows;
+        public UnitDictionary<long, bool> componentShowSwitchs;
+        public UnitDictionary<long, bool> childrenShowSwitchs;
         public Rect rect = new Rect(0, 0, 1000, 1000);
 
         public SystemGroup systems;
-        public long currentNode;
+        public Entity currentNode;
+        public Entity selectNode;
         private Vector2 scrollLogView = Vector2.zero;
-        private bool AreaView = false;
 
 
         public string box = "Button";
         public string box2 = "Box";
         public GUIStyle BtnStyle;
 
+        public GUIStyle black3;
+        public GUIStyle black2;
+        public GUIStyle black1;
+        public GUIStyle blue;
+        public GUIStyle Transparent;
+
+        private Color bak;
+
         public void GUIWindowMax(int windowId)
         {
-           
-            AreaView = EditorGUILayout.Foldout(AreaView, "测试!!!!!");
-            box2 = GUILayout.TextField(box2);
-            if (GUILayout.Button("测试"))
-            {
-                box = box2;
-            }
+
+            bak = GUI.color;
+
+            //GUI.color = Color.yellow;
+
+            GUILayout.BeginHorizontal(GUIDefault.StyleBlack2, GUIDefault.optionHeight25);
+
+            GUILayout.Label("世界树可视化", GUIDefault.StyleTransparent);
+            GUILayout.FlexibleSpace();
+
+            GUIDefault.CloseButton(() => { });
+
+            GUILayout.EndHorizontal();
 
 
-            scrollLogView = GUILayout.BeginScrollView(scrollLogView, GUILayout.Height(900));
+            GUIDefault.LineHorizontal();
 
-            TraversalRecursive(Root);
 
+
+            GUILayout.BeginHorizontal(GUIDefault.StyleBlack2);
+
+            PathNodeView(currentNode);
+
+            GUILayout.EndHorizontal();
+
+
+            GUIDefault.LineHorizontal();
+
+            //GUI.color = bak;
+
+
+
+            GUILayout.BeginVertical();
+
+            scrollLogView = GUILayout.BeginScrollView(scrollLogView, GUIDefault.StyleBlack2);
+            //TraversalRecursive(currentNode);
+            ForeachShow(currentNode);
             GUILayout.EndScrollView();
+
+            GUILayout.EndVertical();
             GUI.DragWindow();
 
             //子物体绘制
         }
+
         public void TraversalRecursive(Entity node)
         {
             GUILayout.BeginVertical();
+
+            ShowItem(node);
+
+            //GUILayout.BeginHorizontal();
+
+            //GUILayout.Space(100);
+            ForeachShow(node);
+
+            //GUILayout.EndHorizontal();
+
+            //GUIDefault.LineHorizontal();
+
+            GUILayout.EndVertical();
+        }
+
+
+        public void PathNodeView(Entity entity)
+        {
+            if (entity != null)
+            {
+                PathNodeView(entity.Parent);
+                if (GUILayout.Button(entity.Type.Name, GUIDefault.StyleBlack3, GUILayout.ExpandWidth(false)))
+                {
+                    currentNode = entity;
+                }
+            }
+        }
+
+
+        public void ShowItem(Entity node)
+        {
             if (systems.TryGetValue(node.Type, out List<ISystem> systemList))
             {
                 foreach (IConsoleTreeViewItemSystem system in systemList)
@@ -115,50 +219,82 @@ namespace WorldTree
                     system.Draw(node, this);
                 }
             }
-            GUILayout.BeginHorizontal();
-            GUILayout.Space(100);
+        }
+        public void ForeachShow(Entity node)
+        {
             GUILayout.BeginVertical();
 
-            ViewShows.TryGetValue(node.id, out bool value);
-            if (value)
+
+
+            ForeachComponents(node);
+            ForeachChildren(node);
+
+            GUILayout.EndVertical();
+
+
+        }
+
+        public void ForeachComponents(Entity node)
+        {
+
+            componentShowSwitchs.TryGetValue(node.id, out bool value);
+
+            if (node.components != null && value)
             {
-                GUILayout.BeginVertical(BtnStyle);
+                //GUIDefault.LineHorizontal();
 
-                if (node.components == null && node.children == null) ViewShows[node.id] = false;
+                GUILayout.BeginHorizontal(GUIDefault.StyleBlack1);
+                GUILayout.BeginHorizontal(GUIDefault.StyleBlack2);
+                //GUILayout.Space(100);
+                GUILayout.Label("Components:", GUIDefault.StyleTransparent, GUIDefault.optionWidth80);
 
-                if (node.components != null)
+                GUIDefault.LineVertical();
+
+                GUILayout.BeginVertical();
+
+            
+                foreach (var item in node.components)
                 {
-                    GUILayout.Label("Components:");
-
-                    foreach (var item in node.components)
-                    {
-                        TraversalRecursive(item.Value);
-                    }
-
+                    TraversalRecursive(item.Value);
                 }
                 GUILayout.EndVertical();
-
-                GUILayout.BeginVertical(BtnStyle);
-
-                if (node.children != null)
-                {
-                    GUILayout.Label("Children:");
-
-                    foreach (var item in node.children)
-                    {
-                        TraversalRecursive(item.Value);
-                    }
-                }
-                GUILayout.EndVertical();
+                GUILayout.EndHorizontal();
+                GUILayout.EndHorizontal();
 
             }
-            GUILayout.EndVertical();
-
-
-            GUILayout.EndHorizontal();
-
-            GUILayout.EndVertical();
         }
+
+        public void ForeachChildren(Entity node)
+        {
+            childrenShowSwitchs.TryGetValue(node.id, out bool value);
+            if (node.children != null && value)
+            {
+                GUILayout.BeginHorizontal(GUIDefault.StyleBlack1);
+                GUILayout.BeginHorizontal(GUIDefault.StyleBlack2);
+
+                GUILayout.Label("Children:", GUIDefault.StyleTransparent, GUIDefault.optionWidth80);
+
+                //GUILayout.Space(100);
+
+                GUIDefault.LineVertical();
+
+                GUILayout.BeginVertical();
+
+        
+
+                foreach (var item in node.children)
+                {
+                    TraversalRecursive(item.Value);
+                }
+
+                GUILayout.EndVertical();
+                GUILayout.EndHorizontal();
+                GUILayout.EndHorizontal();
+
+            }
+
+        }
+
 
     }
 
@@ -167,19 +303,73 @@ namespace WorldTree
 
     public class ConsoleTreeViewItem : ConsoleTreeViewItemSystem<Entity>
     {
-        public override void OnDraw(Entity self, ConsoleTreeView consoleTreeView)
+        public override void OnDraw(Entity self, ConsoleTreeView console)
         {
-            GUILayout.BeginHorizontal("Button", GUILayout.Width(600));
-            GUILayout.Label(self.ToString(), consoleTreeView.BtnStyle, GUILayout.Width(400));
 
-            if (consoleTreeView.ViewShows.ContainsKey(self.id))
+            bool componentSwitch = console.componentShowSwitchs[self.id];
+            bool childrenSwitch = console.childrenShowSwitchs[self.id];
+
+            //GUILayout.BeginHorizontal("Box", GUILayout.Width(600));
+            GUILayout.BeginHorizontal(console.selectNode == self ? GUIDefault.StyleBlue : GUIDefault.StyleBlack3, GUILayout.Width(600));
+            //EditorGUILayout
+
+            if (self.components != null || self.children != null)
             {
-                bool bit = consoleTreeView.ViewShows[self.id];
-                if (GUILayout.Button(bit ? "收起" : "展开", GUILayout.Width(200)))
+                GUIDefault.FoldoutButton(componentSwitch || childrenSwitch, (bit) =>
                 {
-                    consoleTreeView.ViewShows[self.id] = !bit;
-                }
+                    componentSwitch = !bit;
+                    childrenSwitch = componentSwitch;
+                });
             }
+            else
+            {
+                GUILayout.Space(25);
+            }
+
+
+            GUILayout.BeginHorizontal();
+
+            GUIDefault.Button(self.Type.Name, () =>
+            {
+                if (console.selectNode == self)
+                {
+                    console.currentNode = self;
+                }
+                console.selectNode = self;
+            }, GUILayout.Width(300));
+
+
+            if (self.components != null)
+            {
+                if (GUILayout.Button(componentSwitch ? "▼" : "▶", GUIDefault.StyleTransparent, GUILayout.Width(20)))
+                {
+                    componentSwitch = !componentSwitch;
+                }
+                GUILayout.Label(self.components.Count.ToString(), GUILayout.Width(80));
+            }
+            else
+            {
+                componentSwitch = false;
+            }
+
+
+            if (self.children != null)
+            {
+                if (GUILayout.Button(childrenSwitch ? "▼" : "▶", GUIDefault.StyleTransparent, GUILayout.Width(20)))
+                {
+                    childrenSwitch = !childrenSwitch;
+                }
+                GUILayout.Label(self.children.Count.ToString(), GUILayout.Width(80));
+            }
+            else
+            {
+                childrenSwitch = false;
+            }
+
+            console.componentShowSwitchs[self.id] = componentSwitch;
+            console.childrenShowSwitchs[self.id] = childrenSwitch;
+
+            GUILayout.EndHorizontal();
             GUILayout.EndHorizontal();
         }
     }
