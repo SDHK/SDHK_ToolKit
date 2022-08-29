@@ -9,7 +9,7 @@ namespace WorldTree
 {
     public class GUIBeginVertical : GUIBase
     {
-        public override void Draw()
+        public  void Draw()
         {
             GUILayout.BeginVertical(Style, options);
         }

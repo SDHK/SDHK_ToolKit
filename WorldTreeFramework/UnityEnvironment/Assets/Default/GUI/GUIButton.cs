@@ -21,7 +21,7 @@ namespace WorldTree
     {
         public Action action;
 
-        public override void Draw()
+        public  void Draw()
         {
             if (GUILayout.Button(text, Style, options))
             {

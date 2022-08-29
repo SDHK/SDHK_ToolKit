@@ -185,7 +185,6 @@ namespace WorldTree
             this.options = options;
         }
 
-        public abstract void Draw();
     }
 
 

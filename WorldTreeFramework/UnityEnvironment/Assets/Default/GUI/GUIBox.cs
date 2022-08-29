@@ -19,7 +19,7 @@ namespace WorldTree
 {
     public class GUIBox : GUIBase
     {
-        public override void Draw()
+        public  void Draw()
         {
             GUILayout.Box(text, Style, options);
         }
