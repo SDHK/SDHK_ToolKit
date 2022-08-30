@@ -13,6 +13,7 @@ namespace WorldTree
         public override void OnAdd(InitialDomain self)
         {
             self.Root.AddChildren<ConsoleTreeView>();
+            self.Root.AddChildren<GUIWindow>();
         }
     }
     class ConsoleTreeViewAddSystem : AddSystem<ConsoleTreeView>
@@ -96,7 +97,15 @@ namespace WorldTree
     {
         public override void OnGUI(ConsoleTreeView self, float deltaTime)
         {
+<<<<<<< HEAD
             self.rect = GUI.Window(self.GetHashCode(), self.rect, self.GUIWindowMax, default(string), GUIDefault.StyleBlack2);
+=======
+            Rect rect = new Rect(self.rect.x, self.rect.y, self.rect.width * GUIDefault.size, self.rect.height * GUIDefault.size);
+            rect = GUILayout.Window(self.GetHashCode(), rect, self.GUIWindowMax, default(string));
+            self.rect.x = rect.x;
+            self.rect.y = rect.y;
+
+>>>>>>> 8ee27bd5be6bacc41385365f58caa9acfbb7a436
         }
 
     }
@@ -126,6 +135,11 @@ namespace WorldTree
 
         public void GUIWindowMax(int windowId)
         {
+<<<<<<< HEAD
+=======
+            
+            beginVertical1.Draw();
+>>>>>>> 8ee27bd5be6bacc41385365f58caa9acfbb7a436
 
             bak = GUI.color;
 
@@ -141,7 +155,19 @@ namespace WorldTree
             GUILayout.EndHorizontal();
 
 
+<<<<<<< HEAD
             GUIDefault.LineHorizontal();
+=======
+
+            lineHorizontal.Draw();
+
+            GUIWindowContent();
+
+            GUILayout.EndVertical();
+            GUI.DragWindow();
+
+        }
+>>>>>>> 8ee27bd5be6bacc41385365f58caa9acfbb7a436
 
 
 
